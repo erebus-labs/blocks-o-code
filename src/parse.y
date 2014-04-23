@@ -36,7 +36,7 @@ Parsing Emulator for A Block of Code
 /* Types **********************/
 
 %define parse.lac full
-%define parse.error verbose
+//%define parse.error verbose
 %locations
 
 %union {
@@ -63,24 +63,24 @@ Parsing Emulator for A Block of Code
 
 
 /* Precedence *****************/
-%precedence GLOBAL
-%precedence GLOBAL_STAT
-%precedence GLOBAL_STATLIST
+%left GLOBAL
+%left GLOBAL_STAT
+%left GLOBAL_STATLIST
 %left STAT                      /* A statement              */
 %left STATLIST
 %left WHILE IF
-%precedence IF_ONLY
-%precedence IF_ELSE
+%left IF_ONLY
+%left IF_ELSE
 %left END_IF END_WHILE
 %left OUTPUT SAY AS_PLUS AS_MINUS AS_MULT AS_DIV AS_POW AS_MOD
 %left SUBEXP                    /* Expression in parens     */
-%precedence EVAR                /* Empty variable statement */
+%left EVAR                /* Empty variable statement */
 %left EX_EQ EX_NE EX_LT EX_GT EX_LE EX_GE /* Comparision Operators    */
 %left EX_PLUS EX_MINUS          /* Arithmetic Operators     */
 %left EX_MULT EX_DIV            /*                          */
 %right EX_POW EX_MOD            /* Arithmetic Operators     */
-%precedence NNOT                /* Unary Numerical Negation */
-%precedence NNEG                /* Unary Numerical Negation */
+%left NNOT                /* Unary Numerical Negation */
+%left NNEG                /* Unary Numerical Negation */
 
 /* Semantics ******************/
 %%
@@ -94,10 +94,10 @@ input:
 ;
 
 STATEMENT_LIST:
-      STATEMENT_LIST STATEMENT %prec STATLIST {
+      STATEMENT_LIST STATEMENT {
         $$ = ast_node_list_append($1, ast_node_new_list($2));
     }
-    | STATEMENT %prec STAT {
+    | STATEMENT {
         $$ = ast_node_new_list($1);
     }
 ;
@@ -128,11 +128,11 @@ STATEMENT:
         DEBUG("    (Parser Responds: Found 'while' statement)\n");
         $$ = ast_node_new_loop('@', $2, $3);
     }
-    | IF      EXPRESSION ENDIF_STATEMENT_LIST %prec IF_ONLY {
+    | IF      EXPRESSION ENDIF_STATEMENT_LIST {
         DEBUG("    (Parser Responds: Found 'if' statement)\n");
         $$ = ast_node_conditional($2, $3, 0);
     }
-    | IF      EXPRESSION ELSE_STATEMENT_LIST ENDIF_STATEMENT_LIST %prec IF_ELSE {
+    | IF      EXPRESSION ELSE_STATEMENT_LIST ENDIF_STATEMENT_LIST {
         DEBUG("    (Parser Responds: Found 'if...Else' statement)\n");
         $$ = ast_node_conditional($2, $3, $4);
     }
@@ -180,7 +180,7 @@ EXPRESSION:
         DEBUG("    (Parser Responds: Found 'number %g' expresson)\n", $1);
         $$ = ast_node_new_literal($1, 0, 0);
     }
-    | VAR %prec EVAR {
+    | VAR {
         expects_condition = 0;
         DEBUG("    (Parser Responds: Found 'variable %d' expresson)\n", $1);
         $$ = ast_node_new_var($1, 0, 0);
@@ -205,7 +205,7 @@ EXPRESSION:
         $$ = ast_node_new_op('/', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix /' expresson)\n");
     }
-    | EX_MINUS EXPRESSION %prec NNEG {
+    | EX_MINUS EXPRESSION {
         expects_condition = 0;
         $$ = ast_node_new_op('-', 0, $2);
         DEBUG("    (Parser Responds: Found 'unary -' expresson)\n");
@@ -250,12 +250,12 @@ EXPRESSION:
         DEBUG("    (Parser Responds: Found 'infix !=' expresson)\n");
         $$ = ast_node_new_op('~', $1, $3);
     }
-    | EX_CLAIMATION EXPRESSION %prec NNOT {
+    | EX_CLAIMATION EXPRESSION {
         expects_condition = 0;
         $$ = ast_node_new_op('!', 0, $2);
         DEBUG("    (Parser Responds: Found 'unary !' expresson)\n");
     }
-    | LPAREN EXPRESSION RPAREN %prec SUBEXP {
+    | LPAREN EXPRESSION RPAREN {
         expects_condition = 0;
         DEBUG("    [Parser Responds: Found '(subexpresson)' expresson]\n");
         $$ = $2;

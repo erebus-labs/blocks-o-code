@@ -15,8 +15,18 @@ class ABCFilter(object):
     is a float.
     """
 
-    def __init__(self, channel):
-        self.channel = int(channel)
+    def __init__(self):
+        if len(sys.argv) < 2:
+            raise ValueError('An output channel is required')
+    
+        try:
+            dummy = int(sys.argv[1])
+            if dummy > 5 or dummy < 0:
+                raise RuntimeError('The output channel must be between 1-5')
+        except ValueError:
+            raise ValueError('Could not parse output channel')
+
+        self.channel = int(sys.argv[1])
 
     def _run(self):
         """
@@ -34,6 +44,7 @@ class ABCFilter(object):
 
             if not '#OUT(' + str(self.channel) in line:
                 sys.stdout.write(line)
+                sys.stdout.flush()
             else:
                 second_arg_with_paren = line.split(',')[1]
                 secondarg = second_arg_with_paren.split(')')[0]
@@ -51,17 +62,7 @@ class ABCFilter(object):
 
 
 def main():
-    if len(sys.argv) < 2:
-        raise ValueError('An output channel is required')
-
-    try:
-        dummy = int(sys.argv[1])
-        if dummy > 5 or dummy < 0:
-            raise RuntimeError('The output channel must be between 1-5')
-    except ValueError:
-        raise ValueError('Could not parse output channel')
-
-    abcfilter = ABCFilter(sys.argv[1])
+    abcfilter = ABCFilter()
     abcfilter._run()
 
 if __name__ == '__main__':

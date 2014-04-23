@@ -367,6 +367,7 @@ void yyerror(char const* error) {
             #endif
             fprintf(stderr, "ERROR: Unexpected Token(s): %s\n", errortext);
             fprintf(stderr, "       on line %d, column %d\n", errorline, errorcolumn);
+            fprintf(stdout, "#SYNTAXERROR(%d, %d)\n", errorline, errorcolumn);
             #ifdef PRINTDEBUGINFO
             DEBUG("Parser and Lexer are too confused to finish their jobs...\n")
             #endif
