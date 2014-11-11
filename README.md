@@ -1,6 +1,5 @@
 blocks-o-code
 =============
-Blocks of Code Main Project
 
 #A Block of Code
 + *Title:* Physical manipulators for developing and implementing shot programing routines 
@@ -15,7 +14,6 @@ Blocks of Code Main Project
   + Greg Stromire
   + Nathan Bryant
 + *PSU Academic Advisor:* [Roy Kravitz](http://www.pdx.edu/directory/name/roy_kravitz) 
-
 + *Targeted Users:* Infants to High School aged children, parents and their educators
 
 
