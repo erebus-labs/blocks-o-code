@@ -2,7 +2,7 @@ blocks-o-code
 =============
 
 #A Block of Code
-+ *Title:* Physical manipulators for developing and implementing shot programing routines 
++ *Title:* Physical manipulators for developing and implementing short programing routines 
 + *Project Short Name:* A Block of Code (ABC)
 + *Sponsors:* 
   + [Dr. Mike Borowczak](https://www.linkedin.com/in/mborowczak) @ [Erebus Labs](www.erebuslabs.com)
@@ -24,7 +24,7 @@ Your task is to design the basic hardware / software structure for ultra-low cos
 The fundamental grammar should contain 7 types of blocks:
 + numbers (ints/doubles) – stringing these blocks together forms longer numbers [0,1,2,3,4,5]; [6,7,8,9,.]
 + variables  
-+ assignment operators 
++ assignment operators (<-)*Confusion in elementary aged children arises when using = 
 + simple binary operators (*,/,-,+,%?): 
 + equivalence operators (<,>,==, !=,<=,>=)
 + control block start/end
@@ -38,7 +38,7 @@ Algorithms, logical constructs and the foundations of programming are generally 
 
 ##Skill Requirements (Order of importance):
 1. System Design 
-2.Ultra-small form factor design
+2. Ultra-small form factor design
 3. Ultra-low power/heat design (the final design would be incased in a resin
 4. Power and signal transmission through traditional wire & inductance
 
