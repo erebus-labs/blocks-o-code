@@ -24,7 +24,11 @@ Your task is to design the basic hardware / software structure for ultra-low cos
 The fundamental grammar should contain 7 types of blocks:
 + numbers (ints/doubles) – stringing these blocks together forms longer numbers [0,1,2,3,4,5]; [6,7,8,9,.]
 + variables  
-+ assignment operators (<-)*Confusion in elementary aged children arises when using = 
++ assignment operators (<-)
+  - Confusion in novice algebra students arises when using = in programming
+  - e.g x = x +1; 
+    - algebraicly this is not possible how can x take a value s.t. adding one is still the same value; 
+    - x-x = 1 ;  0 = 1 ??
 + simple binary operators (*,/,-,+,%?): 
 + equivalence operators (<,>,==, !=,<=,>=)
 + control block start/end
@@ -51,6 +55,7 @@ Algorithms, logical constructs and the foundations of programming are generally 
 + No NDA required
 
 ##Requirements (Wish List):
+
 ###Must Have
 
 - [ ] Hardware cost <$3 per unit (average cost for a set 20 = $60)
