@@ -34,7 +34,9 @@ While a majority of the logic for the entire operation could be housed in the pr
 
 ##Background
 
-Algorithms, logical constructs and the foundations of programming are generally limited to computer-based instances. No physical manipulators exist that expose children to programming as they do for number and alphabet systems, mechanics, art, etc.  Build a prototype for building blocks that can be attached through internal magnets, these magnets perform two actions 1) physical connect and 2) logical circuit connections.
+Algorithms, logical constructs and the foundations of programming are generally limited to computer-based instances. No physical manipulators exist that expose children to programming as they do for number and alphabet systems, mechanics, art, etc.  Build a prototype for building blocks that can be attached through internal magnets, these magnets perform two actions 
+1. physical connection and 
+2. logical circuit connections.
 
 ##Skill Requirements (Order of importance):
 1. System Design 
@@ -87,4 +89,3 @@ Algorithms, logical constructs and the foundations of programming are generally 
 - [ ] Development of full hardware solution
 - [ ] Development of power system
 - [ ] Development of communication system
-
