@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Blocks-o-code : Blocks of Code Main Project">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Blocks-o-code</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/erebus-labs/blocks-o-code">View on GitHub</a>
+
+          <h1 id="project_title">Blocks-o-code</h1>
+          <h2 id="project_tagline">Blocks of Code Main Project</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/erebus-labs/blocks-o-code/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/erebus-labs/blocks-o-code/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="blocks-o-code" class="anchor" href="#blocks-o-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>blocks-o-code</h1>
+
+<h1>
+<a id="a-block-of-code" class="anchor" href="#a-block-of-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>A Block of Code</h1>
+
+<ul>
+<li>
+<em>Title:</em> Physical manipulators for developing and implementing short programing routines </li>
+<li>
+<em>Project Short Name:</em> A Block of Code (ABC)</li>
+<li>
+<em>Sponsors:</em> 
+
+<ul>
+<li>
+<a href="https://www.linkedin.com/in/mborowczak">Dr. Mike Borowczak</a> @ <a href="www.erebuslabs.com">Erebus Labs</a>
+</li>
+<li>
+<a href="http://uwyo.academia.edu/AndreaBurrows">Dr. Andrea Burrows</a> @ <a href="http://www.uwyo.edu/seced/faculty-staff/andrea-burrows.html">University of Wyoming</a>
+</li>
+</ul>
+</li>
+<li>
+<em>Senior Design Team:</em> 
+
+<ul>
+<li>Jacob Mickiewicz </li>
+<li>Tyler Hart</li>
+<li>Daniel Frister</li>
+<li>Greg Stromire</li>
+<li>Nathan Bryant</li>
+</ul>
+</li>
+<li>
+<em>PSU Academic Advisor:</em> <a href="http://www.pdx.edu/directory/name/roy_kravitz">Roy Kravitz</a> </li>
+<li>
+<em>Targeted Users:</em> Infants to High School aged children, parents and their educators</li>
+</ul>
+
+<h2>
+<a id="problemtask" class="anchor" href="#problemtask" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problem/Task</h2>
+
+<p>Your task is to design the basic hardware / software structure for ultra-low cost, connectable “blocks” that mimic a simple-grammar programming language. </p>
+
+<p>The fundamental grammar should contain 7 types of blocks:</p>
+
+<ul>
+<li>numbers (ints/doubles) – stringing these blocks together forms longer numbers [0,1,2,3,4,5]; [6,7,8,9,.]</li>
+<li>variables<br>
+</li>
+<li>assignment operators (&lt;-)
+
+<ul>
+<li>Confusion in novice algebra students arises when using = in programming</li>
+<li>e.g x = x +1; 
+
+<ul>
+<li>algebraicly this is not possible how can x take a value s.t. adding one is still the same value; </li>
+<li>x-x = 1 ;  0 = 1 ??</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>simple binary operators (*,/,-,+,%?): </li>
+<li>equivalence operators (&lt;,&gt;,==, !=,&lt;=,&gt;=)</li>
+<li>control block start/end</li>
+<li>program start/end</li>
+</ul>
+
+<p>While a majority of the logic for the entire operation could be housed in the program start/end or control block start/end – there are communication and connectivity challenges; especially without exposing connectors. </p>
+
+<h2>
+<a id="background" class="anchor" href="#background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Background</h2>
+
+<p>Algorithms, logical constructs and the foundations of programming are generally limited to computer-based instances. No physical manipulators exist that expose children to programming as they do for number and alphabet systems, mechanics, art, etc.  Build a prototype for building blocks that can be attached through internal magnets, these magnets perform two actions 
+1. physical connection and 
+2. logical circuit connections.</p>
+
+<h2>
+<a id="skill-requirements-order-of-importance" class="anchor" href="#skill-requirements-order-of-importance" aria-hidden="true"><span class="octicon octicon-link"></span></a>Skill Requirements (Order of importance):</h2>
+
+<ol>
+<li>System Design </li>
+<li>Ultra-small form factor design</li>
+<li>Ultra-low power/heat design (the final design would be incased in a resin</li>
+<li>Power and signal transmission through traditional wire &amp; inductance</li>
+</ol>
+
+<h2>
+<a id="other-details" class="anchor" href="#other-details" aria-hidden="true"><span class="octicon octicon-link"></span></a>Other Details:</h2>
+
+<ul>
+<li>IP Ownership: Joint/”none”: The goal is to release an open hardware device and software; joint ownership of the original design, publicly available for reuse under similar attribution</li>
+<li>Extension after End of Project: 50-100 parts run to distribute to high-needs schools as a mechanism to enhance/drive STEM as a college degree option.</li>
+<li>Publication Opportunities: Conference and Journal Publication both in K20 Education, IEEE Spectrum, and/or others (joint ownership: ECE team and Sponsors) [resume/CV builder!]</li>
+<li>No NDA required</li>
+</ul>
+
+<h2>
+<a id="requirements-wish-list" class="anchor" href="#requirements-wish-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements (Wish List):</h2>
+
+<h3>
+<a id="must-have" class="anchor" href="#must-have" aria-hidden="true"><span class="octicon octicon-link"></span></a>Must Have</h3>
+
+<ul>
+<li>[ ] Hardware cost &lt;$3 per unit (average cost for a set 20 = $60)</li>
+<li>[ ] Open Source Hardware Design &amp; Board (can use “closed source” components: ASICs, uC, etc.)</li>
+<li>[ ] Must Have a Multi-Chip solution – e.g. no single SoC;</li>
+<li>[ ] Magnetic  + Inductive coupling between blocks</li>
+<li>[ ] Fundamental grammar functioning; assignment; binary operators; </li>
+<li>[ ] Open Software Repository (github)</li>
+<li>[ ] Power: Ultra Low power operation</li>
+<li>[ ] Built in power source / power pack</li>
+<li>[ ] Separate “power” blocks?</li>
+<li>[ ] Set of blocks for each team member and two sponsors</li>
+</ul>
+
+<h3>
+<a id="like-to-have" class="anchor" href="#like-to-have" aria-hidden="true"><span class="octicon octicon-link"></span></a>Like to Have</h3>
+
+<ul>
+<li>[ ] Hardware cost &lt;$2 per unit (average cost for a set 20 = $40)</li>
+<li>[ ] Hardware:
+
+<ul>
+<li>[ ] Multi-function blocks – e.g. 6 (or 4) binary operators on a single block; depending on connections/which side “faces up” operation changes </li>
+<li>[ ] Control Structure Blocks</li>
+</ul>
+</li>
+<li>[ ] Set of blocks for each team member and two sponsors + 5 extra sets</li>
+</ul>
+
+<h3>
+<a id="nice-to-have" class="anchor" href="#nice-to-have" aria-hidden="true"><span class="octicon octicon-link"></span></a>Nice to Have</h3>
+
+<ul>
+<li>[ ] Hardware cost &lt;$1 per unit (average cost for a set 20 = $20)</li>
+<li>[ ] Power
+
+<ul>
+<li>[ ] Built in power source w/inductance recharge</li>
+</ul>
+</li>
+<li>[ ] Computer GUI/Phone App: simulate a set of blocks (pre build) or take a picture of a set of blocks and execute code</li>
+<li>[ ] Set of blocks for each team member and two sponsors + 10 extra sets (5 to sponsors; 5 to PSU)</li>
+</ul>
+
+<h2>
+<a id="milestones" class="anchor" href="#milestones" aria-hidden="true"><span class="octicon octicon-link"></span></a>Milestones:</h2>
+
+<h3>
+<a id="hardware-evaluation-to-satisfy-given-constraints" class="anchor" href="#hardware-evaluation-to-satisfy-given-constraints" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hardware Evaluation to satisfy given constraints</h3>
+
+<ul>
+<li>[ ] Main System: Modification of existing Open Hardware Design to create part or creation of custom PCB?</li>
+<li>[ ] Power System: Battery capacity + recharge?</li>
+<li>[ ] Communication mechanisms: Effective low cost communication and sync (without taxing power source)?</li>
+</ul>
+
+<h3>
+<a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h3>
+
+<ul>
+<li>[ ] Development of full hardware solution</li>
+<li>[ ] Development of power system</li>
+<li>[ ] Development of communication system</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Blocks-o-code maintained by <a href="https://github.com/erebus-labs">erebus-labs</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
