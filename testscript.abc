@@ -1,0 +1,10 @@
+# This is a comment
+
+# This assigns '12' to A
+A:12
+
+# This multiples A by 3 and stores it back in A
+A:A*3
+
+# This prints it out
+pA

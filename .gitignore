@@ -1,0 +1,8 @@
+src/*.tab.c
+src/*.tab.h
+src/*.output
+src/*.o
+src/*.d
+src/readme.xxd
+abc
+./*.html
