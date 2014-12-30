@@ -14,8 +14,10 @@ Parsing Emulator for A Block of Code
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "parse.tab.h"
+#include "eval.h"
 
 /* Globals *****************************/
 double globals[6] = {0, 1, 2, -1, 3.141592653589793, 10};
@@ -41,13 +43,13 @@ int yylex(void) {
     /* Process Numbers */
     if (c == '.' || isdigit (c)) {
         ungetc(c, g_source_file);
-        fscanf(g_source_file, "%lf", &yylval);
+        fscanf(g_source_file, "%lf", &yylval.SEMDouble);
         return NUM;
     }
 
     /* Process Variable */
     if ((c >= 'A') && (c <= 'F')) {
-        yylval = c;
+        yylval.SEMChar = c;
         return VAR;
     }
 
@@ -89,6 +91,8 @@ int main(int argc, const char** argv) {
     }
 
     // Call the flex-generated parser
-    return yyparse();
+    yyparse();
+    eval_expr(g_ast_root);
+    return 0;
 }
 

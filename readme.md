@@ -1,16 +1,14 @@
 # A Block of Code Emulator
 ```
 usage:
-    interactive mode:
-    ./abc
-
     scripted mode:
     ./abc /path/to/file
 ```
+Note: Interactive mode currently broken.
 
 ## Semantics
 There are two 'things' currently implemented: statements and expressions
-* Statements do things
+* ~~Statements do things~~ Statements are implemented as expressions with side-effects
 * Expressions say things
 
 Expressions can contain operators, implemented as pure functions. These
@@ -34,8 +32,8 @@ useful values:
 There are 3 statements currently implemented:
 * `VARIABLE: EXPRESSION` Assigns the results of evaluating EXPRESSION
     to the indicated variable, prints debug info
-* `EXPRESSION` prints the results of evaluating EXPRESSION, with debug
-    info
+* ~~`EXPRESSION` prints the results of evaluating EXPRESSION, with debug
+    info~~ Removed
 * `p EXPRESSION` explicitly prints the results of evaluating EXPRESSION
 
 ### Functions

@@ -14,30 +14,42 @@ Parsing Emulator for A Block of Code
 %{
     #include <stdio.h>
     #include <math.h>
+
     int yylex (void);
     void yyerror (char const *);
-    double globals[6];
+
+    #include "eval.h"
+    #include "pool.h"
+
+    extern struct _ASTNode* g_ast_root;
 %}
 
 /* Types **********************/
 
-/* Default value for literals is a double */
-%define api.value.type {double}
-%token NUM
+%union {
+    double SEMDouble;
+    char SEMChar;
+    struct _ASTNode* SEMNode;
+};
+
+/* Value for literals is a double */
+%token <SEMDouble> NUM
 
 /* One of 6 variables [A-F]  */
-%token VAR
+%token <SEMChar> VAR
 
+/* Value for expressions */
+%type <SEMNode> exp statement
 
 /* Precedence *****************/
+%left ':'                       /* Assignment Operator      */
+%left 'p'                       /* Print Action             */
+%left '=' '>' '<' 'l' 'g' '~'   /* Comparision Operators    */
 %left '-' '+'                   /* Arithmetic Operators     */
 %left '*' '/'                   /*                          */
 %precedence NNEG                /* Unary Numerical Negation */
 %right '^' '%'                  /* Arithmetic Operators     */
 %right '!'                      /* Unary Logical Negation   */
-%left '=' '>' '<' 'l' 'g' '~'   /* Comparision Operators    */
-%right 'p'                      /* Print Action             */
-%left ':'                       /* Assignment Operator      */
 %precedence EVAR                /* Empty variable statement */
 
 
@@ -45,83 +57,82 @@ Parsing Emulator for A Block of Code
 %%
 
 input:
-      %empty
-    | input statement
+    statement {
+        g_ast_root = $1;
+    }
 ;
 
 statement:
-      '\n'
-    | action ';'
-    | action '\n'
-;
-
-action:
-    'p' exp {
-        printf("%.10g\n", $2);
+      statement '\n' {
+        $$ = ast_node_new_list($1);
     }
-    | VAR ':' exp {
-        int dex = $1 - 'A';
-        globals[dex] = $3;
-        printf("Assigning variable '%c' the value: %.10g\n", (char)$1, $3);
+    | statement statement {
+        $$ = ast_node_list_append($1, $2);
     }
     | exp {
-        printf("Expression Result: %.10g\n", $1);
+        $$ = ast_node_new_list($1);
     }
 ;
 
 exp:
     NUM {
-         $$ = $1;
+        $$ = ast_node_new_literal($1, 0, 0);
     }
-    | VAR %prec EVAR {
-        int dex = $1 - 'A';
-        $$ = globals[dex];
+    | VAR {
+        $$ = ast_node_new_var($1, 0, 0);
     }
     | exp '+' exp {
-        $$ = $1 + $3;
+        $$ = ast_node_new_op('+', $1, $3);
     }
     | exp '-' exp {
-        $$ = $1 - $3;
+        $$ = ast_node_new_op('-', $1, $3);
     }
     | exp '*' exp {
-         $$ = $1 * $3;
+        $$ = ast_node_new_op('*', $1, $3);
     }
     | exp '/' exp {
-        $$ = $1 / $3;
+        $$ = ast_node_new_op('/', $1, $3);
     }
-    | '-' exp  %prec NNEG {
-        $$ = -$2;
+    | '-' exp %prec NNEG {
+        $$ = ast_node_new_op('-', 0, $2);
     }
     | '!' exp {
-        $$ = !$2;
+        $$ = ast_node_new_op('!', 0, $2);
     }
     | exp '^' exp {
-        $$ = pow($1, $3);
+        $$ = ast_node_new_op('^', $1, $3);
     }
     | exp '%' exp {
-        $$ = (double)((int)$1 % (int)$3);
+        $$ = ast_node_new_op('%', $1, $3);
     }
     | exp '=' exp {
-        $$ = $1 == $3;
+        $$ = ast_node_new_op('=', $1, $3);
     }
     | exp '>' exp {
-        $$ = $1 > $3;
+        $$ = ast_node_new_op('>', $1, $3);
     }
     | exp '<' exp {
-        $$ = $1 < $3;
+        $$ = ast_node_new_op('<', $1, $3);
     }
     | exp 'l' exp {
-        $$ = $1 <= $3;
+        $$ = ast_node_new_op('l', $1, $3);
     }
     | exp 'g' exp {
-        $$ = $1 >= $3;
+        $$ = ast_node_new_op('g', $1, $3);
     }
     | exp '~' exp {
-        $$ = $1 != $3;
+        $$ = ast_node_new_op('~', $1, $3);
     }
     | '(' exp ')' {
         $$ = $2;
     }
+    | 'p' exp {
+        $$ = ast_node_new_op('p', 0, $2);
+    }
+    | VAR ':' exp {
+        $$ = ast_node_new_op(':', ast_node_new_var($1,0,0), $3);
+    }
+
 ;
 
 %%

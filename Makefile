@@ -1,4 +1,5 @@
 CC=gcc
+CFLAGS=-std=c99 -g
 XXD=xxd -i
 BISON=bison
 
@@ -25,11 +26,11 @@ HTML=$(DOC:.md=.html)
 all: $(TARGETS)
 
 abc: $(OBJ)
-	$(CC) -o $(TARGETS) $(OBJ) $(LIBS)
+	$(CC) $(CFLAGS) -o $(TARGETS) $(OBJ) $(LIBS)
 
 %.o: %.c $(PARSESRC) $(README)
-	$(CC) -c $< -o $@
-	$(CC) -c -o $*.d -MT $@ -MM $<
+	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c -o $*.d -MT $@ -MM $<
 
 $(PARSESRC): $(PARSERS)
 	$(BISON) -o src/parse.tab.c --defines=src/parse.tab.h $<

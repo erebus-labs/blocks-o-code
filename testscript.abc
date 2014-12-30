@@ -1,10 +1,7 @@
-# This is a comment
+A
+# ^ TODO: Comments can't be the first things in a file right now
 
-# This assigns '12' to A
-A:12
-
-# This multiples A by 3 and stores it back in A
-A:A*3
-
-# This prints it out
+# Print A
+A:5*3
 pA
+pA-2
