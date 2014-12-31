@@ -28,12 +28,20 @@ git clone https://github.com/erebus-labs/blocks-o-code.git -b emulator --single-
 ```
 
 ## Building
-Building relies on `bison` and `xxd` (and of course `make` and `gcc`, along
+Building relies on `bison` (>3.0 for '%precendence' directive)  and `xxd` (and of course `make` and `gcc`, along
 with gnu `libc`. If you've ever used a Makefile on your machine, you probably
 already have these.
 
 Just run `make` to build, then `sudo make install` to install. The default
 path is `/usr/local/bin/abc`
+
+### OSX Specific
+Default `bison` version = 2.5 < 3.0. This will require manual update, or installation through favorite add on package mangement tool (port, brew, etc). The following assumes the use of Brew, which installs to `/usr/local/opt/bison/lib`
+
+```
+brew tap homebrew/dupes && brew install bison
+```
+
 
 ## Semantics
 Everything is an expression, meaning everything returns a value
