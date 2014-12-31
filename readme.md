@@ -17,16 +17,6 @@ your script:
 Then make your script executable with `chmod +x /path/to/your/script`. It
 will be interpreted just like any other script.
 
-## Cloning A Branch
-When using multiple branches within the same git repository you need to specify the branch name 
-`git clone GITREPO -b SOME_BRANCH --single-branch` (otherwise you'll get the default branch).
-
-
-For this emulator branch use the following clone command:
-```
-git clone https://github.com/erebus-labs/blocks-o-code.git -b emulator --single-branch
-```
-
 ## Building
 Building relies on `bison` (>3.0 for '%precendence' directive)  and `xxd` (and of course `make` and `gcc`, along
 with gnu `libc`. If you've ever used a Makefile on your machine, you probably
