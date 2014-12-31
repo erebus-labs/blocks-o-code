@@ -1,10 +1,26 @@
+UNAME=$(shell uname)
+
 CC=gcc
 CFLAGS=-std=c99
 XXD=xxd -i
-BISON=bison
 INSTALL=install
 UNINSTALL=rm -f
 BINDIR=/usr/local/bin
+
+ifeq ($(UNAME), Darwin)
+BISON=/usr/local/opt/bison/bin/bison
+ifneq (,$(wildcard $(BISON)))
+$(info Using BREW PORT of BISON)
+else
+$(info OSX Requires bison ver > 3.0)
+$(info use: sudo brew tap homebrew/dupes && brew install bison)
+$(error Bison 3.0 Not Found)
+endif
+else
+BISON=bison
+endif
+
+
 
 LIBS=-lm
 
