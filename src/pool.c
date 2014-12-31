@@ -84,3 +84,20 @@ ASTNode* ast_node_empty() {
     return node;
    
 }
+
+ASTNode* ast_node_conditional(ASTNode* e, ASTNode* lop, ASTNode* rop) {
+    ASTNode* node = ast_node_new();
+    node->t = ASTConditional;
+    node->data.e = e;
+    node->lop = lop;
+    node->rop = rop;
+    return node;
+}
+
+ASTNode* ast_node_new_loop(char c, ASTNode* lop, ASTNode* rop) {
+    ASTNode* node = ast_node_new_op(c, lop, rop);
+    node->t = ASTLoop;
+    return node;
+}
+
+

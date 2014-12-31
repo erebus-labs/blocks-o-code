@@ -16,6 +16,7 @@ Parsing Emulator for A Block of Code
 #include <math.h>
 
 #include "pool.h"
+#include "eval.h"
 
 typedef double (*eval_expr_fn)(double, double);
 eval_expr_fn eval_op_lut[128];
@@ -27,11 +28,55 @@ eval_expr_fn eval_get_fn(ASTNode* node) {
     return eval_op_lut[node->data.op];
 }
 
+double eval_conditional(ASTNode* node) {
+    double success = eval_expr(node->data.e);
+    double retval = 0;
+    if (success) {
+        retval = eval_expr(node->lop);
+    } else {
+        if (node->rop) {
+            retval = eval_expr(node->rop);
+        }
+    }
+    return retval;
+}
+
+double eval_repeat(ASTNode* node) {
+    double retval = 0;
+
+    for (double x = 0; x < eval_expr(node->lop); x++) {
+        retval = eval_expr(node->rop);
+    }
+
+    return retval;
+}
+
+double eval_while(ASTNode* node) {
+    double retval = 0;
+
+    while (eval_expr(node->lop)) {
+        retval = eval_expr(node->rop);
+    }
+
+    return retval;
+}
+
+double eval_dowhile(ASTNode* node) {
+    double retval = 0;
+
+    do {
+        retval = eval_expr(node->rop);
+    } while (eval_expr(node->lop));
+
+    return retval;
+}
+
 double eval_expr(ASTNode* expr) {
     // Intialize things that can't be
     // declared in switch
     eval_expr_fn op = 0;
     ASTNode* needle = expr;
+    double retval = 0;
 
     // Handle types
     if (!expr) {
@@ -55,12 +100,24 @@ double eval_expr(ASTNode* expr) {
             );
         case ASTList:
             for (; needle; needle = needle->rop) {
-                eval_expr(needle->data.e);
+                retval = eval_expr(needle->data.e);
             }
+            return retval;
+        case ASTConditional:
+            return eval_conditional(expr);
+        case ASTLoop:
+            switch (expr->data.op) {
+                case '@': return eval_while(expr);
+                case 'd': return eval_dowhile(expr);
+                case '$': return eval_repeat(expr);
+            }
+            return 0; // This should never be reached!
         default:
             return 0;
     }
 }
+
+
 
 double eval_default(double x, double y) {
     fprintf(stderr, "ERROR: Unrecognized operator :(\n");
@@ -69,6 +126,11 @@ double eval_default(double x, double y) {
 
 double eval_print(double x, double y) {
     fprintf(stdout, "%g\n", y);
+    return y;
+}
+
+double eval_charprint(double x, double y) {
+    fprintf(stdout, "%c", (char)y);
     return y;
 }
 
@@ -192,7 +254,7 @@ eval_expr_fn eval_op_lut[128] = {
     [96]  = &eval_default, // `   grave / accent
     [97]  = &eval_default, // a
     [98]  = &eval_default, // b
-    [99]  = &eval_default, // c
+    [99]  =&eval_charprint,// c
     [100] = &eval_default, // d
     [101] = &eval_default, // e
     [102] = &eval_default, // f

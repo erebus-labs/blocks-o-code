@@ -38,6 +38,7 @@ int yylex(void) {
         while ((c = fgetc(g_source_file)) != '\n') {
             continue;
         }
+        // c = fgetc(g_source_file);
     }
 
     /* Process Numbers */
@@ -82,7 +83,7 @@ int main(int argc, const char** argv) {
         }
         if (!(g_source_file = fopen(argv[1], "r"))) {
             // Open file to scan
-            fprintf(stderr, "ERROR: Could not open file: %s", argv[1]);
+            fprintf(stderr, "ERROR: Could not open file: %s\n", argv[1]);
             return 1;
         }
     } else {

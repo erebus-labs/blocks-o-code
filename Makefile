@@ -33,13 +33,13 @@ abc: $(OBJ)
 	$(CC) $(CFLAGS) -c -o $*.d -MT $@ -MM $<
 
 $(PARSESRC): $(PARSERS)
-	$(BISON) -o src/parse.tab.c --defines=src/parse.tab.h $<
+	$(BISON) -v -o src/parse.tab.c --defines=src/parse.tab.h $<
 
 $(README):
 	$(XXD) -i $(READMESRC) > $(README)
 
 clean:
-	rm -f $(OBJ) $(DEP) $(PARSESRC) $(TARGETS) $(README)
+	rm -f $(OBJ) $(DEP) $(PARSESRC) $(TARGETS) $(README) $(PARSERS:.y=.output)
 
 doc:
 	pandoc -f markdown_github -o $(HTML) $(DOC)

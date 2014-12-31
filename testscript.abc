@@ -1,7 +1,90 @@
-A
-# ^ TODO: Comments can't be the first things in a file right now
+#! /opt/bin/abc.exe
 
-# Print A
-A:5*3
-pA
-pA-2
+# Demonstrate Conditionals
+A:15
+A>12?{
+  B:5
+}:(A<12)?{
+  B:2
+}:{
+  B:1
+}
+pB
+
+A:12
+A>12?{
+
+  B:5
+
+
+
+
+}:(A<12)?{
+  B:2
+}:{
+  B:1
+}
+pB
+
+A:-1
+A>12?{
+  B:5
+}:(A<12)?{
+  B:2
+}:{
+  B:1
+}
+pB
+
+
+# Demonstrate repeat loop
+B:6
+12${
+  pB:B-1
+}
+
+
+# Demonstrate while loop
+B:3
+B@{
+  pE
+  B:B-1
+}
+
+# Demonstrate do loop
+Bd{
+  pC
+}
+
+# Demonstrate long lines
+                                                                                                                                                            pF
+
+# Demonstrate lots of blank
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+p10000
+
+# Demonstrate char printing
+c72;c101;c108;c108;c111;c32;
+c87;c111;c114;c108;c100;c33;
+c10

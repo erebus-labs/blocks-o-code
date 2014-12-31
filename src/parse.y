@@ -39,37 +39,57 @@ Parsing Emulator for A Block of Code
 %token <SEMChar> VAR
 
 /* Value for expressions */
-%type <SEMNode> exp statement
+%type <SEMNode> exp explist
 
 /* Precedence *****************/
+
+%left BLOCK                     /* A list of expressions    */
+%left COND_ELSE                 /* A conditional w/ else    */
+%left COND                      /* A conditional w/o else   */
+%left STATLIST
+%left STAT                      /* A statement              */
+%left SUBEXP                    /* Expression in parens     */
+%precedence EVAR                /* Empty variable statement */
+%left '@' 'd'                   /* While loops              */
+%left '$'                       /* Repeat loop              */
+%left '?'                       /* Conditional Symbol       */
 %left ':'                       /* Assignment Operator      */
-%left 'p'                       /* Print Action             */
+%left 'p' 'c'                   /* Print Action             */
 %left '=' '>' '<' 'l' 'g' '~'   /* Comparision Operators    */
 %left '-' '+'                   /* Arithmetic Operators     */
 %left '*' '/'                   /*                          */
-%precedence NNEG                /* Unary Numerical Negation */
 %right '^' '%'                  /* Arithmetic Operators     */
+%precedence NNEG                /* Unary Numerical Negation */
 %right '!'                      /* Unary Logical Negation   */
-%precedence EVAR                /* Empty variable statement */
-
 
 /* Semantics ******************/
 %%
 
 input:
-    statement {
+    blank explist {
+        g_ast_root = $2;
+    }
+    | explist {
         g_ast_root = $1;
     }
 ;
 
-statement:
-      statement '\n' {
+blank:
+      '\n'
+    | '\n' blank
+;
+
+explist:
+      explist ';' %prec STATLIST {
         $$ = ast_node_new_list($1);
     }
-    | statement statement {
-        $$ = ast_node_list_append($1, $2);
+    |  explist '\n' %prec STATLIST {
+        $$ = ast_node_new_list($1);
     }
-    | exp {
+    | explist exp %prec STAT {
+        $$ = ast_node_list_append($1, ast_node_new_list($2));
+    }
+    | exp %prec STAT {
         $$ = ast_node_new_list($1);
     }
 ;
@@ -78,7 +98,7 @@ exp:
     NUM {
         $$ = ast_node_new_literal($1, 0, 0);
     }
-    | VAR {
+    | VAR %prec EVAR {
         $$ = ast_node_new_var($1, 0, 0);
     }
     | exp '+' exp {
@@ -123,16 +143,39 @@ exp:
     | exp '~' exp {
         $$ = ast_node_new_op('~', $1, $3);
     }
-    | '(' exp ')' {
+    | exp '@' exp {
+        $$ = ast_node_new_loop('@', $1, $3);
+    }
+    | exp 'd' exp {
+        $$ = ast_node_new_loop('d', $1, $3);
+    }
+    | exp '$' exp {
+        $$ = ast_node_new_loop('$', $1, $3);
+    }
+    | '(' exp ')' %prec SUBEXP {
         $$ = $2;
     }
     | 'p' exp {
         $$ = ast_node_new_op('p', 0, $2);
     }
+    | 'c' exp {
+        $$ = ast_node_new_op('c', 0, $2);
+    }
     | VAR ':' exp {
         $$ = ast_node_new_op(':', ast_node_new_var($1,0,0), $3);
     }
-
+    | '{' explist '}' %prec BLOCK {
+        $$ = ast_node_new_list($2);
+    }
+    | '{' blank explist '}' %prec BLOCK {
+        $$ = ast_node_new_list($3);
+    }
+    | exp '?' exp %prec COND {
+        $$ = ast_node_conditional($1, $3, 0);
+    }
+    | exp '?' exp ':' exp %prec COND_ELSE {
+        $$ = ast_node_conditional($1, $3, $5);
+    }
 ;
 
 %%

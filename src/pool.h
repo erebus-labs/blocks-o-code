@@ -39,7 +39,9 @@ typedef enum {
     ASTNum,             ///< A number
     ASTVar,             ///< A variable
     ASTExp,             ///< A high-level expression
-    ASTList             ///< A list of statements
+    ASTList,            ///< A list of expressions
+    ASTConditional,     ///< An if...else statement
+    ASTLoop             ///< A loop
 } ASTNode_t;
 
 ///
@@ -65,11 +67,15 @@ typedef struct _ASTNode {
 /// Get a new node
 ASTNode* ast_node_new(void);
 
+// The following are just constructors for `ast_node_new()` so they're
+// undocumented (because they're redundant).
 ASTNode* ast_node_new_op(char c, ASTNode* lop, ASTNode* rop);
 ASTNode* ast_node_new_var(char c, ASTNode* lop, ASTNode* rop);
 ASTNode* ast_node_new_literal(double n, ASTNode* lop, ASTNode* rop);
 ASTNode* ast_node_new_list(ASTNode* e);
 ASTNode* ast_node_list_append(ASTNode* e, ASTNode* rop);
 ASTNode* ast_node_empty();
+ASTNode* ast_node_conditional(ASTNode* e, ASTNode* lop, ASTNode* rop);
+ASTNode* ast_node_new_loop(char c, ASTNode* lop, ASTNode* rop);
 
 #endif
