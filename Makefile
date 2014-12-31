@@ -1,7 +1,10 @@
 CC=gcc
-CFLAGS=-std=c99 -g
+CFLAGS=-std=c99
 XXD=xxd -i
 BISON=bison
+INSTALL=install
+UNINSTALL=rm -f
+BINDIR=/usr/local/bin
 
 LIBS=-lm
 
@@ -25,6 +28,12 @@ HTML=$(DOC:.md=.html)
 
 all: $(TARGETS)
 
+install: all
+	$(INSTALL) $(TARGETS) '$(BINDIR)/'
+
+uninstall:
+	-$(UNINSTALL) '$(BINDIR)/$(TARGETS)'
+
 abc: $(OBJ)
 	$(CC) $(CFLAGS) -o $(TARGETS) $(OBJ) $(LIBS)
 
@@ -36,7 +45,7 @@ $(PARSESRC): $(PARSERS)
 	$(BISON) -v -o src/parse.tab.c --defines=src/parse.tab.h $<
 
 $(README):
-	$(XXD) -i $(READMESRC) > $(README)
+	$(XXD) $(READMESRC) > $(README)
 
 clean:
 	rm -f $(OBJ) $(DEP) $(PARSESRC) $(TARGETS) $(README) $(PARSERS:.y=.output)

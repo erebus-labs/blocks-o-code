@@ -5,14 +5,25 @@ usage:
     ./abc -h               Display this help
 ```
 
+Alternatively, do a full install and use a hashbang on the first line of
+your script:
+
+```
+#! /usr/local/bin/abc
+
+<your code goes here>
+```
+
+Then make your script executable with `chmod +x /path/to/your/script`. It
+will be interpreted just like any other script.
+
 ## Building
 Building relies on `bison` and `xxd` (and of course `make` and `gcc`, along
 with gnu `libc`. If you've ever used a Makefile on your machine, you probably
 already have these.
 
-Just run `make` to build.
-
-There is no `install` rule to add it to your path yet.
+Just run `make` to build, then `sudo make install` to install. The default
+path is `/usr/local/bin/abc`
 
 ## Semantics
 Everything is an expression, meaning everything returns a value
@@ -70,3 +81,4 @@ differently since the following have side-effects:
 
 ## TODO
 * Error Checking
+

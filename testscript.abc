@@ -1,4 +1,4 @@
-#! /opt/bin/abc.exe
+#! /usr/local/bin/abc
 
 # Demonstrate Conditionals
 A:15
