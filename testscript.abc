@@ -1,5 +1,11 @@
 #! /usr/local/bin/abc
 
+# Test <Nan>
+p(-1^(1/2))
+
+# Test <Inf>
+p(1/0)
+
 # Demonstrate Conditionals
 A:15
 A>12?{

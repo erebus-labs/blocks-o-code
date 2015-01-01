@@ -125,7 +125,11 @@ double eval_default(double x, double y) {
 }
 
 double eval_print(double x, double y) {
-    fprintf(stdout, "%g\n", y);
+    if (!isfinite(y) || isnan(y)) {
+        fprintf(stdout, "<%g>\n", y);
+    } else {
+        fprintf(stdout, "%g\n", y);
+    }
     return y;
 }
 
