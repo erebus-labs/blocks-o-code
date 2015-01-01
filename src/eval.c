@@ -144,7 +144,7 @@ double eval_mul(double x, double y) { return x *  y;  }
 double eval_div(double x, double y) { return x /  y;  }
 double eval_pow(double x, double y) { return pow(x,y);}
 double eval_mod(double x, double y) {
-    return (double)((int)x %  (int)y);
+    return (double)(fmod(x,y));
 }
 
 double eval_ceq(double x, double y) { return x == y;  }
