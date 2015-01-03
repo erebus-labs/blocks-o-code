@@ -1,0 +1,33 @@
+#! /usr/local/bin/abc
+
+# Get my feet wet...
+A:3
+A>2?{
+  B:1
+}:{
+  B:0
+}
+pB
+
+# Mod?
+B:8
+pB%2
+
+# Nest condition in loop?
+B@{
+  B%2?{
+    pB
+  }
+  B:B-1
+}
+
+# Combined statement
+C:11
+C:-A+C-B*2
+pC
+
+# Intro to Algebra structure
+D:4
+E:3D+2D
+pE
+
