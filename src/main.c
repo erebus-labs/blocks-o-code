@@ -66,11 +66,15 @@ int main(int argc, const char** argv) {
     int parsesuccess = 0;
     if (g_source_file == stdin) {
         printf("Starting ABC Interactive Mode...\n");
+        printf("    use 'forget' to back out of a pending while or if statement\n");
         printf("    try 'quit' to exit\n");
         g_interactive_quit = 0;
         while (g_interactive_quit != 1) {
             printf("> ");
             parsesuccess = abc_parse();
+            if (g_interactive_quit > 1) {
+                g_interactive_quit = 0;
+            }
         }
     } else {
         parsesuccess = abc_parse();

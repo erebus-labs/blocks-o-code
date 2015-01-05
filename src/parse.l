@@ -39,10 +39,10 @@ Parsing Emulator for A Block of Code
             }
             break;
         case 1:
-            printf("While what? ");
+            printf("While what?");
             break;
         case 2:
-            printf("If what? ");
+            printf("If what?");
             break;
         }
         putchar(' ');
@@ -318,7 +318,9 @@ Parsing Emulator for A Block of Code
     }
 
 (?i:quit)|(?i:exit)|"q" {
+    /* Interactive Commands */
     if (g_source_file == stdin) {
+        expects_condition = 0;
         g_interactive_quit = 1;
         return INTERACTIVE_QUIT;
     }
@@ -330,7 +332,23 @@ Parsing Emulator for A Block of Code
     return ERROR;
     }
 
-.  {
+(?i:cancel)|(?i:forget) {
+    if (g_source_file == stdin) {
+        g_interactive_quit = 2;
+        if (nest_level > 0) nest_level--;
+        DEBUG("Lexer Says: Cancelling...\n");
+        YY_FLUSH_BUFFER;
+        return INTERACTIVE_QUIT;
+    }
+    /* Dont recognize this if not in interactive mode */
+    errorline = yylineno;
+    errorcolumn = yycolnum;
+    errortext = yytext;
+    unrecognized = 1;
+    return ERROR;
+    }
+
+. {
     /* Anything else is an error */
     errorline = yylineno;
     errorcolumn = yycolnum;
@@ -342,19 +360,24 @@ Parsing Emulator for A Block of Code
 %%
 
 void yyerror(char const* error) {
-    if (!g_interactive_quit) {
+    if (g_interactive_quit == 0) {
         if (unrecognized) {
             #ifdef PRINTDEBUGINFO
             fprintf(stderr, "\n");
             #endif
-            fprintf(stderr, "<%d:%d>ERROR: Unrecognized Token(s): %s\n", errorline, errorcolumn, errortext);
+            fprintf(stderr, "ERROR: Unexpected Token(s): %s\n", errortext);
+            fprintf(stderr, "       on line %d, column %d\n", errorline, errorcolumn);
+            #ifdef PRINTDEBUGINFO
+            DEBUG("Parser and Lexer are too confused to finish their jobs...\n")
+            #endif
+        } else {
+            #ifdef PRINTDEBUGINFO
+            fprintf(stderr, "\n");
+            DEBUG("Parser and Lexer are too confused to finish their jobs...\n")
+            #else
+            fprintf(stderr, "ERROR: %s\n", error);
+            #endif
         }
-        #ifdef PRINTDEBUGINFO
-        fprintf(stderr, "\n");
-        DEBUG("Parser and Lexer are too confused to finish their jobs...\n")
-        #else
-        fprintf(stderr, "ERROR: %s\n", error);
-        #endif
         g_interactive_quit = 1;
     }
 }
