@@ -18,8 +18,7 @@ Parsing Emulator for A Block of Code
     #include "parse.lex.h"
     #include "globals.h"
 
-    int yylex (void);
-    void yyerror (char const *);
+    void yyerror (char const*);
 
     #include "eval.h"
     #include "pool.h"
@@ -36,6 +35,8 @@ Parsing Emulator for A Block of Code
 
 /* Types **********************/
 
+%define parse.lac full
+%define parse.error verbose
 %locations
 
 %union {
