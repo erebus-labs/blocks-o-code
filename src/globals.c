@@ -10,23 +10,10 @@ Parsing Emulator for A Block of Code
 
 ****************************************/
 
-/// \file globals.h
-/// \brief A nice place to put stuff
-
-#ifndef ABC_GLOBALS_H
-#define ABC_GLOBALS_H
-
-/* Macros ******************************/
-#ifdef PRINTDEBUGINFO
-#define DEBUG(...) fprintf(stderr, ">>> " __VA_ARGS__);
-#else
-#define DEBUG(...) ;
-#endif
+#include <stdio.h>
 
 /* Globals *****************************/
-extern double globals[];
-extern FILE* g_source_file;
-extern int g_interactive_quit;
+double globals[8] = {0, 1, 2, -1, 3.141592653589793, 10, 0, 0};
+FILE* g_source_file;
+int g_interactive_quit;
 
-
-#endif

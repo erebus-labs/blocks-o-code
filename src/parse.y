@@ -30,6 +30,8 @@ Parsing Emulator for A Block of Code
     int errorcolumn;
     char* errortext;
     int unrecognized = 0;
+
+    extern char expects_condition;
 %}
 
 /* Types **********************/
@@ -52,7 +54,7 @@ Parsing Emulator for A Block of Code
 %token <SEMChar> EX_EQ   EX_NE    EX_LT   EX_GT  EX_LE  EX_GE
 %token <SEMChar> WHILE END_WHILE IF ELSE END_IF SAY OUTPUT
 %token <SEMChar> RPAREN LPAREN EX_CLAIMATION
-%token <SEMChar> ERROR
+%token <SEMChar> ERROR INTERACTIVE_QUIT
 
 /* Value for expressions */
 %type <SEMNode> EXPRESSION STATEMENT ENDWHILE_STATEMENT_LIST ENDIF_STATEMENT_LIST ELSE_STATEMENT_LIST STATEMENT_LIST
@@ -170,74 +172,94 @@ STATEMENT:
 
 EXPRESSION:
     NUM {
-        $$ = ast_node_new_literal($1, 0, 0);
+        expects_condition = 0;
         DEBUG("    (Parser Responds: Found 'number %g' expresson)\n", $1);
+        $$ = ast_node_new_literal($1, 0, 0);
     }
     | VAR %prec EVAR {
+        expects_condition = 0;
         DEBUG("    (Parser Responds: Found 'variable %d' expresson)\n", $1);
         $$ = ast_node_new_var($1, 0, 0);
     }
     | EXPRESSION EX_PLUS EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('+', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix +' expresson)\n");
     }
     | EXPRESSION EX_MINUS EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('-', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix -' expresson)\n");
     }
     | EXPRESSION EX_MULT EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('*', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix *' expresson)\n");
     }
     | EXPRESSION EX_DIV EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('/', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix /' expresson)\n");
     }
     | EX_MINUS EXPRESSION %prec NNEG {
+        expects_condition = 0;
         $$ = ast_node_new_op('-', 0, $2);
         DEBUG("    (Parser Responds: Found 'unary -' expresson)\n");
     }
     | EXPRESSION EX_POW EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('^', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix ^' expresson)\n");
     }
     | EXPRESSION EX_MOD EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('%', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix %' expresson)\n");
     }
     | EXPRESSION EX_EQ EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('=', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix ==' expresson)\n");
     }
     | EXPRESSION EX_GT EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('>', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix <' expresson)\n");
     }
     | EXPRESSION EX_LT EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('<', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix >' expresson)\n");
     }
     | EXPRESSION EX_LE EXPRESSION {
+        expects_condition = 0;
         $$ = ast_node_new_op('l', $1, $3);
         DEBUG("    (Parser Responds: Found 'infix <=' expresson)\n");
     }
     | EXPRESSION EX_GE EXPRESSION {
+        expects_condition = 0;
         DEBUG("    (Parser Responds: Found 'infix >=' expresson)\n");
         $$ = ast_node_new_op('g', $1, $3);
     }
     | EXPRESSION EX_NE EXPRESSION {
+        expects_condition = 0;
         DEBUG("    (Parser Responds: Found 'infix !=' expresson)\n");
         $$ = ast_node_new_op('~', $1, $3);
     }
     | EX_CLAIMATION EXPRESSION %prec NNOT {
+        expects_condition = 0;
         $$ = ast_node_new_op('!', 0, $2);
         DEBUG("    (Parser Responds: Found 'unary !' expresson)\n");
     }
     | LPAREN EXPRESSION RPAREN %prec SUBEXP {
+        expects_condition = 0;
         DEBUG("    [Parser Responds: Found '(subexpresson)' expresson]\n");
         $$ = $2;
     }
     | ERROR {
+        YYABORT;
+    }
+    | INTERACTIVE_QUIT {
         YYABORT;
     }
 ;

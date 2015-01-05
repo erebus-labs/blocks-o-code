@@ -28,6 +28,26 @@ Parsing Emulator for A Block of Code
     extern int errorcolumn;
     extern char* errortext;
     extern int unrecognized;
+
+    unsigned int nest_level = 1;
+    char expects_condition = 0;
+    void print_nest() {
+        switch (expects_condition) {
+        case 0:
+            for (int i = 0; i < nest_level; i++) {
+                putchar('>');
+            }
+            break;
+        case 1:
+            printf("While what? ");
+            break;
+        case 2:
+            printf("While what? ");
+            break;
+        }
+        putchar(' ');
+    }
+
 %}
 
 %option noyywrap
@@ -38,6 +58,14 @@ Parsing Emulator for A Block of Code
 #[^\n]*\n {
     /* Ignore Comments */
     yycolnum = 1;
+    if (g_source_file == stdin) {
+        // Only execute (by returning EOF) when on the global scope
+        if (nest_level == 1) {
+            DEBUG("Lexer says: Found a comment!\n");
+            return EOF;
+        }
+        print_nest();
+    }
     }
 
 [ \t] {
@@ -47,6 +75,14 @@ Parsing Emulator for A Block of Code
 
 \n {
     yycolnum = 1;
+    if (g_source_file == stdin) {
+        // Only execute (by returning EOF) when on the global scope
+        if (nest_level == 1) {
+            DEBUG("Lexer says: Accepting input\n");
+            return EOF;
+        }
+        print_nest();
+    }
     }
 
 [0-9]+\.[0-9]+ {
@@ -68,16 +104,21 @@ Parsing Emulator for A Block of Code
 (?i:while) {
     /* Statements */
     /* Case insensitive */
+    nest_level++;
+    expects_condition = 1;
     yycolnum+=6;
     DEBUG("Lexer says: Found Statement: %s\n", yytext);
     return WHILE;
     }
-(?i:end\ while) {
+(?i:end\ while)|(?i:endwhile) {
+    if (nest_level > 0) nest_level--;
     yycolnum+=9;
     DEBUG("Lexer says: Found Statement: %s\n", yytext);
     return END_WHILE;
     }
 (?i:if) {
+    nest_level++;
+    expects_condition = 2;
     yycolnum+=2;
     DEBUG("Lexer says: Found Statement: %s\n", yytext);
     return IF;
@@ -87,12 +128,13 @@ Parsing Emulator for A Block of Code
     DEBUG("Lexer says: Found Statement: %s\n", yytext);
     return ELSE;
     }
-(?i:end\ if) {
+(?i:end\ if)|(?i:endif) {
+    if (nest_level > 0) nest_level--;
     yycolnum+=6;
     DEBUG("Lexer says: Found Statement: %s\n", yytext);
     return END_IF;
     }
-(?i:say) {
+(?i:say)|(?i:print) {
     yycolnum+=3;
     DEBUG("Lexer says: Found Statement: %s\n", yytext);
     return SAY;
@@ -161,27 +203,27 @@ Parsing Emulator for A Block of Code
     DEBUG("Lexer says: Found Compound Assignment: %s\n", yytext);
     return AS_PLUS;
     }
-"-=" { 
+"-=" {
     yycolnum+=2;
     DEBUG("Lexer says: Found Compound Assignment: %s\n", yytext);
     return AS_MINUS;
     }
-"*=" { 
+"*=" {
     yycolnum+=2;
     DEBUG("Lexer says: Found Compound Assignment: %s\n", yytext);
     return AS_MULT;
     }
-"/=" { 
+"/=" {
     yycolnum+=2;
     DEBUG("Lexer says: Found Compound Assignment: %s\n", yytext);
     return AS_DIV;
     }
-"^=" { 
+"^=" {
     yycolnum+=2;
     DEBUG("Lexer says: Found Compound Assignment: %s\n", yytext);
     return AS_POW;
     }
-"%=" { 
+"%=" {
     yycolnum+=2;
     DEBUG("Lexer says: Found Compound Assignment: %s\n", yytext);
     return AS_MOD;
@@ -189,32 +231,32 @@ Parsing Emulator for A Block of Code
 
 "+" {
     /* Aritmetic Operators */
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Operator: %s\n", yytext);
     return EX_PLUS;
     }
 "-" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Operator: %s\n", yytext);
     return EX_MINUS;
     }
 "*" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Operator: %s\n", yytext);
     return EX_MULT;
     }
 "/" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Operator: %s\n", yytext);
     return EX_DIV;
     }
 "^" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Operator: %s\n", yytext);
     return EX_POW;
     }
 "%" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Operator: %s\n", yytext);
     return EX_MOD;
     }
@@ -226,17 +268,17 @@ Parsing Emulator for A Block of Code
     return EX_EQ;
     }
 "=" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Conditional: %s\n", yytext);
     return EX_EQ;
     }
 "<" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Conditional: %s\n", yytext);
     return EX_LT;
     }
 ">" {
-    yycolnum++; 
+    yycolnum++;
     DEBUG("Lexer says: Found Conditional: %s\n", yytext);
     return EX_GT;
     }
@@ -262,11 +304,11 @@ Parsing Emulator for A Block of Code
     }
 "(" {
     /* Parens */
-    yycolnum++; 
+    yycolnum++;
     return LPAREN;
     }
 ")" {
-    yycolnum++; 
+    yycolnum++;
     return RPAREN;
     }
 
@@ -274,6 +316,20 @@ Parsing Emulator for A Block of Code
     DEBUG("Lexer says: Found EOF%s\n", yytext);
     return EOF;
     }
+
+(?i:quit)|(?i:exit)|"q" {
+    if (g_source_file == stdin) {
+        g_interactive_quit = 1;
+        return INTERACTIVE_QUIT;
+    }
+    /* Dont recognize this if not in interactive mode */
+    errorline = yylineno;
+    errorcolumn = yycolnum;
+    errortext = yytext;
+    unrecognized = 1;
+    return ERROR;
+    }
+
 .  {
     /* Anything else is an error */
     errorline = yylineno;
@@ -286,17 +342,20 @@ Parsing Emulator for A Block of Code
 %%
 
 void yyerror(char const* error) {
-    if (unrecognized) {
+    if (!g_interactive_quit) {
+        if (unrecognized) {
+            #ifdef PRINTDEBUGINFO
+            fprintf(stderr, "\n");
+            #endif
+            fprintf(stderr, "<%d:%d>ERROR: Unrecognized Token(s): %s\n", errorline, errorcolumn, errortext);
+        }
         #ifdef PRINTDEBUGINFO
         fprintf(stderr, "\n");
+        DEBUG("Parser and Lexer are too confused to finish their jobs...\n")
+        #else
+        fprintf(stderr, "ERROR: %s\n", error);
         #endif
-        fprintf(stderr, "<%d:%d>ERROR: Unrecognized Token(s): %s\n", errorline, errorcolumn, errortext);
+        g_interactive_quit = 1;
     }
-    #ifdef PRINTDEBUGINFO
-    fprintf(stderr, "\n");
-    DEBUG("Parser and Lexer are too confused to finish their jobs...\n")
-    #else
-    fprintf(stderr, "Aborting...\n");
-    #endif
 }
 
