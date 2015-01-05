@@ -42,7 +42,7 @@ Parsing Emulator for A Block of Code
             printf("While what? ");
             break;
         case 2:
-            printf("While what? ");
+            printf("If what? ");
             break;
         }
         putchar(' ');
