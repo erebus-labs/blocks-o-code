@@ -3,9 +3,9 @@
 *****************************************
 
 Parsing Emulator for A Block of Code
-* Tyler's proposal for syntax/symantics
+* Greg's proposal for syntax/symantics
 
-(C)2014 Erubus Labs
+(C)2014-2015 Erubus Labs
 * For internal use only (subject to change)
 
 ****************************************/

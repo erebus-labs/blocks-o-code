@@ -1,5 +1,7 @@
 src/*.tab.c
 src/*.tab.h
+src/*.lex.c
+src/*.lex.h
 src/*.output
 src/*.o
 src/*.d

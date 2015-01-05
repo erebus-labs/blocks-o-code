@@ -1,12 +1,13 @@
 UNAME=$(shell uname)
-
 CC=gcc
-CFLAGS=-std=c99
+CFLAGS=-std=gnu99
+CDEBUGFLAGS=-g -DPRINTDEBUGINFO
 XXD=xxd -i
 INSTALL=install
 UNINSTALL=rm -f
 BINDIR=/usr/local/bin
 
+FLEX=flex
 ifeq ($(UNAME), Darwin)
 BISON=/usr/local/opt/bison/bin/bison
 ifneq (,$(wildcard $(BISON)))
@@ -20,9 +21,7 @@ else
 BISON=bison
 endif
 
-
-
-LIBS=-lm
+LIBS=-lm -lfl
 
 TARGETS=abc
 
@@ -32,17 +31,26 @@ PARSEH=$(PARSERS:.y=.tab.h)
 PARSEO=$(PARSERS:.y=.tab.o)
 PARSESRC=$(PARSEC) $(PARSEH)
 
+LEXS=src/parse.l
+LEXC=$(LEXS:.l=.lex.c)
+LEXH=$(LEXS:.l=.lex.h)
+LEXO=$(LEXS:.l=.lex.o)
+LEXSRC=$(LEXC) $(LEXH)
+
 READMESRC=readme.md
 README=src/readme.xxd
 
-SRC=$(wildcard src/*.c) $(PARSEC)
-OBJ=$(filter-out $(PARSEO), $(patsubst %.c, %.o, $(SRC))) $(PARSEO)
+SRC=$(wildcard src/*.c) $(PARSEC) $(LEXC)
+OBJ=$(filter-out $(PARSEO) $(LEXO), $(patsubst %.c, %.o, $(SRC) $(LEXO))) $(PARSEO) $(LEXO)
 DEP=$(SRC:.c=.d)
 
 DOC=readme.md
 HTML=$(DOC:.md=.html)
 
 all: $(TARGETS)
+
+debug: CFLAGS += $(CDEBUGFLAGS)
+debug: clean all
 
 install: all
 	$(INSTALL) $(TARGETS) '$(BINDIR)/'
@@ -53,18 +61,21 @@ uninstall:
 abc: $(OBJ)
 	$(CC) $(CFLAGS) -o $(TARGETS) $(OBJ) $(LIBS)
 
-%.o: %.c $(PARSESRC) $(README)
+%.o: %.c $(PARSESRC) $(LEXSRC) $(README)
 	$(CC) $(CFLAGS) -c $< -o $@
 	$(CC) $(CFLAGS) -c -o $*.d -MT $@ -MM $<
 
 $(PARSESRC): $(PARSERS)
 	$(BISON) -v -o src/parse.tab.c --defines=src/parse.tab.h $<
 
+$(LEXSRC): $(LEXS)
+	$(FLEX) -o $(LEXC) --header-file=$(LEXH) $<
+
 $(README):
 	$(XXD) $(READMESRC) > $(README)
 
 clean:
-	rm -f $(OBJ) $(DEP) $(PARSESRC) $(TARGETS) $(README) $(PARSERS:.y=.output)
+	rm -f $(OBJ) $(DEP) $(PARSESRC) $(LEXSRC) $(TARGETS) $(README) $(PARSERS:.y=.output)
 
 doc:
 	pandoc -f markdown_github -o $(HTML) $(DOC)

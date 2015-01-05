@@ -3,18 +3,17 @@
 *****************************************
 
 Parsing Emulator for A Block of Code
-* Tyler's proposal for syntax/symantics
+* Greg's proposal for syntax/symantics
 
-(C)2014 Erubus Labs
+(C)2014-2015 Erubus Labs
 * For internal use only (subject to change)
 
 ****************************************/
 
-
 /// \file eval.h
 /// \brief Evaulate ABC AST
 ///
-/// Defines the global `g_ast_root` which is the 
+/// Defines the global `g_ast_root` which is the
 /// trunk of the AST. Just call eval_expr on it
 /// to execute the AST.
 

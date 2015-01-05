@@ -3,9 +3,9 @@
 *****************************************
 
 Parsing Emulator for A Block of Code
-* Tyler's proposal for syntax/symantics
+* Greg's proposal for syntax/symantics
 
-(C)2014 Erubus Labs
+(C)2014-2015 Erubus Labs
 * For internal use only (subject to change)
 
 ****************************************/
@@ -21,7 +21,7 @@ Parsing Emulator for A Block of Code
 typedef double (*eval_expr_fn)(double, double);
 eval_expr_fn eval_op_lut[128];
 
-extern double globals[6];
+extern double globals[8];
 ASTNode* g_ast_root;
 
 eval_expr_fn eval_get_fn(ASTNode* node) {
@@ -41,32 +41,12 @@ double eval_conditional(ASTNode* node) {
     return retval;
 }
 
-double eval_repeat(ASTNode* node) {
-    double retval = 0;
-
-    for (double x = 0; x < eval_expr(node->lop); x++) {
-        retval = eval_expr(node->rop);
-    }
-
-    return retval;
-}
-
 double eval_while(ASTNode* node) {
     double retval = 0;
 
     while (eval_expr(node->lop)) {
         retval = eval_expr(node->rop);
     }
-
-    return retval;
-}
-
-double eval_dowhile(ASTNode* node) {
-    double retval = 0;
-
-    do {
-        retval = eval_expr(node->rop);
-    } while (eval_expr(node->lop));
 
     return retval;
 }
@@ -86,18 +66,50 @@ double eval_expr(ASTNode* expr) {
         case ASTNum:
             return expr->data.num;
         case ASTVar:
-            return globals[expr->data.op - 'A'];
+            return globals[expr->data.op];
         case ASTExp:
-            if (expr->data.op == ':') {
-                return (*eval_get_fn(expr))(
-                    expr->lop->data.op,
-                    eval_expr(expr->rop)
-                );
+            switch (expr->data.op) {
+                case ':':
+                    return (*eval_get_fn(expr))(
+                        expr->lop->data.op,
+                        eval_expr(expr->rop)
+                    );
+                case 'A':
+                    return (*eval_get_fn(expr))(
+                        expr->lop->data.op,
+                        eval_expr(expr->rop)
+                    );
+                case 'B':
+                    return (*eval_get_fn(expr))(
+                        expr->lop->data.op,
+                        eval_expr(expr->rop)
+                    );
+                case 'C':
+                    return (*eval_get_fn(expr))(
+                        expr->lop->data.op,
+                        eval_expr(expr->rop)
+                    );
+                case 'D':
+                    return (*eval_get_fn(expr))(
+                        expr->lop->data.op,
+                        eval_expr(expr->rop)
+                    );
+                case 'E':
+                    return (*eval_get_fn(expr))(
+                        expr->lop->data.op,
+                        eval_expr(expr->rop)
+                    );
+                case 'F':
+                    return (*eval_get_fn(expr))(
+                        expr->lop->data.op,
+                        eval_expr(expr->rop)
+                    );
+                default:
+                    return (*eval_get_fn(expr))(
+                        eval_expr(expr->lop),
+                        eval_expr(expr->rop)
+                    );
             }
-            return (*eval_get_fn(expr))(
-                eval_expr(expr->lop),
-                eval_expr(expr->rop)
-            );
         case ASTList:
             for (; needle; needle = needle->rop) {
                 retval = eval_expr(needle->data.e);
@@ -106,18 +118,11 @@ double eval_expr(ASTNode* expr) {
         case ASTConditional:
             return eval_conditional(expr);
         case ASTLoop:
-            switch (expr->data.op) {
-                case '@': return eval_while(expr);
-                case 'd': return eval_dowhile(expr);
-                case '$': return eval_repeat(expr);
-            }
-            return 0; // This should never be reached!
+            return eval_while(expr);
         default:
             return 0;
     }
 }
-
-
 
 double eval_default(double x, double y) {
     fprintf(stderr, "ERROR: Unrecognized operator :(\n");
@@ -139,7 +144,31 @@ double eval_charprint(double x, double y) {
 }
 
 double eval_assign(double x, double y) {
-    return globals[(char)x - 'A'] = y;
+    return globals[(char)x] = y;
+}
+
+double eval_aplus(double x, double y) {
+    return globals[(char)x] += y;
+}
+
+double eval_aminus(double x, double y) {
+    return globals[(char)x] -= y;
+}
+
+double eval_amult(double x, double y) {
+    return globals[(char)x] *= y;
+}
+
+double eval_adiv(double x, double y) {
+    return globals[(char)x] /= y;
+}
+
+double eval_apow(double x, double y) {
+    return globals[(char)x] = pow(globals[(char)x],y);
+}
+
+double eval_amod(double x, double y) {
+    return globals[(char)x] = fmod(globals[(char)x], y);
 }
 
 double eval_add(double x, double y) { return x +  y;  }
@@ -157,6 +186,8 @@ double eval_cgt(double x, double y) { return x >  y;  }
 double eval_cle(double x, double y) { return x <= y;  }
 double eval_cge(double x, double y) { return x >= y;  }
 double eval_cne(double x, double y) { return x != y;  }
+
+double eval_unneg(double x, double y) { return !y;  }
 
 eval_expr_fn eval_op_lut[128] = {
     [0]   = &eval_default, // NUL null
@@ -192,7 +223,7 @@ eval_expr_fn eval_op_lut[128] = {
     [30]  = &eval_default, // RS  record separator
     [31]  = &eval_default, // US  unit separator
     [32]  = &eval_default, // ' ' space
-    [33]  = &eval_default, // !   exclamation mark
+    [33]  = &eval_unneg,   // !   exclamation mark
     [34]  = &eval_default, // "   double quote
     [35]  = &eval_default, // #   number
     [36]  = &eval_default, // $   dollar
@@ -224,12 +255,12 @@ eval_expr_fn eval_op_lut[128] = {
     [62]  = &eval_cgt,     // >   greater than
     [63]  = &eval_default, // ?   question mark
     [64]  = &eval_default, // @   at sign
-    [65]  = &eval_default, // A
-    [66]  = &eval_default, // B
-    [67]  = &eval_default, // C
-    [68]  = &eval_default, // D
-    [69]  = &eval_default, // E
-    [70]  = &eval_default, // F
+    [65]  = &eval_aplus,   // A
+    [66]  = &eval_aminus,  // B
+    [67]  = &eval_amult,   // C
+    [68]  = &eval_adiv,    // D
+    [69]  = &eval_apow,    // E
+    [70]  = &eval_amod,    // F
     [71]  = &eval_default, // G
     [72]  = &eval_default, // H
     [73]  = &eval_default, // I
@@ -258,7 +289,7 @@ eval_expr_fn eval_op_lut[128] = {
     [96]  = &eval_default, // `   grave / accent
     [97]  = &eval_default, // a
     [98]  = &eval_default, // b
-    [99]  =&eval_charprint,// c
+    [99]  = &eval_default, // c
     [100] = &eval_default, // d
     [101] = &eval_default, // e
     [102] = &eval_default, // f
