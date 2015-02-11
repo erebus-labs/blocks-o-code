@@ -194,5 +194,35 @@ Identifying potential risks  at the beginning of a project can help by allowing 
       The interpreter descends the abstract syntax tree, performing the actions associated with each node.
 
   \subsection{Pitfalls}
+    Possible pitfalls for the current proposed solution are discussed in this section, and likely mitigation techniques are discussed for each pitfall.
+    \begin{enumerate}
+
+      \item Varying path lengths on each bus may result in bit drift and/or clock skew.
+      \begin{enumerate}
+        \item \textit{Mitigation:} Throughput on buses is not likely to be a significant factor in system performance (whereas interpreter performance is), so slower baud rates are a cheap solution.
+      \end{enumerate}
+
+%   WE DO NOT CURRENTLY ADDRESS 2 DIMENSIONAL SCANNING IN OUR PAPER, WE ONLY INTRODUCE RASTER SCANNING TECHNIQUE
+%      \item Propagation of position vectoring commands along two dimensions could result in long wait times for global bus arbitration, resulting in timeouts.
+%      \begin{enumerate}
+%        \item
+%      \end{enumerate}
+
+      \item A user can write an infinite loop
+      \begin{enumerate}
+        \item \textit{Mitigation:}User programs will run in their own process which will be killed whenever blocks are rearranged (then the new program will start in a new process).
+      \end{enumerate}
+
+      \item Manufacturing uncertainties: Connectors do not align; enclosures are not square. Magnetic interference.
+      \begin{enumerate}
+        \item \textit{Mitigation:} Expose connectors for proof-of-concept revisions to demonstrate functionality.
+      \end{enumerate}
+
+      \item Communication algorithm was inherently flawed.
+      \begin{enumerate}
+        \item \textit{Mitigation:} We plan to release our first revision at the halfway mark before "product launch". Reimplementing the Location-Vectoring algorithm using a tray as a fixed-grid reader of Unique IDs would be trivial from a design perspective.
+      \end{enumerate}
+
+    \end{enumerate}
 
 \end{document}
