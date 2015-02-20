@@ -1,0 +1,22 @@
+﻿Some notes on this diagram:
+* Once a microcontroller has determined its address, it will enable its I2C port and attach itself to the shared bus. This allows the main processor SBC to regularly poll the bus for the correct devices.
+* This diagram assumes that the main processor “block” is oriented at the bottom-left of the code blocks and the “program” will be built up from this origin, i.e. each block receives its position vector either from below or from the left. 
+* This implementation allows us to utilize existing, supported, documented I2C drivers for both the microcontroller in a hardware-supported and interrupt-driven slave-mode and the SBC in master-mode.
+* If the block is disconnected and reconnected it should return to the beginning state. This is now noted at the top by Reset.
+* In a 2x2 example, the block at (1, 1) would get vect signals both from the left and from below. It could simply use the first one it receives and ignore the other, or it could use the second to confirm the correct position as they should generate the same coordinate value.
+* Each microcontroller generates its own address from its position vector. A possible implementation is that the x-coordinate is the most significant 3 bits of the address, followed by the y-coordinate as the next 4 bits of the address, and the final bit (LSB) is the I2C R/W bit, per spec. For example, the block at position (2, 1) would have the address of: [010 0001 x]. This resolves to dimension limitations of 8 blocks long and 16 blocks tall, or a max 16 lines of code that are max 8 blocks wide. This is further limited by I2C reserved addresses. Other implementations could improve upon this.
+* Once the block knows its function and its position, it is immediately available for I2C addressing from the SBC. Since the I2C communication will be interrupt-driven, the block can resume setting up after it services a message if it was received before it completed initialization. Possible commands could include:
+   * Return this block's function code
+   * Toggle this block's error LED
+   * Reset this block
+   * Etc.
+
+
+Some pitfalls and mitigations for this implementation:
+
+
+* Blocks may get stuck in different states. Reset triggers and watchdog timers can help alleviate some issues.
+* The algorithm on its own does not determine end of line or completed search, the main processor block must poll regularly for block identities. This can lead to:
+   * Stale function values
+   * Wasted processing on both ends of the bus
+Possible optimizations can be made by limiting poll to likely addresses (blocks starting at 0, etc)
