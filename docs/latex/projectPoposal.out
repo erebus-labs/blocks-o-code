@@ -1,0 +1,23 @@
+\BOOKMARK [1][-]{section.1}{Needs Statement}{}% 1
+\BOOKMARK [1][-]{section.2}{Objective}{}% 2
+\BOOKMARK [1][-]{section.3}{Background}{}% 3
+\BOOKMARK [1][-]{section.4}{Marketing Requirements}{}% 4
+\BOOKMARK [1][-]{section.5}{Current Proposed Solutions }{}% 5
+\BOOKMARK [2][-]{subsection.5.1}{System Overview and User Interface}{section.5}% 6
+\BOOKMARK [2][-]{subsection.5.2}{Blocks And Communication: Software}{section.5}% 7
+\BOOKMARK [3][-]{subsubsection.5.2.1}{Determining Location}{subsection.5.2}% 8
+\BOOKMARK [2][-]{subsection.5.3}{Language, Parsing, Processing}{section.5}% 9
+\BOOKMARK [3][-]{subsubsection.5.3.1}{Lexing}{subsection.5.3}% 10
+\BOOKMARK [3][-]{subsubsection.5.3.2}{Parsing}{subsection.5.3}% 11
+\BOOKMARK [3][-]{subsubsection.5.3.3}{Interpretation}{subsection.5.3}% 12
+\BOOKMARK [2][-]{subsection.5.4}{ Visual Feedback}{section.5}% 13
+\BOOKMARK [3][-]{subsubsection.5.4.1}{I/O}{subsection.5.4}% 14
+\BOOKMARK [2][-]{subsection.5.5}{Micro-controller}{section.5}% 15
+\BOOKMARK [2][-]{subsection.5.6}{Physical Connections}{section.5}% 16
+\BOOKMARK [1][-]{section.6}{Risk Management}{}% 17
+\BOOKMARK [2][-]{subsection.6.1}{User Interface}{section.6}% 18
+\BOOKMARK [2][-]{subsection.6.2}{Software}{section.6}% 19
+\BOOKMARK [2][-]{subsection.6.4}{Visual Feedback}{section.6}% 20
+\BOOKMARK [2][-]{subsection.6.5}{Micro-controller}{section.6}% 21
+\BOOKMARK [2][-]{subsection.6.6}{Physical Connections}{section.6}% 22
+\BOOKMARK [2][-]{subsection.6.7}{General Considerations}{section.6}% 23
