@@ -1,5 +1,5 @@
 \select@language {english}
-\contentsline {section}{\numberline {1}Needs Statement}{1}{section.1}
+\contentsline {section}{\numberline {1}Needs Statement}{2}{section.1}
 \contentsline {section}{\numberline {2}Objective}{2}{section.2}
 \contentsline {section}{\numberline {3}Background}{4}{section.3}
 \contentsline {section}{\numberline {4}Marketing Requirements}{4}{section.4}
@@ -21,4 +21,6 @@
 \contentsline {subsection}{\numberline {6.4}Visual Feedback}{17}{subsection.6.4}
 \contentsline {subsection}{\numberline {6.5}Micro-controller}{18}{subsection.6.5}
 \contentsline {subsection}{\numberline {6.6}Physical Connections}{18}{subsection.6.6}
-\contentsline {subsection}{\numberline {6.7}General Considerations}{19}{subsection.6.7}
+\contentsline {subsection}{\numberline {6.7}General Cautions and Considerations}{19}{subsection.6.7}
+\contentsline {subsubsection}{\numberline {6.7.1}Fetching Block Tokens}{19}{subsubsection.6.7.1}
+\contentsline {subsubsection}{\numberline {6.7.2}Open Sourcing }{20}{subsubsection.6.7.2}

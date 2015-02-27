@@ -55,6 +55,7 @@ Greg    \textsc{Stromire}\\
 \end{center}
 \end{titlepage}
  \tableofcontents
+ \vfill
 
 \section{Needs Statement}
 Today's world is one of interconnected technologies, at the heart of which are devices like computers and micro-controllers. As the technological complexity of our world increases we will find our society increasingly reliant on the men and women who know how to operate and control these devices.
@@ -287,7 +288,23 @@ Blocks will be interlocked using small outward pegs with corresponding recessed 
     \end{enumerate} 
 
 
-\subsection{General Considerations}
+\subsection{General Cautions and Considerations}
+\subsubsection{Fetching Block Tokens}
+When the token is selected on a block by the user(\textit{see 5.3 and 5.4}) it must be fetched by the lexer. Several solutions exist and are proposed below. The solution chosen is dependent on metrics obtained during prototyping. The following factors will be weighed when determining which block-fetch technique will be used:
+\begin{enumerate}
+    \item \textit{Required communication transactions.} Some techniques include the block token in messages already required by the location-finding algorithm, while some introduce additional messages.
+    \item \textit{Token-Fetch-to-Parse Latency.} The amount of time it takes from reading the user-selected token to passing the token to the lexer is variable from technique-to-technique. This latency is a component of the overall system opacity time, eg. the time when user-changes to selected block tokens don't effect program execution. Opacity time should be reduced where possible.
+    \item \textit{Determinism.} Some techniques use parallel execution which could lead to certain token-fetches to arrive at indeterminate times. This can make debugging during testing phases more difficult.
+    \item \textit{Complexity.} The complexity of the algorithm chosen and the complexity of implementing the algorithm are to be considered. Algorithmic complexity makes later expansion more difficult, while implementation complexity increases development time.
+\end{enumerate}
+
+The following block-token-fetching techniques will be considered, and their consideration of the above factors are included:
+\begin{enumerate}
+    \item \textit{Reading and sending block-tokens during location-scanning time.} Least amount of communication, most token-fetch-to-parse latency, deterministic, least complexity.
+    \item \textit{Fetch during lex time.} Adds a message transaction for each block, minimum token-fetch-to-parse latency, deterministic, slightly more complex.
+    \item \textit{Regular polling in asynchronus thread from lexing.} Increases the amount of messages by indeterminate amount, indeterminate token-fetch-to-parse latency, non-deterministic, complex implementation but least complex algorithmically.
+\end{enumerate}
+\subsubsection{Open Sourcing }
 To stay on track with developing an open source platform, we want to reduce actions that might lead to complications.
   
   \begin{enumerate}

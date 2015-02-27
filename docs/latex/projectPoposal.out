@@ -20,4 +20,6 @@
 \BOOKMARK [2][-]{subsection.6.4}{Visual Feedback}{section.6}% 20
 \BOOKMARK [2][-]{subsection.6.5}{Micro-controller}{section.6}% 21
 \BOOKMARK [2][-]{subsection.6.6}{Physical Connections}{section.6}% 22
-\BOOKMARK [2][-]{subsection.6.7}{General Considerations}{section.6}% 23
+\BOOKMARK [2][-]{subsection.6.7}{General Cautions and Considerations}{section.6}% 23
+\BOOKMARK [3][-]{subsubsection.6.7.1}{Fetching Block Tokens}{subsection.6.7}% 24
+\BOOKMARK [3][-]{subsubsection.6.7.2}{Open Sourcing }{subsection.6.7}% 25
