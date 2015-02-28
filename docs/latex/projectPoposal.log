@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.2.1)  26 FEB 2015 23:50
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2014.2.1)  27 FEB 2015 15:19
 entering extended mode
 **projectPoposal.tex
 (C:\Users\Nathan\Documents\GitHub\blocks-o-code\docs\latex\projectPoposal.tex
@@ -664,45 +664,50 @@ ered>[]
  []
 
 [6 <C:/Users/Nathan/Documents/GitHub/blocks-o-code/docs/latex/user_interface.pn
-g>] <central_processor_stages.jpeg, id=189, 614.295pt x 794.97pt>
+g>] [7] <central_processor_stages.jpeg, id=200, 614.295pt x 794.97pt>
 File: central_processor_stages.jpeg Graphic file (type jpg)
 
 <use central_processor_stages.jpeg>
-Package pdftex.def Info: central_processor_stages.jpeg used on input line 125.
+Package pdftex.def Info: central_processor_stages.jpeg used on input line 148.
 (pdftex.def)             Requested size: 433.62pt x 561.15749pt.
 
-Overfull \hbox (43.62pt too wide) in paragraph at lines 125--126
+Overfull \hbox (43.62pt too wide) in paragraph at lines 148--149
  [][] 
  []
 
-[7] [8 <C:/Users/Nathan/Documents/GitHub/blocks-o-code/docs/latex/central_proce
-ssor_stages.jpeg>] [9]
-<central_processor_interpreter.jpeg, id=213, 614.295pt x 794.97pt>
+[8] [9 <C:/Users/Nathan/Documents/GitHub/blocks-o-code/docs/latex/central_proce
+ssor_stages.jpeg>]
+<central_processor_interpreter.jpeg, id=216, 614.295pt x 794.97pt>
 File: central_processor_interpreter.jpeg Graphic file (type jpg)
 
 <use central_processor_interpreter.jpeg>
 Package pdftex.def Info: central_processor_interpreter.jpeg used on input line 
-160.
-(pdftex.def)             Requested size: 379.4175pt x 491.02039pt.
- [10] [11 <C:/Users/Nathan/Documents/GitHub/blocks-o-code/docs/latex/central_pr
-ocessor_interpreter.jpeg>]
-<BlkFace.png, id=226, 423.83344pt x 203.25937pt>
+161.
+(pdftex.def)             Requested size: 433.62pt x 561.15749pt.
+
+Overfull \hbox (43.62pt too wide) in paragraph at lines 161--162
+ [][] 
+ []
+
+[10] [11 <C:/Users/Nathan/Documents/GitHub/blocks-o-code/docs/latex/central_pro
+cessor_interpreter.jpeg>] <BlkFace.png, id=226, 423.83344pt x 203.25937pt>
 File: BlkFace.png Graphic file (type png)
- <use BlkFace.png>
-Package pdftex.def Info: BlkFace.png used on input line 168.
+
+<use BlkFace.png>
+Package pdftex.def Info: BlkFace.png used on input line 169.
 (pdftex.def)             Requested size: 423.83238pt x 203.25887pt.
 
-Overfull \hbox (33.83238pt too wide) in paragraph at lines 168--169
+Overfull \hbox (33.83238pt too wide) in paragraph at lines 169--170
  [][] 
  []
 
 <uC_State.png, id=227, 819.06pt x 892.33376pt>
 File: uC_State.png Graphic file (type png)
  <use uC_State.png>
-Package pdftex.def Info: uC_State.png used on input line 183.
+Package pdftex.def Info: uC_State.png used on input line 184.
 (pdftex.def)             Requested size: 433.62pt x 472.41724pt.
 
-Overfull \hbox (43.62pt too wide) in paragraph at lines 183--185
+Overfull \hbox (43.62pt too wide) in paragraph at lines 184--186
 []
  []
 
@@ -712,26 +717,26 @@ Overfull \hbox (43.62pt too wide) in paragraph at lines 183--185
 File: Connector_scheme_Drawing.png Graphic file (type png)
 
 <use Connector_scheme_Drawing.png>
-Package pdftex.def Info: Connector_scheme_Drawing.png used on input line 211.
+Package pdftex.def Info: Connector_scheme_Drawing.png used on input line 212.
 (pdftex.def)             Requested size: 361.34999pt x 361.36014pt.
  [14] [15 <C:/Users/Nathan/Documents/GitHub/blocks-o-code/docs/latex/Connector_
 scheme_Drawing.png>] [16] [17] [18]
-Overfull \hbox (1.05318pt too wide) in paragraph at lines 305--306
+Overfull \hbox (1.05318pt too wide) in paragraph at lines 306--307
 []\OT1/cmr/m/it/12 Regular polling in asyn-chronus thread from lex-ing. \OT1/cm
 r/m/n/12 In-creases the amount
  []
 
 [19]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 316.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 317.
  [20]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 316.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 317.
 
 (C:\Users\Nathan\Documents\GitHub\blocks-o-code\docs\latex\projectPoposal.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 316.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 316.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 317.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 317.
 Package rerunfilecheck Info: File `projectPoposal.out' has not changed.
 (rerunfilecheck)             Checksum: 5B9357F8ECF50C6EF92A74637FE677FC;1692.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 316.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 317.
  ) 
 Here is how much of TeX's memory you used:
  10012 strings out of 493921
@@ -740,7 +745,7 @@ Here is how much of TeX's memory you used:
  13033 multiletter control sequences out of 15000+200000
  12835 words of font info for 47 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 39i,18n,51p,622b,530s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 39i,18n,51p,634b,530s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Pr
 ogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Program 
 Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files/M
@@ -749,7 +754,7 @@ iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.
 ype1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
 lic/amsfonts/cm/cmti12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsf
 onts/cm/cmtt12.pfb>
-Output written on projectPoposal.pdf (21 pages, 814560 bytes).
+Output written on projectPoposal.pdf (21 pages, 813814 bytes).
 PDF statistics:
  343 PDF objects out of 1000 (max. 8388607)
  92 named destinations out of 1000 (max. 500000)

@@ -65,31 +65,31 @@ However as of today no universally accessible curriculum includes a focus on the
 
 
 \section{Objective}
-The primary goal of this project is to create a low cost tactile teaching aide capable of helping a wide range  K-12 students learn the basics of computer programming. Our proposed teaching aide is a set of blocks that will allow students to  perform basic programming operations and assignments through the arrangement of the blocks. Verification of valid code structures will provide feedback for learning, and control of simple outputs connected to the system can give students a goal for their projects.
+The primary goal of this project is to create a low cost tactile teaching aide capable of helping a wide range of K-12 students learn the basics of computer programming. Our proposed teaching aide is a set of blocks that will allow students to  perform basic programming operations and assignments through the arrangement of the blocks. Verification of valid code structures will provide feedback for learning, and control of simple outputs connected to the system can give students a goal for their projects.
 \newpage
 
 \includepdf[pages={1}]{abcPDS.pdf}
 \section{Background}
 
-Currently there are limited methods of teaching  younger groups of students about computer programming, and those that do exist often rely heavily on access to computers. This project is meant to produce a learning aid that will function in a classroom setting, doing away with the need have computers present for learning about programming.
-The use of a visual-tactile system to teach new skills to children has a long and well established history dating at least as far back as Froebel, who believed that freedom to play and experiment was essential to real learning.
+Currently there are limited methods of teaching  younger groups of students about computer programming, and those that do exist often rely heavily on access to computers. This project is meant to produce a learning aid that will function in a classroom setting, doing away with the need to have computers present for learning about programming.
+The use of a visual-tactile system to teach new skills to children has a long and well established history dating at least as far back as Froebel, who believed that freedom to play and experiment, was essential to real learning.
 
- In terms of this project the system can be thought of as a, Froebel \textit{Spielgaben}, or a subject specific learning module. The purpose of which is to allow students of any age to be introduced to coding using a familiar process that promotes creativity. Allowing the module to be untethered, separate from a computer, will also allow the teaching of programming without the other distractions available on a PC, and give students that have trouble with abstraction a set of objects to focus on.
+ In terms of this project the system can be thought of as a, Froebel \textit{Spielgaben}, or a subject specific learning module. The purpose of which, is to allow students of any age to be introduced to coding, using a familiar process that promotes creativity. Allowing the module to be untethered, separate from a computer, will also allow the teaching of programming without the other distractions available on a PC, and give students that have trouble with abstraction a set of objects to focus on.
 
 \section{Marketing Requirements}
 
 
 The final package will be a set of between twenty to thirty blocks typically two or less inches across a side. The set will function as it's own interface device, where the topographical arrangement of elements (blocks) will determine the \textit{program}. The individual blocks must be identifiable as belonging to a specific programming construct-group. At a minimum these groups must include; numbers, variables, operators, and controls.
 
-Additionally , if possible, a block should be capable of indicating what  value or function has been  assigned to it. Blocks should be easy to assemble,  allowing users to experiment with layouts, but provide area specific error feedback and thereby increasing understanding and limiting confusion.
+Additionally , if possible, a block should be capable of indicating what  value or function has been  assigned to it. Blocks should be easy to assemble,  allowing users to experiment with layouts, but provide area specific error feedback, thereby increasing understanding and limiting confusion.
 
-Finally, the set should open source and be sufficiently accessible, both by cost and teaching use, as to promote universal access and encourage development and expansion by others.
+Finally, the set should be open source and be sufficiently accessible, both by cost and teaching use, as to promote universal access and encourage development and expansion by others.
 
 
 
 
 \section{Current Proposed Solutions }
-  The current solutions we propose below are subject to change, as feasibility and effectiveness will become more clear as prototyping commences. Each level of description is limited to an overview in this paper, as we address each solution further in the \textit{Product  Specifications} document. The overviews are given to give enough familiarity to address the \textit{Risk Management} section of this document.
+  The current solutions we propose below are subject to change, as feasibility and effectiveness will become more clear as prototyping commences. Each level of description is limited to an overview of the specific proposed method. Each subsection is intended to create enough familiarity with the method described so that we can address associated \textit{Risk Management} in section 6.
 
 \subsection{System Overview and User Interface}
  Our product will consist of identical \textit{blocks}, each with enough digital circuitry to accomplish the following;
@@ -107,24 +107,19 @@ Finally, the set should open source and be sufficiently accessible, both by cost
    \end{figure}
 
 \vspace{.5cm}
-The  \textit{\textbf{RUN}} block, or control block (see figure), has buttons to  force a reset or to attempt a run/ compile.  It also has LED indicators for relaying current status. It connects to the bottom most left most of the other blocks. \begin{verbatim}
+The  \textit{\textbf{RUN}} block, or control block (see figure 1), has buttons to  force a reset or to attempt a run/ compile.  It also has LED indicators for relaying current status. It connects to the bottom most left most of the other blocks. \begin{verbatim}
 <Note: the bottom is one possible configuration being considered> 
 \end{verbatim}
 
-Each programming block connects to its neighbors to form a program. The lines of  code are read from left to right, and lines are read one at a time from top to bottom. On each programming block a tunable wheel allows the user to select the meaning or \textit{value} of the block  in its \textbf{\textit{This Block}} window.  Users are given hints for which blocks ought to be placed to the left and right of the current block. Hints appear in the \textbf{\textit{Neighbors}} windows, and an LED will indicate error when the program is run if the block sequence is invalid . 
+Each programming block connects to its neighbors to form a program. The lines of  code are read from left to right, and lines are read one at a time from top to bottom. On each programming block a tunable wheel allows the user to select the meaning or \textit{value} of the block  in its \textbf{\textit{This Block}} window.  Users are given hints for which blocks ought to be placed to the left and right of the current block. Hints appear in the \textbf{\textit{Neighbors}} windows, and an LED will indicate error locality at the block whose sequence/ syntax is invalid when the program is run. 
 
-Output blocks will have some way of acting on the world, such as a controllable light source, or a small speaker for sound. The interface to control  output is a separately connected to a special \textit{output} block (not shown), which may be connected to the run/ control block.
+Output blocks will have some way of acting on the world, such as a controllable light source, or a small speaker for sound. The interface to control  output is a separately connected  special \textit{output} block (not shown), which may be connected to the run/ control block.
 
 
-   
-    On the last line of the matrix, Row 1, the user will place the Master Processing block, which is not identical to the other blocks.
+ 
   \subsection{Blocks And Communication: Software}
     Each block stores its own associated data. Each block stores a \textit{position vector}, which represents where on the matrix the block is located, and stores a \textit{unique ID}, which allows the block to be uniquely addressed on the global bus. Upon initialization, the position vector of each block is unknown.
-   \begin{figure}[H]
-   \centering
-    \includegraphics[width=6in]{central_processor_stages}
-    \caption{Flow chart for sections 5.2 through 5.3}
-   \end{figure}
+  
    
 
     \subsubsection{Determining Location}
@@ -137,6 +132,7 @@ Output blocks will have some way of acting on the world, such as a controllable 
           $**note$; \textit{the unique ID is generated and assigned by I2C }
           \item The last block on the column increments the y component of its position vector, then emits a message on the global bus containing \begin{verbatim}[position vector, unique ID, END_OF_DIMENSION]\end{verbatim}
         \end{enumerate}
+        
       \item The processing block collects this info in its own local copy of the matrix.
       \item To identify each block in each row:
         \begin{enumerate}
@@ -147,6 +143,11 @@ Output blocks will have some way of acting on the world, such as a controllable 
         \end{enumerate}
       \item Using the messages passed on the global bus, the processing block is able to fill in its local-cache with all of the Unique IDs of the blocks in the network.
       \end{enumerate}
+       \begin{figure}[H]
+         \centering
+          \includegraphics[width=6in]{central_processor_stages}
+          \caption{Flow chart for sections 5.2 through 5.3}
+         \end{figure}
   \subsection{Language, Parsing, Processing}
     After filling in its local-cache, the processing block can interpret the language in a traditional manner using a Lexer, Parser, and AST-Interpreter. This all happens in software.
     \subsubsection{Lexing}
@@ -157,7 +158,7 @@ Output blocks will have some way of acting on the world, such as a controllable 
       The interpreter descends the abstract syntax tree \textit{\textbf{(AST)}}, performing the actions associated with each node.
  \begin{figure}[H]
    \centering
- \includegraphics[width=5.25in]{central_processor_interpreter}
+ \includegraphics[width=6in]{central_processor_interpreter}
     \caption{Flow chart for 5.3.3}
    \end{figure}
 \subsection{ Visual Feedback}
