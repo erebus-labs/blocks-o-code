@@ -5,7 +5,7 @@ blocks-o-code
 + *Title:* Physical manipulators for developing and implementing short programing routines 
 + *Project Short Name:* A Block of Code (ABC)
 + *Sponsors:* 
-  + [Dr. Mike Borowczak](https://www.linkedin.com/in/mborowczak) @ [Erebus Labs](www.erebuslabs.com)
+  + [Dr. Mike Borowczak](https://www.linkedin.com/in/mborowczak) @ [Erebus Labs](http://www.erebuslabs.com)
   + [Dr. Andrea Burrows] (http://uwyo.academia.edu/AndreaBurrows) @ [University of Wyoming] (http://www.uwyo.edu/seced/faculty-staff/andrea-burrows.html)
 + *Senior Design Team:* 
   + Jacob Mickiewicz 
