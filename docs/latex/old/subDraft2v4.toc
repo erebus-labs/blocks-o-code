@@ -1,0 +1,20 @@
+\select@language {english}
+\contentsline {section}{\numberline {1}Needs Statement}{1}{section.1}
+\contentsline {section}{\numberline {2}Objective}{3}{section.2}
+\contentsline {section}{\numberline {3}Background}{3}{section.3}
+\contentsline {section}{\numberline {4}Marketing Requirements}{3}{section.4}
+\contentsline {section}{\numberline {5}Risk Management}{4}{section.5}
+\contentsline {subsection}{\numberline {5.1}Defining Risks}{4}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Mitigating Risk}{5}{subsection.5.2}
+\contentsline {section}{\numberline {6}Current Proposed Solutions }{7}{section.6}
+\contentsline {subsection}{\numberline {6.1}System Level Solution}{7}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Blocks And Communication}{8}{subsection.6.2}
+\contentsline {subsubsection}{\numberline {6.2.1}Determining Location}{8}{subsubsection.6.2.1}
+\contentsline {subsection}{\numberline {6.3}Language, Parsing, Processing}{9}{subsection.6.3}
+\contentsline {subsubsection}{\numberline {6.3.1}Lexing}{10}{subsubsection.6.3.1}
+\contentsline {subsubsection}{\numberline {6.3.2}Parsing}{10}{subsubsection.6.3.2}
+\contentsline {subsubsection}{\numberline {6.3.3}Interpretation}{10}{subsubsection.6.3.3}
+\contentsline {subsection}{\numberline {6.4} Visual Feedback}{10}{subsection.6.4}
+\contentsline {subsubsection}{\numberline {6.4.1}Wheel Encoder Diagrams}{11}{subsubsection.6.4.1}
+\contentsline {subsubsection}{\numberline {6.4.2}I/O}{11}{subsubsection.6.4.2}
+\contentsline {section}{\numberline {7}Pitfalls}{11}{section.7}
