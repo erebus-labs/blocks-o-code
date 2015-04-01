@@ -45,7 +45,7 @@
 #define SPI_F_B_DIR		DDB1
 #define SPI_F_L_DIR		DDB0
 #define SPI_S_DI_DDR	DDRA
-#define SPI_S_DI_DIR	DDRA1
+#define SPI_S_DI_DIR	DDRA0
 #define SPI_S_PORT		PORTB
 #define SPI_S_INT_PORT	PCIE
 #define SPI_S_CLK_PCINT	PCINT2
@@ -55,12 +55,28 @@
 //#define SPI_S_DO_DDR	DDRA
 //#define SPI_S_DO_DIR	DDRA0
 
-
 // SPI Master Pins
-#define SPI_M_CLK		PORTB6
+#define SPI_M_DO_REG	PORTA
 #define SPI_M_DO		PORTA1
-#define SS_T_ABOVE		PORTB4
-#define SS_T_RIGHT		PORTB3
+#define SPI_M_PIN_REG	PINB
+#define SPI_M_CLK		PINB6
+#define SS_T_ABOVE		PINB4
+#define SS_T_RIGHT		PINB3
+#define SPI_M_DDR		DDRB
+#define SPI_M_CLK_DIR	DDB6
+#define SPI_T_A_DIR		DDB4
+#define SPI_T_R_DIR		DDB3
+#define SPI_M_DO_DDR	DDRA
+#define SPI_M_DO_DIR	DDRA1
+#define SPI_M_PORT		PORTB
+#define SPI_M_INT_PORT	PCIE
+#define SPI_T_A_PCINT	PCINT4
+#define SPI_T_R_PCINT	PCINT3
+//#define SPI_S_DI		PORTA0
+//#define SPI_S_DI_DDR	DDRA
+//#define SPI_S_DI_DIR	DDRA0
+
+
 //#define SPI_M_DI	PINA0
 
 /**
@@ -76,6 +92,7 @@ typedef enum {
 	StartHandshake,
 	EndHandshake,
 	SpiSlave,
+	SpiMasterHandshake,
 	SpiMaster,
 	TwoWireTransmission
 //	...
@@ -89,6 +106,9 @@ volatile static uint8_t hs_ended		= 0;
 volatile static uint8_t spi_s_data_in	= 0;
 volatile static uint8_t s_data_in_pos	= 8;
 
+volatile static uint8_t spi_m_data_out	= 0;
+volatile static uint8_t m_data_out_pos	= 8;
+
 #ifdef SPI_S_DO
 volatile static uint8_t spi_s_data_out	= 0;
 volatile static uint8_t s_data_out_pos	= 8;
@@ -99,11 +119,13 @@ volatile static uint8_t prev_pin_d		= 0;
 volatile static uint8_t trig_f_below	= 0;
 volatile static uint8_t trig_f_left		= 0;
 volatile static uint8_t rx_completed	= 0;
+volatile static uint8_t tx_completed	= 0;
 volatile static uint8_t i2c_addr		= 0;
 
 volatile static uint8_t irc_count		= 0;
 
-static void initSoftSPI(void);
+static void initSPISlave(void);
+static void initSPIMaster(void);
 static void showAddress(void);
 static void initIO(void);
 static void startupSequence(void);
@@ -113,12 +135,15 @@ static void initHandshake(void);
 static void serviceHandshakeStart(void);
 static void serviceHandshakeEnd(void);
 static void serviceSpiSlaveTransmission(uint8_t changedPins);
+static void serviceMasterHandshake(uint8_t changedPins);
+
 static void waitForCompletedHandshake(void);
+static void sendVector(uint8_t newBlockDirection);
 
 /**
  *	Initializes pins and registers for handshake protocol
  */
-void initHandshake(void){
+void initHandshake(void) {
 	
 	cur_state = StartHandshake;
 
@@ -130,9 +155,9 @@ void initHandshake(void){
 	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
 	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
 	
-	// start slave selects high
-	SPI_S_PORT	 |= _BV(SS_F_BELOW);
-	SPI_S_PORT	 |= _BV(SS_F_LEFT);
+	// start slave selects low
+	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
+	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
 	
 	// enable pin change interrupts (PCI)
 	GIMSK |= _BV(SPI_S_INT_PORT);			// SPI slave interrupt port
@@ -144,7 +169,8 @@ void initHandshake(void){
 /**
  *	Initializes pins and registers for software SPI-slave implementation
  */
-void initSoftSPI(void) {
+void initSPISlave(void) {
+	
 	cur_state = SpiSlave;
 
 	// SPI signal directions
@@ -172,13 +198,37 @@ void initSoftSPI(void) {
 	spi_s_data_out = 6;						// initial value
 #endif
 	
-	sei();									// enable interrupts
+//	sei();									// enable interrupts
+}
+
+void initSPIMaster(void) {
+	
+	cur_state = SpiMasterHandshake;
+	
+	// SPI master signal directions
+	SPI_M_DDR	 |= _BV(SPI_M_CLK_DIR);		// set master clock as output
+	SPI_M_DO_DDR |= _BV(SPI_M_DO_DIR);		// set master DO as output
+	
+	// set slave selects temporarily as inputs to "listen"
+	// for new block presence
+	SPI_M_DDR	 &= ~_BV(SPI_T_A_DIR);
+	SPI_M_DDR	 &= ~_BV(SPI_T_R_DIR);
+	
+	// start slave selects low
+//	SPI_M_PORT	 &= ~_BV(SS_T_ABOVE);
+//	SPI_M_PORT	 &= ~_BV(SS_T_RIGHT);
+	
+	// enable pin change interrupts (PCI)
+	GIMSK |= _BV(SPI_M_INT_PORT);			// SPI interrupt port
+	PCMSK |= _BV(SPI_T_A_PCINT);			// SPI slave select to-right
+	PCMSK |= _BV(SPI_T_R_PCINT);			// SPI slave select to-above
 }
 
 void serviceHandshakeStart(void) {
 	if (prev_pin_b & _BV(SPI_S_CLK)) {
 		// HIGH to LOW transition - change state
 		
+		/*
 		if (hs_started) {
 			cur_state = EndHandshake;
 			
@@ -194,6 +244,7 @@ void serviceHandshakeStart(void) {
 			prev_pin_b	|= _BV(SS_F_BELOW);			// initialized to high
 			prev_pin_b	|= _BV(SS_F_LEFT);			// "slave select" pulls low
 		}
+		*/
 		
 	} else {
 		// LOW to HIGH transition - sample
@@ -201,6 +252,23 @@ void serviceHandshakeStart(void) {
 		// if data-in is high, handshake has started
 		if (!!(SPI_S_DI_REG & _BV(SPI_S_DI))) {
 			hs_started = 1;
+		} else {
+		// if data-in is low, handshake is completing
+			if (hs_started) {
+				cur_state = EndHandshake;
+				
+				// set slave selects as inputs
+				SPI_S_DDR	&= ~_BV(SPI_F_B_DIR);
+				SPI_S_DDR	&= ~_BV(SPI_F_L_DIR);
+				
+				// SPI pull-up resistors
+				SPI_S_PORT	|= _BV(SS_F_BELOW);			// slave select from below
+				SPI_S_PORT	|= _BV(SS_F_LEFT);			// slave select from left
+				
+				// previous port values associated with pull-ups
+				prev_pin_b	|= _BV(SS_F_BELOW);			// initialized to high
+				prev_pin_b	|= _BV(SS_F_LEFT);			// "slave select" pulls low
+			}
 		}
 	}
 }
@@ -210,13 +278,13 @@ void serviceHandshakeEnd(void) {
 		// HIGH to LOW transition - change state
 		
 		if (hs_ended) {
-			initSoftSPI();
+			initSPISlave();
 		}
 	} else {
 		// LOW to HIGH transition - sample
 		
-		// if data-in is low, handshake has ended
-		if (!(SPI_S_DI_REG & _BV(SPI_S_DI))) {
+		// if data-in is high, handshake has ended
+		if (!!(SPI_S_DI_REG & _BV(SPI_S_DI))) {
 			hs_ended = 1;
 		}
 	}
@@ -283,6 +351,84 @@ void serviceSpiSlaveTransmission(uint8_t changedPins) {
 	}
 }
 
+void serviceMasterHandshake(uint8_t changedPins) {
+	
+	uint8_t from_above = 0;
+	uint8_t from_right = 0;
+	
+	if (changedPins & _BV(SS_T_ABOVE)) {
+		if (prev_pin_b & _BV(SS_T_ABOVE)) {
+			// HIGH to LOW - end handshake
+			
+		} else {
+			// LOW to HIGH - start handshake
+			
+			from_above = 1;
+		}
+	} else if (changedPins & _BV(SS_T_RIGHT)) {
+		if (prev_pin_b & _BV(SS_T_RIGHT)) {
+			// HIGH to LOW - end handshake
+			
+		} else {
+			// LOW to HIGH - start handshake
+			
+			from_right = 1;
+		}
+		
+	}
+	
+	// start handshake
+	if (from_above || from_right) {
+		SPI_M_DO_REG |= _BV(SPI_M_DO);
+		SPI_M_PORT	 |= _BV(SPI_M_CLK);
+		_delay_ms(5);
+		SPI_M_PORT	 &= ~_BV(SPI_M_CLK);
+		SPI_M_DO_REG &= ~_BV(SPI_M_DO);
+		_delay_ms(5);
+		
+		SPI_M_PORT	 |= _BV(SPI_M_CLK);
+		_delay_ms(5);
+		SPI_M_PORT	 &= ~_BV(SPI_M_CLK);
+		_delay_ms(5);
+		
+		SPI_M_DO_REG |= _BV(SPI_M_DO);
+		SPI_M_PORT	  |= _BV(SPI_M_CLK);
+		
+		// set corresponding slave select as output
+		uint8_t slave = _BV((from_above) ? (SPI_T_A_DIR) : (SPI_T_R_DIR));
+		SPI_M_DDR	 |= slave;
+			
+		// pull HIGH to prepare for tx
+		SPI_M_PORT	 |= slave;
+		_delay_ms(5);
+
+		SPI_M_PORT   &= ~_BV(SPI_M_CLK);
+		SPI_M_DO_REG &= ~_BV(SPI_M_DO);
+		_delay_ms(5);
+		
+		sendVector(slave);
+	}
+}
+
+void sendVector(uint8_t newBlockDirection) {
+	
+	cur_state = SpiMaster;
+	
+	// pull slave select to signal tx start
+	SPI_M_PORT &= ~ newBlockDirection;
+	
+	// put next bit on data out line
+	while (m_data_out_pos--) {
+		SPI_M_DO_REG = (SPI_M_DO_REG & ~_BV(SPI_M_DO)) | ((spi_m_data_out >> m_data_out_pos) & _BV(SPI_M_DO));
+		
+		// pulse clock
+		SPI_M_PORT  |= _BV(SPI_M_CLK);
+		_delay_ms(5);
+		SPI_M_PORT  &= ~_BV(SPI_M_CLK);
+		_delay_ms(5);
+	}
+}
+
 /**
  *  Interrupt Service Routine for Pin Change in PCIE (PORTB).
  */
@@ -308,6 +454,11 @@ ISR(PCINT_vect) {
 		// soft SPI slave select triggers
 		case SpiSlave:
 			serviceSpiSlaveTransmission(changed);
+			break;
+			
+		// starting SPI Master handshake
+		case SpiMasterHandshake:
+			serviceMasterHandshake(changed);
 			break;
 			
 		default:
@@ -368,11 +519,11 @@ void initIO(void) {
 
 void startupSequence(void) {
 	for(int i = 0; i < 4; ++i){
-		_delay_ms(25);
+		_delay_ms(125);
 		PORTD |= _BV(PD0 + i);
 	}
 	for(int i = 0; i < 4; ++i){
-		_delay_ms(25);
+		_delay_ms(125);
 		PORTD &= ~_BV(PD0 + i);
 	}
 }
@@ -380,11 +531,11 @@ void startupSequence(void) {
 void waitForCompletedHandshake(void) {
 	uint8_t left = 1;
 	
-	// bring SS_F_LEFT or SS_F_BELOW to low
-	SPI_S_PORT &= ~_BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+	// bring SS_F_LEFT or SS_F_BELOW to HIGH
+	SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
 	
 	// master processor may be busy
-	_delay_ms(50);
+	_delay_ms(25);
 	
 	// spin until handshake has been recognized
 	while (cur_state == StartHandshake && !hs_started) {
@@ -392,11 +543,11 @@ void waitForCompletedHandshake(void) {
 		// disable clock pin change interrupt
 		PCMSK &= ~_BV(SPI_S_CLK_PCINT);
 		
-		// bring SS_F_LEFT or SS_F_BELOW back up high
-		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+		// bring SS_F_LEFT or SS_F_BELOW back down LOW
+		SPI_S_PORT &= ~_BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
 		
 		// give more time to finish
-		_delay_ms(50);
+		_delay_ms(25);
 		
 		// re-eneable clock pin change interrupt
 		PCMSK |= _BV(SPI_S_CLK_PCINT);
@@ -404,22 +555,26 @@ void waitForCompletedHandshake(void) {
 		// toggle to other input select
 		left = !left;
 		
-		// bring SS_F_LEFT or SS_F_BELOW to low
-		SPI_S_PORT &= ~_BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+		// bring SS_F_LEFT or SS_F_BELOW to HIGH
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
 		
 		// master processor may be busy
-		_delay_ms(50);
+		_delay_ms(25);
+		
+		TOGGLE_ERROR;
 	}
 }
 
 int main(void) {
 	
 	initIO();
-	initSoftSPI();
+//	initSPISlave();
 	startupSequence();
 
-//	initHandshake();
-//	waitForCompletedHandshake();
+	initHandshake();
+	waitForCompletedHandshake();
+//	initSPIMaster();
+
 	
 	while (1) {
 		_delay_ms(100);
