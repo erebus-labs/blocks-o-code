@@ -392,7 +392,7 @@ void serviceMasterHandshake(uint8_t changedPins) {
 		_delay_ms(5);
 		
 		SPI_M_DO_REG |= _BV(SPI_M_DO);
-		SPI_M_PORT	  |= _BV(SPI_M_CLK);
+		SPI_M_PORT	 |= _BV(SPI_M_CLK);
 		
 		// set corresponding slave select as output
 		uint8_t slave = _BV((from_above) ? (SPI_T_A_DIR) : (SPI_T_R_DIR));
@@ -412,14 +412,14 @@ void serviceMasterHandshake(uint8_t changedPins) {
 
 void sendVector(uint8_t newBlockDirection) {
 	
-	cur_state = SpiMaster;
+//	cur_state = SpiMaster;
 	
-	// pull slave select to signal tx start
-	SPI_M_PORT &= ~ newBlockDirection;
+	// pull slave select LOW to signal tx start
+	SPI_M_PORT &= ~newBlockDirection;
 	
 	// put next bit on data out line
 	while (m_data_out_pos--) {
-		SPI_M_DO_REG = (SPI_M_DO_REG & ~_BV(SPI_M_DO)) | ((spi_m_data_out >> m_data_out_pos) & _BV(SPI_M_DO));
+		SPI_M_DO_REG = (SPI_M_DO_REG & ~_BV(SPI_M_DO)) | ((i2c_addr >> m_data_out_pos) & _BV(SPI_M_DO));
 		
 		// pulse clock
 		SPI_M_PORT  |= _BV(SPI_M_CLK);
@@ -427,6 +427,9 @@ void sendVector(uint8_t newBlockDirection) {
 		SPI_M_PORT  &= ~_BV(SPI_M_CLK);
 		_delay_ms(5);
 	}
+	
+	// pull HIGH to signal end of tx
+	SPI_M_PORT |= newBlockDirection;
 }
 
 /**
@@ -485,6 +488,8 @@ ISR(PCINT_vect) {
 		
 		showAddress();
 		
+		initSPIMaster();
+		
 		// disable pin change interrupts (PCI)
 //		PCMSK &= ~_BV(PCINT2);			// clk pin
 //		PCMSK &= ~_BV(PCINT6);			// slave select from below
@@ -502,9 +507,9 @@ void showAddress(void) {
 	PORTD &= 0b11110000;
 	PORTD |= (i2c_addr & 0b00000011);
 	PORTD |= ((i2c_addr & (0b00000011 << 3)) >> 1);
-	spi_s_data_in = 0;
-	i2c_addr = 0;
-	rx_completed = 0;
+//	spi_s_data_in = 0;
+//	i2c_addr = 0;
+//	rx_completed = 0;
 }
 
 void initIO(void) {
@@ -519,11 +524,11 @@ void initIO(void) {
 
 void startupSequence(void) {
 	for(int i = 0; i < 4; ++i){
-		_delay_ms(125);
+		_delay_ms(25);
 		PORTD |= _BV(PD0 + i);
 	}
 	for(int i = 0; i < 4; ++i){
-		_delay_ms(125);
+		_delay_ms(25);
 		PORTD &= ~_BV(PD0 + i);
 	}
 }
@@ -573,7 +578,6 @@ int main(void) {
 
 	initHandshake();
 	waitForCompletedHandshake();
-//	initSPIMaster();
 
 	
 	while (1) {
