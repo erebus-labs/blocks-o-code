@@ -1,0 +1,1799 @@
+
+combineduc.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000007ea  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000004  00800060  000007ea  0000087e  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000036  00800064  00800064  00000882  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000882  2**0
+                  CONTENTS, READONLY
+  4 .debug_aranges 000000c0  00000000  00000000  000008b2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000d61  00000000  00000000  00000972  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 0000050f  00000000  00000000  000016d3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000057f  00000000  00000000  00001be2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  000001d4  00000000  00000000  00002164  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000065c  00000000  00000000  00002338  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000006b8  00000000  00000000  00002994  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 000000d8  00000000  00000000  0000304c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	2a c0       	rjmp	.+84     	; 0x58 <__bad_interrupt>
+   4:	29 c0       	rjmp	.+82     	; 0x58 <__bad_interrupt>
+   6:	28 c0       	rjmp	.+80     	; 0x58 <__bad_interrupt>
+   8:	27 c0       	rjmp	.+78     	; 0x58 <__bad_interrupt>
+   a:	26 c0       	rjmp	.+76     	; 0x58 <__bad_interrupt>
+   c:	25 c0       	rjmp	.+74     	; 0x58 <__bad_interrupt>
+   e:	24 c0       	rjmp	.+72     	; 0x58 <__bad_interrupt>
+  10:	23 c0       	rjmp	.+70     	; 0x58 <__bad_interrupt>
+  12:	22 c0       	rjmp	.+68     	; 0x58 <__bad_interrupt>
+  14:	21 c0       	rjmp	.+66     	; 0x58 <__bad_interrupt>
+  16:	21 c0       	rjmp	.+66     	; 0x5a <__vector_11>
+  18:	1f c0       	rjmp	.+62     	; 0x58 <__bad_interrupt>
+  1a:	1e c0       	rjmp	.+60     	; 0x58 <__bad_interrupt>
+  1c:	1d c0       	rjmp	.+58     	; 0x58 <__bad_interrupt>
+  1e:	f9 c2       	rjmp	.+1522   	; 0x612 <__vector_15>
+  20:	14 c3       	rjmp	.+1576   	; 0x64a <__vector_16>
+  22:	1a c0       	rjmp	.+52     	; 0x58 <__bad_interrupt>
+  24:	19 c0       	rjmp	.+50     	; 0x58 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf ed       	ldi	r28, 0xDF	; 223
+  2c:	cd bf       	out	0x3d, r28	; 61
+
+0000002e <__do_copy_data>:
+  2e:	10 e0       	ldi	r17, 0x00	; 0
+  30:	a0 e6       	ldi	r26, 0x60	; 96
+  32:	b0 e0       	ldi	r27, 0x00	; 0
+  34:	ea ee       	ldi	r30, 0xEA	; 234
+  36:	f7 e0       	ldi	r31, 0x07	; 7
+  38:	02 c0       	rjmp	.+4      	; 0x3e <__SP_L__+0x1>
+  3a:	05 90       	lpm	r0, Z+
+  3c:	0d 92       	st	X+, r0
+  3e:	a4 36       	cpi	r26, 0x64	; 100
+  40:	b1 07       	cpc	r27, r17
+  42:	d9 f7       	brne	.-10     	; 0x3a <__do_copy_data+0xc>
+
+00000044 <__do_clear_bss>:
+  44:	20 e0       	ldi	r18, 0x00	; 0
+  46:	a4 e6       	ldi	r26, 0x64	; 100
+  48:	b0 e0       	ldi	r27, 0x00	; 0
+  4a:	01 c0       	rjmp	.+2      	; 0x4e <.do_clear_bss_start>
+
+0000004c <.do_clear_bss_loop>:
+  4c:	1d 92       	st	X+, r1
+
+0000004e <.do_clear_bss_start>:
+  4e:	aa 39       	cpi	r26, 0x9A	; 154
+  50:	b2 07       	cpc	r27, r18
+  52:	e1 f7       	brne	.-8      	; 0x4c <.do_clear_bss_loop>
+  54:	9c d1       	rcall	.+824    	; 0x38e <main>
+  56:	c7 c3       	rjmp	.+1934   	; 0x7e6 <_exit>
+
+00000058 <__bad_interrupt>:
+  58:	d3 cf       	rjmp	.-90     	; 0x0 <__vectors>
+
+0000005a <__vector_11>:
+}
+
+/**
+ *  Interrupt Service Routine for Pin Change in PCIE (PORTB).
+ */
+ISR(PCINT_vect) {
+  5a:	1f 92       	push	r1
+  5c:	0f 92       	push	r0
+  5e:	0f b6       	in	r0, 0x3f	; 63
+  60:	0f 92       	push	r0
+  62:	11 24       	eor	r1, r1
+  64:	2f 93       	push	r18
+  66:	3f 93       	push	r19
+  68:	4f 93       	push	r20
+  6a:	5f 93       	push	r21
+  6c:	6f 93       	push	r22
+  6e:	7f 93       	push	r23
+  70:	8f 93       	push	r24
+  72:	9f 93       	push	r25
+  74:	af 93       	push	r26
+  76:	bf 93       	push	r27
+  78:	ef 93       	push	r30
+  7a:	ff 93       	push	r31
+	// isolate changed pins
+	uint8_t changed = SPI_S_PIN_REG ^ prev_pin_b;
+  7c:	26 b3       	in	r18, 0x16	; 22
+  7e:	30 91 68 00 	lds	r19, 0x0068
+  82:	32 27       	eor	r19, r18
+	
+	switch (cur_state) {
+  84:	20 91 6c 00 	lds	r18, 0x006C
+  88:	22 30       	cpi	r18, 0x02	; 2
+  8a:	71 f1       	breq	.+92     	; 0xe8 <__stack+0x9>
+  8c:	18 f4       	brcc	.+6      	; 0x94 <__vector_11+0x3a>
+  8e:	21 30       	cpi	r18, 0x01	; 1
+  90:	41 f0       	breq	.+16     	; 0xa2 <__vector_11+0x48>
+  92:	20 c1       	rjmp	.+576    	; 0x2d4 <__stack+0x1f5>
+  94:	23 30       	cpi	r18, 0x03	; 3
+  96:	09 f4       	brne	.+2      	; 0x9a <__vector_11+0x40>
+  98:	58 c0       	rjmp	.+176    	; 0x14a <__stack+0x6b>
+  9a:	24 30       	cpi	r18, 0x04	; 4
+  9c:	09 f4       	brne	.+2      	; 0xa0 <__vector_11+0x46>
+  9e:	97 c0       	rjmp	.+302    	; 0x1ce <__stack+0xef>
+  a0:	19 c1       	rjmp	.+562    	; 0x2d4 <__stack+0x1f5>
+		// handshake initiated
+		case StartHandshake:
+			if (changed & _BV(SPI_S_CLK)) {
+  a2:	32 ff       	sbrs	r19, 2
+  a4:	17 c1       	rjmp	.+558    	; 0x2d4 <__stack+0x1f5>
+	PCMSK |= _BV(SPI_T_A_PCINT);			// SPI slave select to-right
+	PCMSK |= _BV(SPI_T_R_PCINT);			// SPI slave select to-above
+}
+
+void serviceHandshakeStart(void) {
+	if (prev_pin_b & _BV(SPI_S_CLK)) {
+  a6:	80 91 68 00 	lds	r24, 0x0068
+  aa:	82 fd       	sbrc	r24, 2
+  ac:	13 c1       	rjmp	.+550    	; 0x2d4 <__stack+0x1f5>
+		
+	} else {
+		// LOW to HIGH transition - sample
+		
+		// if data-in is high, handshake has started
+		if (!!(SPI_S_DI_REG & _BV(SPI_S_DI))) {
+  ae:	c8 9b       	sbis	0x19, 0	; 25
+  b0:	04 c0       	rjmp	.+8      	; 0xba <__vector_11+0x60>
+			hs_started = 1;
+  b2:	81 e0       	ldi	r24, 0x01	; 1
+  b4:	80 93 6b 00 	sts	0x006B, r24
+  b8:	0d c1       	rjmp	.+538    	; 0x2d4 <__stack+0x1f5>
+		} else {
+		// if data-in is low, handshake is completing
+			if (hs_started) {
+  ba:	80 91 6b 00 	lds	r24, 0x006B
+  be:	88 23       	and	r24, r24
+  c0:	09 f4       	brne	.+2      	; 0xc4 <__vector_11+0x6a>
+  c2:	08 c1       	rjmp	.+528    	; 0x2d4 <__stack+0x1f5>
+				cur_state = EndHandshake;
+  c4:	82 e0       	ldi	r24, 0x02	; 2
+  c6:	80 93 6c 00 	sts	0x006C, r24
+				
+				// set slave selects as inputs
+				SPI_S_DDR	&= ~_BV(SPI_F_B_DIR);
+  ca:	b9 98       	cbi	0x17, 1	; 23
+				SPI_S_DDR	&= ~_BV(SPI_F_L_DIR);
+  cc:	b8 98       	cbi	0x17, 0	; 23
+				
+				// SPI pull-up resistors
+				SPI_S_PORT	|= _BV(SS_F_BELOW);			// slave select from below
+  ce:	c1 9a       	sbi	0x18, 1	; 24
+				SPI_S_PORT	|= _BV(SS_F_LEFT);			// slave select from left
+  d0:	c0 9a       	sbi	0x18, 0	; 24
+				
+				// previous port values associated with pull-ups
+				prev_pin_b	|= _BV(SS_F_BELOW);			// initialized to high
+  d2:	80 91 68 00 	lds	r24, 0x0068
+  d6:	82 60       	ori	r24, 0x02	; 2
+  d8:	80 93 68 00 	sts	0x0068, r24
+				prev_pin_b	|= _BV(SS_F_LEFT);			// "slave select" pulls low
+  dc:	80 91 68 00 	lds	r24, 0x0068
+  e0:	81 60       	ori	r24, 0x01	; 1
+  e2:	80 93 68 00 	sts	0x0068, r24
+  e6:	f6 c0       	rjmp	.+492    	; 0x2d4 <__stack+0x1f5>
+			}
+			break;
+			
+		// handshake completing
+		case EndHandshake:
+			if (changed & _BV(SPI_S_CLK)) {
+  e8:	32 ff       	sbrs	r19, 2
+  ea:	f4 c0       	rjmp	.+488    	; 0x2d4 <__stack+0x1f5>
+		}
+	}
+}
+
+void serviceHandshakeEnd(void) {
+	if (prev_pin_b & _BV(SPI_S_CLK)) {
+  ec:	80 91 68 00 	lds	r24, 0x0068
+  f0:	82 ff       	sbrs	r24, 2
+  f2:	25 c0       	rjmp	.+74     	; 0x13e <__stack+0x5f>
+		// HIGH to LOW transition - change state
+		
+		if (hs_ended) {
+  f4:	80 91 6a 00 	lds	r24, 0x006A
+  f8:	88 23       	and	r24, r24
+  fa:	09 f4       	brne	.+2      	; 0xfe <__stack+0x1f>
+  fc:	eb c0       	rjmp	.+470    	; 0x2d4 <__stack+0x1f5>
+/**
+ *	Initializes pins and registers for software SPI-slave implementation
+ */
+void initSPISlave(void) {
+	
+	cur_state = SpiSlave;
+  fe:	83 e0       	ldi	r24, 0x03	; 3
+ 100:	80 93 6c 00 	sts	0x006C, r24
+
+	// SPI signal directions
+	SPI_S_DDR	 &= ~_BV(SPI_S_CLK_DIR);	// set slave clock as input
+ 104:	ba 98       	cbi	0x17, 2	; 23
+	SPI_S_DI_DDR &= ~_BV(SPI_S_DI_DIR);		// set slave DI as input
+ 106:	d0 98       	cbi	0x1a, 0	; 26
+	SPI_S_DDR	 &= ~_BV(SPI_F_B_DIR);		// set slave selects as inputs
+ 108:	b9 98       	cbi	0x17, 1	; 23
+	SPI_S_DDR	 &= ~_BV(SPI_F_L_DIR);
+ 10a:	b8 98       	cbi	0x17, 0	; 23
+	
+	// SPI pull-up resistors
+	SPI_S_PORT |= _BV(SS_F_BELOW);			// slave select from below
+ 10c:	c1 9a       	sbi	0x18, 1	; 24
+	SPI_S_PORT |= _BV(SS_F_LEFT);			// slave select from left
+ 10e:	c0 9a       	sbi	0x18, 0	; 24
+	
+	// previous port values associated with pull-ups
+	prev_pin_b |= _BV(SS_F_BELOW);			// initialized to high
+ 110:	80 91 68 00 	lds	r24, 0x0068
+ 114:	82 60       	ori	r24, 0x02	; 2
+ 116:	80 93 68 00 	sts	0x0068, r24
+	prev_pin_b |= _BV(SS_F_LEFT);			// "slave select" pulls low
+ 11a:	80 91 68 00 	lds	r24, 0x0068
+ 11e:	81 60       	ori	r24, 0x01	; 1
+ 120:	80 93 68 00 	sts	0x0068, r24
+	
+	// enable pin change interrupts (PCI)
+	GIMSK |= _BV(SPI_S_INT_PORT);			// SPI slave interrupt port
+ 124:	8b b7       	in	r24, 0x3b	; 59
+ 126:	80 62       	ori	r24, 0x20	; 32
+ 128:	8b bf       	out	0x3b, r24	; 59
+	PCMSK |= _BV(SPI_S_CLK_PCINT);			// SPI slave clock
+ 12a:	80 b5       	in	r24, 0x20	; 32
+ 12c:	84 60       	ori	r24, 0x04	; 4
+ 12e:	80 bd       	out	0x20, r24	; 32
+	PCMSK |= _BV(SPI_F_B_PCINT);			// slave select from below
+ 130:	80 b5       	in	r24, 0x20	; 32
+ 132:	82 60       	ori	r24, 0x02	; 2
+ 134:	80 bd       	out	0x20, r24	; 32
+	PCMSK |= _BV(SPI_F_L_PCINT);			// slave select from left
+ 136:	80 b5       	in	r24, 0x20	; 32
+ 138:	81 60       	ori	r24, 0x01	; 1
+ 13a:	80 bd       	out	0x20, r24	; 32
+ 13c:	cb c0       	rjmp	.+406    	; 0x2d4 <__stack+0x1f5>
+		}
+	} else {
+		// LOW to HIGH transition - sample
+		
+		// if data-in is high, handshake has ended
+		if (!!(SPI_S_DI_REG & _BV(SPI_S_DI))) {
+ 13e:	c8 9b       	sbis	0x19, 0	; 25
+ 140:	c9 c0       	rjmp	.+402    	; 0x2d4 <__stack+0x1f5>
+			hs_ended = 1;
+ 142:	81 e0       	ldi	r24, 0x01	; 1
+ 144:	80 93 6a 00 	sts	0x006A, r24
+ 148:	c5 c0       	rjmp	.+394    	; 0x2d4 <__stack+0x1f5>
+	}
+}
+
+void serviceSpiSlaveTransmission(uint8_t changedPins) {
+	
+	if (changedPins & _BV(SS_F_BELOW)) {
+ 14a:	31 ff       	sbrs	r19, 1
+ 14c:	0f c0       	rjmp	.+30     	; 0x16c <__stack+0x8d>
+		
+		// trigger from below
+		if (prev_pin_b & _BV(SS_F_BELOW)) {
+ 14e:	80 91 68 00 	lds	r24, 0x0068
+ 152:	81 ff       	sbrs	r24, 1
+ 154:	07 c0       	rjmp	.+14     	; 0x164 <__stack+0x85>
+			// transmission started, remove SS_F_LEFT interrupt
+			trig_f_below = 1;
+ 156:	81 e0       	ldi	r24, 0x01	; 1
+ 158:	80 93 67 00 	sts	0x0067, r24
+			PCMSK &= ~_BV(SPI_F_L_PCINT);
+ 15c:	80 b5       	in	r24, 0x20	; 32
+ 15e:	8e 7f       	andi	r24, 0xFE	; 254
+ 160:	80 bd       	out	0x20, r24	; 32
+ 162:	b8 c0       	rjmp	.+368    	; 0x2d4 <__stack+0x1f5>
+			}
+#endif
+			
+		} else {
+			// end of receive
+			rx_completed = 1;
+ 164:	81 e0       	ldi	r24, 0x01	; 1
+ 166:	80 93 65 00 	sts	0x0065, r24
+ 16a:	b4 c0       	rjmp	.+360    	; 0x2d4 <__stack+0x1f5>
+		}
+	} else if (changedPins & _BV(SS_F_LEFT)) {
+ 16c:	30 ff       	sbrs	r19, 0
+ 16e:	0f c0       	rjmp	.+30     	; 0x18e <__stack+0xaf>
+		
+		// trigger from left
+		if (prev_pin_b & _BV(SS_F_LEFT)) {
+ 170:	80 91 68 00 	lds	r24, 0x0068
+ 174:	80 ff       	sbrs	r24, 0
+ 176:	07 c0       	rjmp	.+14     	; 0x186 <__stack+0xa7>
+			// transmission started, remove SS_F_BELOW interrupt
+			trig_f_left = 1;
+ 178:	81 e0       	ldi	r24, 0x01	; 1
+ 17a:	80 93 66 00 	sts	0x0066, r24
+			PCMSK &= ~_BV(SPI_F_B_PCINT);
+ 17e:	80 b5       	in	r24, 0x20	; 32
+ 180:	8d 7f       	andi	r24, 0xFD	; 253
+ 182:	80 bd       	out	0x20, r24	; 32
+ 184:	a7 c0       	rjmp	.+334    	; 0x2d4 <__stack+0x1f5>
+			}
+#endif
+			
+		} else {
+			// end of receive
+			rx_completed = 1;
+ 186:	81 e0       	ldi	r24, 0x01	; 1
+ 188:	80 93 65 00 	sts	0x0065, r24
+ 18c:	a3 c0       	rjmp	.+326    	; 0x2d4 <__stack+0x1f5>
+		}
+	} else if (changedPins & _BV(SPI_S_CLK)) {
+ 18e:	32 ff       	sbrs	r19, 2
+ 190:	a1 c0       	rjmp	.+322    	; 0x2d4 <__stack+0x1f5>
+		
+		// SPI mode 0: CPOL = 0, CPHA = 0
+		if (prev_pin_b & _BV(SPI_S_CLK)) {
+ 192:	20 91 68 00 	lds	r18, 0x0068
+ 196:	22 fd       	sbrc	r18, 2
+ 198:	9d c0       	rjmp	.+314    	; 0x2d4 <__stack+0x1f5>
+			}
+#endif
+			
+		} else {
+			// LOW to HIGH - sample
+			if (s_data_in_pos--) {
+ 19a:	20 91 61 00 	lds	r18, 0x0061
+ 19e:	3f ef       	ldi	r19, 0xFF	; 255
+ 1a0:	32 0f       	add	r19, r18
+ 1a2:	30 93 61 00 	sts	0x0061, r19
+ 1a6:	22 23       	and	r18, r18
+ 1a8:	09 f4       	brne	.+2      	; 0x1ac <__stack+0xcd>
+ 1aa:	94 c0       	rjmp	.+296    	; 0x2d4 <__stack+0x1f5>
+				spi_s_data_in |= (!!(SPI_S_DI_REG & _BV(SPI_S_DI)) << s_data_in_pos);
+ 1ac:	49 b3       	in	r20, 0x19	; 25
+ 1ae:	30 91 61 00 	lds	r19, 0x0061
+ 1b2:	20 91 69 00 	lds	r18, 0x0069
+ 1b6:	84 2f       	mov	r24, r20
+ 1b8:	81 70       	andi	r24, 0x01	; 1
+ 1ba:	90 e0       	ldi	r25, 0x00	; 0
+ 1bc:	02 c0       	rjmp	.+4      	; 0x1c2 <__stack+0xe3>
+ 1be:	88 0f       	add	r24, r24
+ 1c0:	99 1f       	adc	r25, r25
+ 1c2:	3a 95       	dec	r19
+ 1c4:	e2 f7       	brpl	.-8      	; 0x1be <__stack+0xdf>
+ 1c6:	82 2b       	or	r24, r18
+ 1c8:	80 93 69 00 	sts	0x0069, r24
+ 1cc:	83 c0       	rjmp	.+262    	; 0x2d4 <__stack+0x1f5>
+void serviceMasterHandshake(uint8_t changedPins) {
+	
+	uint8_t from_above = 0;
+	uint8_t from_right = 0;
+	
+	if (changedPins & _BV(SS_T_ABOVE)) {
+ 1ce:	34 ff       	sbrs	r19, 4
+ 1d0:	09 c0       	rjmp	.+18     	; 0x1e4 <__stack+0x105>
+		if (prev_pin_b & _BV(SS_T_ABOVE)) {
+ 1d2:	90 91 68 00 	lds	r25, 0x0068
+ 1d6:	92 95       	swap	r25
+ 1d8:	91 70       	andi	r25, 0x01	; 1
+ 1da:	81 e0       	ldi	r24, 0x01	; 1
+ 1dc:	89 27       	eor	r24, r25
+		}
+		
+	}
+	
+	// start handshake
+	if (from_above || from_right) {
+ 1de:	09 f4       	brne	.+2      	; 0x1e2 <__stack+0x103>
+ 1e0:	79 c0       	rjmp	.+242    	; 0x2d4 <__stack+0x1f5>
+ 1e2:	07 c0       	rjmp	.+14     	; 0x1f2 <__stack+0x113>
+		} else {
+			// LOW to HIGH - start handshake
+			
+			from_above = 1;
+		}
+	} else if (changedPins & _BV(SS_T_RIGHT)) {
+ 1e4:	33 ff       	sbrs	r19, 3
+ 1e6:	76 c0       	rjmp	.+236    	; 0x2d4 <__stack+0x1f5>
+		if (prev_pin_b & _BV(SS_T_RIGHT)) {
+ 1e8:	80 91 68 00 	lds	r24, 0x0068
+		}
+		
+	}
+	
+	// start handshake
+	if (from_above || from_right) {
+ 1ec:	83 fd       	sbrc	r24, 3
+ 1ee:	72 c0       	rjmp	.+228    	; 0x2d4 <__stack+0x1f5>
+	}
+}
+
+void serviceMasterHandshake(uint8_t changedPins) {
+	
+	uint8_t from_above = 0;
+ 1f0:	80 e0       	ldi	r24, 0x00	; 0
+		
+	}
+	
+	// start handshake
+	if (from_above || from_right) {
+		SPI_M_DO_REG |= _BV(SPI_M_DO);
+ 1f2:	d9 9a       	sbi	0x1b, 1	; 27
+		SPI_M_PORT	 |= _BV(SPI_M_CLK);
+ 1f4:	c6 9a       	sbi	0x18, 6	; 24
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 1f6:	e1 ee       	ldi	r30, 0xE1	; 225
+ 1f8:	f4 e0       	ldi	r31, 0x04	; 4
+ 1fa:	31 97       	sbiw	r30, 0x01	; 1
+ 1fc:	f1 f7       	brne	.-4      	; 0x1fa <__stack+0x11b>
+ 1fe:	00 c0       	rjmp	.+0      	; 0x200 <__stack+0x121>
+ 200:	00 00       	nop
+		_delay_ms(5);
+		SPI_M_PORT	 &= ~_BV(SPI_M_CLK);
+ 202:	c6 98       	cbi	0x18, 6	; 24
+		SPI_M_DO_REG &= ~_BV(SPI_M_DO);
+ 204:	d9 98       	cbi	0x1b, 1	; 27
+ 206:	e1 ee       	ldi	r30, 0xE1	; 225
+ 208:	f4 e0       	ldi	r31, 0x04	; 4
+ 20a:	31 97       	sbiw	r30, 0x01	; 1
+ 20c:	f1 f7       	brne	.-4      	; 0x20a <__stack+0x12b>
+ 20e:	00 c0       	rjmp	.+0      	; 0x210 <__stack+0x131>
+ 210:	00 00       	nop
+		_delay_ms(5);
+		
+		SPI_M_PORT	 |= _BV(SPI_M_CLK);
+ 212:	c6 9a       	sbi	0x18, 6	; 24
+ 214:	e1 ee       	ldi	r30, 0xE1	; 225
+ 216:	f4 e0       	ldi	r31, 0x04	; 4
+ 218:	31 97       	sbiw	r30, 0x01	; 1
+ 21a:	f1 f7       	brne	.-4      	; 0x218 <__stack+0x139>
+ 21c:	00 c0       	rjmp	.+0      	; 0x21e <__stack+0x13f>
+ 21e:	00 00       	nop
+		_delay_ms(5);
+		SPI_M_PORT	 &= ~_BV(SPI_M_CLK);
+ 220:	c6 98       	cbi	0x18, 6	; 24
+ 222:	e1 ee       	ldi	r30, 0xE1	; 225
+ 224:	f4 e0       	ldi	r31, 0x04	; 4
+ 226:	31 97       	sbiw	r30, 0x01	; 1
+ 228:	f1 f7       	brne	.-4      	; 0x226 <__stack+0x147>
+ 22a:	00 c0       	rjmp	.+0      	; 0x22c <__stack+0x14d>
+ 22c:	00 00       	nop
+		_delay_ms(5);
+		
+		SPI_M_DO_REG |= _BV(SPI_M_DO);
+ 22e:	d9 9a       	sbi	0x1b, 1	; 27
+		SPI_M_PORT	 |= _BV(SPI_M_CLK);
+ 230:	c6 9a       	sbi	0x18, 6	; 24
+		
+		// set corresponding slave select as output
+		uint8_t slave = _BV((from_above) ? (SPI_T_A_DIR) : (SPI_T_R_DIR));
+ 232:	88 23       	and	r24, r24
+ 234:	11 f0       	breq	.+4      	; 0x23a <__stack+0x15b>
+ 236:	50 e1       	ldi	r21, 0x10	; 16
+ 238:	01 c0       	rjmp	.+2      	; 0x23c <__stack+0x15d>
+ 23a:	58 e0       	ldi	r21, 0x08	; 8
+		SPI_M_DDR	 |= slave;
+ 23c:	87 b3       	in	r24, 0x17	; 23
+ 23e:	85 2b       	or	r24, r21
+ 240:	87 bb       	out	0x17, r24	; 23
+			
+		// pull HIGH to prepare for tx
+		SPI_M_PORT	 |= slave;
+ 242:	88 b3       	in	r24, 0x18	; 24
+ 244:	85 2b       	or	r24, r21
+ 246:	88 bb       	out	0x18, r24	; 24
+ 248:	81 ee       	ldi	r24, 0xE1	; 225
+ 24a:	94 e0       	ldi	r25, 0x04	; 4
+ 24c:	01 97       	sbiw	r24, 0x01	; 1
+ 24e:	f1 f7       	brne	.-4      	; 0x24c <__stack+0x16d>
+ 250:	00 c0       	rjmp	.+0      	; 0x252 <__stack+0x173>
+ 252:	00 00       	nop
+		_delay_ms(5);
+
+		SPI_M_PORT   &= ~_BV(SPI_M_CLK);
+ 254:	c6 98       	cbi	0x18, 6	; 24
+		SPI_M_DO_REG &= ~_BV(SPI_M_DO);
+ 256:	d9 98       	cbi	0x1b, 1	; 27
+ 258:	e1 ee       	ldi	r30, 0xE1	; 225
+ 25a:	f4 e0       	ldi	r31, 0x04	; 4
+ 25c:	31 97       	sbiw	r30, 0x01	; 1
+ 25e:	f1 f7       	brne	.-4      	; 0x25c <__stack+0x17d>
+ 260:	00 c0       	rjmp	.+0      	; 0x262 <__stack+0x183>
+ 262:	00 00       	nop
+void sendVector(uint8_t newBlockDirection) {
+	
+//	cur_state = SpiMaster;
+	
+	// pull slave select LOW to signal tx start
+	SPI_M_PORT &= ~newBlockDirection;
+ 264:	88 b3       	in	r24, 0x18	; 24
+ 266:	95 2f       	mov	r25, r21
+ 268:	90 95       	com	r25
+ 26a:	89 23       	and	r24, r25
+ 26c:	88 bb       	out	0x18, r24	; 24
+	
+	// put next bit on data out line
+	while (m_data_out_pos--) {
+ 26e:	80 91 60 00 	lds	r24, 0x0060
+ 272:	9f ef       	ldi	r25, 0xFF	; 255
+ 274:	98 0f       	add	r25, r24
+ 276:	90 93 60 00 	sts	0x0060, r25
+ 27a:	88 23       	and	r24, r24
+ 27c:	41 f1       	breq	.+80     	; 0x2ce <__stack+0x1ef>
+		SPI_M_DO_REG = (SPI_M_DO_REG & ~_BV(SPI_M_DO)) | ((i2c_addr >> m_data_out_pos) & _BV(SPI_M_DO));
+ 27e:	4b b3       	in	r20, 0x1b	; 27
+ 280:	20 91 64 00 	lds	r18, 0x0064
+ 284:	80 91 60 00 	lds	r24, 0x0060
+ 288:	30 e0       	ldi	r19, 0x00	; 0
+ 28a:	b9 01       	movw	r22, r18
+ 28c:	02 c0       	rjmp	.+4      	; 0x292 <__stack+0x1b3>
+ 28e:	75 95       	asr	r23
+ 290:	67 95       	ror	r22
+ 292:	8a 95       	dec	r24
+ 294:	e2 f7       	brpl	.-8      	; 0x28e <__stack+0x1af>
+ 296:	cb 01       	movw	r24, r22
+ 298:	82 70       	andi	r24, 0x02	; 2
+ 29a:	94 2f       	mov	r25, r20
+ 29c:	9d 7f       	andi	r25, 0xFD	; 253
+ 29e:	89 2b       	or	r24, r25
+ 2a0:	8b bb       	out	0x1b, r24	; 27
+		
+		// pulse clock
+		SPI_M_PORT  |= _BV(SPI_M_CLK);
+ 2a2:	c6 9a       	sbi	0x18, 6	; 24
+ 2a4:	81 ee       	ldi	r24, 0xE1	; 225
+ 2a6:	94 e0       	ldi	r25, 0x04	; 4
+ 2a8:	01 97       	sbiw	r24, 0x01	; 1
+ 2aa:	f1 f7       	brne	.-4      	; 0x2a8 <__stack+0x1c9>
+ 2ac:	00 c0       	rjmp	.+0      	; 0x2ae <__stack+0x1cf>
+ 2ae:	00 00       	nop
+		_delay_ms(5);
+		SPI_M_PORT  &= ~_BV(SPI_M_CLK);
+ 2b0:	c6 98       	cbi	0x18, 6	; 24
+ 2b2:	e1 ee       	ldi	r30, 0xE1	; 225
+ 2b4:	f4 e0       	ldi	r31, 0x04	; 4
+ 2b6:	31 97       	sbiw	r30, 0x01	; 1
+ 2b8:	f1 f7       	brne	.-4      	; 0x2b6 <__stack+0x1d7>
+ 2ba:	00 c0       	rjmp	.+0      	; 0x2bc <__stack+0x1dd>
+ 2bc:	00 00       	nop
+	
+	// pull slave select LOW to signal tx start
+	SPI_M_PORT &= ~newBlockDirection;
+	
+	// put next bit on data out line
+	while (m_data_out_pos--) {
+ 2be:	80 91 60 00 	lds	r24, 0x0060
+ 2c2:	9f ef       	ldi	r25, 0xFF	; 255
+ 2c4:	98 0f       	add	r25, r24
+ 2c6:	90 93 60 00 	sts	0x0060, r25
+ 2ca:	81 11       	cpse	r24, r1
+ 2cc:	d8 cf       	rjmp	.-80     	; 0x27e <__stack+0x19f>
+		SPI_M_PORT  &= ~_BV(SPI_M_CLK);
+		_delay_ms(5);
+	}
+	
+	// pull HIGH to signal end of tx
+	SPI_M_PORT |= newBlockDirection;
+ 2ce:	88 b3       	in	r24, 0x18	; 24
+ 2d0:	58 2b       	or	r21, r24
+ 2d2:	58 bb       	out	0x18, r21	; 24
+		default:
+			break;
+	}
+	
+	// set i2c address if vector byte received
+	if (rx_completed) {
+ 2d4:	80 91 65 00 	lds	r24, 0x0065
+ 2d8:	88 23       	and	r24, r24
+ 2da:	09 f4       	brne	.+2      	; 0x2de <__stack+0x1ff>
+ 2dc:	44 c0       	rjmp	.+136    	; 0x366 <__stack+0x287>
+		// reset positions
+#ifdef SPI_S_DO
+		s_data_out_pos = 8;
+#endif
+		
+		s_data_in_pos = 8;
+ 2de:	88 e0       	ldi	r24, 0x08	; 8
+ 2e0:	80 93 61 00 	sts	0x0061, r24
+		
+		// assign address from transmitted byte (vector)
+		// position structure: bits [2:0] are x-coord, [6:3] are y-coord
+		// set x-coord [2:0], increment if triggered from the left
+		i2c_addr |= (spi_s_data_in & 0b00000111) + (trig_f_left);
+ 2e4:	80 91 69 00 	lds	r24, 0x0069
+ 2e8:	20 91 66 00 	lds	r18, 0x0066
+ 2ec:	90 91 64 00 	lds	r25, 0x0064
+ 2f0:	87 70       	andi	r24, 0x07	; 7
+ 2f2:	82 0f       	add	r24, r18
+ 2f4:	89 2b       	or	r24, r25
+ 2f6:	80 93 64 00 	sts	0x0064, r24
+		
+		// set y-coord [6:3], increment if triggered from below
+		i2c_addr |= (spi_s_data_in & 0b01111000) + (trig_f_below << 3);
+ 2fa:	80 91 69 00 	lds	r24, 0x0069
+ 2fe:	20 91 67 00 	lds	r18, 0x0067
+ 302:	90 91 64 00 	lds	r25, 0x0064
+ 306:	22 0f       	add	r18, r18
+ 308:	22 0f       	add	r18, r18
+ 30a:	22 0f       	add	r18, r18
+ 30c:	88 77       	andi	r24, 0x78	; 120
+ 30e:	82 0f       	add	r24, r18
+ 310:	89 2b       	or	r24, r25
+ 312:	80 93 64 00 	sts	0x0064, r24
+	// update history
+	prev_pin_b = SPI_S_PIN_REG;
+}
+
+void showAddress(void) {
+	TOGGLE_ERROR;
+ 316:	92 b3       	in	r25, 0x12	; 18
+ 318:	80 e2       	ldi	r24, 0x20	; 32
+ 31a:	89 27       	eor	r24, r25
+ 31c:	82 bb       	out	0x12, r24	; 18
+	PORTD &= 0b11110000;
+ 31e:	82 b3       	in	r24, 0x12	; 18
+ 320:	80 7f       	andi	r24, 0xF0	; 240
+ 322:	82 bb       	out	0x12, r24	; 18
+	PORTD |= (i2c_addr & 0b00000011);
+ 324:	92 b3       	in	r25, 0x12	; 18
+ 326:	80 91 64 00 	lds	r24, 0x0064
+ 32a:	83 70       	andi	r24, 0x03	; 3
+ 32c:	89 2b       	or	r24, r25
+ 32e:	82 bb       	out	0x12, r24	; 18
+	PORTD |= ((i2c_addr & (0b00000011 << 3)) >> 1);
+ 330:	92 b3       	in	r25, 0x12	; 18
+ 332:	80 91 64 00 	lds	r24, 0x0064
+ 336:	88 71       	andi	r24, 0x18	; 24
+ 338:	86 95       	lsr	r24
+ 33a:	89 2b       	or	r24, r25
+ 33c:	82 bb       	out	0x12, r24	; 18
+		
+		// set y-coord [6:3], increment if triggered from below
+		i2c_addr |= (spi_s_data_in & 0b01111000) + (trig_f_below << 3);
+		
+		showAddress();
+		setup_i2c(i2c_addr);
+ 33e:	80 91 64 00 	lds	r24, 0x0064
+ 342:	90 e0       	ldi	r25, 0x00	; 0
+ 344:	de d0       	rcall	.+444    	; 0x502 <setup_i2c>
+//	sei();									// enable interrupts
+}
+
+void initSPIMaster(void) {
+	
+	cur_state = SpiMasterHandshake;
+ 346:	84 e0       	ldi	r24, 0x04	; 4
+ 348:	80 93 6c 00 	sts	0x006C, r24
+	
+	// SPI master signal directions
+	SPI_M_DDR	 |= _BV(SPI_M_CLK_DIR);		// set master clock as output
+ 34c:	be 9a       	sbi	0x17, 6	; 23
+	SPI_M_DO_DDR |= _BV(SPI_M_DO_DIR);		// set master DO as output
+ 34e:	d1 9a       	sbi	0x1a, 1	; 26
+	
+	// set slave selects temporarily as inputs to "listen"
+	// for new block presence
+	SPI_M_DDR	 &= ~_BV(SPI_T_A_DIR);
+ 350:	bc 98       	cbi	0x17, 4	; 23
+	SPI_M_DDR	 &= ~_BV(SPI_T_R_DIR);
+ 352:	bb 98       	cbi	0x17, 3	; 23
+	// start slave selects low
+//	SPI_M_PORT	 &= ~_BV(SS_T_ABOVE);
+//	SPI_M_PORT	 &= ~_BV(SS_T_RIGHT);
+	
+	// enable pin change interrupts (PCI)
+	GIMSK |= _BV(SPI_M_INT_PORT);			// SPI interrupt port
+ 354:	8b b7       	in	r24, 0x3b	; 59
+ 356:	80 62       	ori	r24, 0x20	; 32
+ 358:	8b bf       	out	0x3b, r24	; 59
+	PCMSK |= _BV(SPI_T_A_PCINT);			// SPI slave select to-right
+ 35a:	80 b5       	in	r24, 0x20	; 32
+ 35c:	80 61       	ori	r24, 0x10	; 16
+ 35e:	80 bd       	out	0x20, r24	; 32
+	PCMSK |= _BV(SPI_T_R_PCINT);			// SPI slave select to-above
+ 360:	80 b5       	in	r24, 0x20	; 32
+ 362:	88 60       	ori	r24, 0x08	; 8
+ 364:	80 bd       	out	0x20, r24	; 32
+//		GIMSK &= ~_BV(PCIE);			// PORTB
+//		return;
+	}
+	
+	// update history
+	prev_pin_b = SPI_S_PIN_REG;
+ 366:	86 b3       	in	r24, 0x16	; 22
+ 368:	80 93 68 00 	sts	0x0068, r24
+}
+ 36c:	ff 91       	pop	r31
+ 36e:	ef 91       	pop	r30
+ 370:	bf 91       	pop	r27
+ 372:	af 91       	pop	r26
+ 374:	9f 91       	pop	r25
+ 376:	8f 91       	pop	r24
+ 378:	7f 91       	pop	r23
+ 37a:	6f 91       	pop	r22
+ 37c:	5f 91       	pop	r21
+ 37e:	4f 91       	pop	r20
+ 380:	3f 91       	pop	r19
+ 382:	2f 91       	pop	r18
+ 384:	0f 90       	pop	r0
+ 386:	0f be       	out	0x3f, r0	; 63
+ 388:	0f 90       	pop	r0
+ 38a:	1f 90       	pop	r1
+ 38c:	18 95       	reti
+
+0000038e <main>:
+//	rx_completed = 0;
+}
+
+void initIO(void) {
+	// set output pins
+	DDRD |= _BV(PD0);
+ 38e:	88 9a       	sbi	0x11, 0	; 17
+	DDRD |= _BV(PD1);
+ 390:	89 9a       	sbi	0x11, 1	; 17
+	DDRD |= _BV(PD2);
+ 392:	8a 9a       	sbi	0x11, 2	; 17
+	DDRD |= _BV(PD3);
+ 394:	8b 9a       	sbi	0x11, 3	; 17
+	DDRD |= _BV(STATUS_LED);
+ 396:	8e 9a       	sbi	0x11, 6	; 17
+	DDRB |= _BV(ERROR_LED);
+ 398:	bd 9a       	sbi	0x17, 5	; 23
+}
+
+void startupSequence(void) {
+	for(int i = 0; i < 4; ++i){
+ 39a:	80 e0       	ldi	r24, 0x00	; 0
+ 39c:	90 e0       	ldi	r25, 0x00	; 0
+		_delay_ms(25);
+		PORTD |= _BV(PD0 + i);
+ 39e:	41 e0       	ldi	r20, 0x01	; 1
+ 3a0:	50 e0       	ldi	r21, 0x00	; 0
+ 3a2:	e9 e6       	ldi	r30, 0x69	; 105
+ 3a4:	f8 e1       	ldi	r31, 0x18	; 24
+ 3a6:	31 97       	sbiw	r30, 0x01	; 1
+ 3a8:	f1 f7       	brne	.-4      	; 0x3a6 <main+0x18>
+ 3aa:	00 c0       	rjmp	.+0      	; 0x3ac <main+0x1e>
+ 3ac:	00 00       	nop
+ 3ae:	62 b3       	in	r22, 0x12	; 18
+ 3b0:	9a 01       	movw	r18, r20
+ 3b2:	08 2e       	mov	r0, r24
+ 3b4:	02 c0       	rjmp	.+4      	; 0x3ba <main+0x2c>
+ 3b6:	22 0f       	add	r18, r18
+ 3b8:	33 1f       	adc	r19, r19
+ 3ba:	0a 94       	dec	r0
+ 3bc:	e2 f7       	brpl	.-8      	; 0x3b6 <main+0x28>
+ 3be:	26 2b       	or	r18, r22
+ 3c0:	22 bb       	out	0x12, r18	; 18
+	DDRD |= _BV(STATUS_LED);
+	DDRB |= _BV(ERROR_LED);
+}
+
+void startupSequence(void) {
+	for(int i = 0; i < 4; ++i){
+ 3c2:	01 96       	adiw	r24, 0x01	; 1
+ 3c4:	84 30       	cpi	r24, 0x04	; 4
+ 3c6:	91 05       	cpc	r25, r1
+ 3c8:	61 f7       	brne	.-40     	; 0x3a2 <main+0x14>
+ 3ca:	80 e0       	ldi	r24, 0x00	; 0
+ 3cc:	90 e0       	ldi	r25, 0x00	; 0
+		_delay_ms(25);
+		PORTD |= _BV(PD0 + i);
+	}
+	for(int i = 0; i < 4; ++i){
+		_delay_ms(25);
+		PORTD &= ~_BV(PD0 + i);
+ 3ce:	41 e0       	ldi	r20, 0x01	; 1
+ 3d0:	50 e0       	ldi	r21, 0x00	; 0
+ 3d2:	e9 e6       	ldi	r30, 0x69	; 105
+ 3d4:	f8 e1       	ldi	r31, 0x18	; 24
+ 3d6:	31 97       	sbiw	r30, 0x01	; 1
+ 3d8:	f1 f7       	brne	.-4      	; 0x3d6 <main+0x48>
+ 3da:	00 c0       	rjmp	.+0      	; 0x3dc <main+0x4e>
+ 3dc:	00 00       	nop
+ 3de:	62 b3       	in	r22, 0x12	; 18
+ 3e0:	9a 01       	movw	r18, r20
+ 3e2:	08 2e       	mov	r0, r24
+ 3e4:	02 c0       	rjmp	.+4      	; 0x3ea <main+0x5c>
+ 3e6:	22 0f       	add	r18, r18
+ 3e8:	33 1f       	adc	r19, r19
+ 3ea:	0a 94       	dec	r0
+ 3ec:	e2 f7       	brpl	.-8      	; 0x3e6 <main+0x58>
+ 3ee:	20 95       	com	r18
+ 3f0:	26 23       	and	r18, r22
+ 3f2:	22 bb       	out	0x12, r18	; 18
+void startupSequence(void) {
+	for(int i = 0; i < 4; ++i){
+		_delay_ms(25);
+		PORTD |= _BV(PD0 + i);
+	}
+	for(int i = 0; i < 4; ++i){
+ 3f4:	01 96       	adiw	r24, 0x01	; 1
+ 3f6:	84 30       	cpi	r24, 0x04	; 4
+ 3f8:	91 05       	cpc	r25, r1
+ 3fa:	59 f7       	brne	.-42     	; 0x3d2 <main+0x44>
+/**
+ *	Initializes pins and registers for handshake protocol
+ */
+void initHandshake(void) {
+	
+	cur_state = StartHandshake;
+ 3fc:	81 e0       	ldi	r24, 0x01	; 1
+ 3fe:	80 93 6c 00 	sts	0x006C, r24
+
+	// SPI signal directions
+	SPI_S_DDR	 &= ~_BV(SPI_S_CLK_DIR);	// set slave clock as input
+ 402:	ba 98       	cbi	0x17, 2	; 23
+	SPI_S_DI_DDR &= ~_BV(SPI_S_DI_DIR);		// set slave DI as input
+ 404:	d0 98       	cbi	0x1a, 0	; 26
+	
+	// set slave selects temporarily as outputs to "announce" new block presence
+	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
+ 406:	b9 9a       	sbi	0x17, 1	; 23
+	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
+ 408:	b8 9a       	sbi	0x17, 0	; 23
+	
+	// start slave selects low
+	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
+ 40a:	c1 98       	cbi	0x18, 1	; 24
+	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
+ 40c:	c0 98       	cbi	0x18, 0	; 24
+	
+	// enable pin change interrupts (PCI)
+	GIMSK |= _BV(SPI_S_INT_PORT);			// SPI slave interrupt port
+ 40e:	8b b7       	in	r24, 0x3b	; 59
+ 410:	80 62       	ori	r24, 0x20	; 32
+ 412:	8b bf       	out	0x3b, r24	; 59
+	PCMSK |= _BV(SPI_S_CLK_PCINT);			// SPI slave clock
+ 414:	80 b5       	in	r24, 0x20	; 32
+ 416:	84 60       	ori	r24, 0x04	; 4
+ 418:	80 bd       	out	0x20, r24	; 32
+	
+	sei();									// enable interrupts
+ 41a:	78 94       	sei
+
+void waitForCompletedHandshake(void) {
+	uint8_t left = 1;
+	
+	// bring SS_F_LEFT or SS_F_BELOW to HIGH
+	SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 41c:	c0 9a       	sbi	0x18, 0	; 24
+ 41e:	89 e6       	ldi	r24, 0x69	; 105
+ 420:	98 e1       	ldi	r25, 0x18	; 24
+ 422:	01 97       	sbiw	r24, 0x01	; 1
+ 424:	f1 f7       	brne	.-4      	; 0x422 <main+0x94>
+ 426:	00 c0       	rjmp	.+0      	; 0x428 <main+0x9a>
+ 428:	00 00       	nop
+	
+	// master processor may be busy
+	_delay_ms(25);
+	
+	// spin until handshake has been recognized
+	while (cur_state == StartHandshake && !hs_started) {
+ 42a:	80 91 6c 00 	lds	r24, 0x006C
+ 42e:	81 30       	cpi	r24, 0x01	; 1
+ 430:	19 f5       	brne	.+70     	; 0x478 <main+0xea>
+ 432:	80 91 6b 00 	lds	r24, 0x006B
+ 436:	81 11       	cpse	r24, r1
+ 438:	1f c0       	rjmp	.+62     	; 0x478 <main+0xea>
+		PORTD &= ~_BV(PD0 + i);
+	}
+}
+
+void waitForCompletedHandshake(void) {
+	uint8_t left = 1;
+ 43a:	81 e0       	ldi	r24, 0x01	; 1
+		
+		// re-eneable clock pin change interrupt
+		PCMSK |= _BV(SPI_S_CLK_PCINT);
+		
+		// toggle to other input select
+		left = !left;
+ 43c:	60 e0       	ldi	r22, 0x00	; 0
+		
+		// bring SS_F_LEFT or SS_F_BELOW to HIGH
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 43e:	52 e0       	ldi	r21, 0x02	; 2
+		
+		// re-eneable clock pin change interrupt
+		PCMSK |= _BV(SPI_S_CLK_PCINT);
+		
+		// toggle to other input select
+		left = !left;
+ 440:	41 e0       	ldi	r20, 0x01	; 1
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+		
+		// master processor may be busy
+		_delay_ms(25);
+		
+		TOGGLE_ERROR;
+ 442:	30 e2       	ldi	r19, 0x20	; 32
+	
+	// spin until handshake has been recognized
+	while (cur_state == StartHandshake && !hs_started) {
+
+		// disable clock pin change interrupt
+		PCMSK &= ~_BV(SPI_S_CLK_PCINT);
+ 444:	90 b5       	in	r25, 0x20	; 32
+ 446:	9b 7f       	andi	r25, 0xFB	; 251
+ 448:	90 bd       	out	0x20, r25	; 32
+		
+		// bring SS_F_LEFT or SS_F_BELOW back down LOW
+		SPI_S_PORT &= ~_BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 44a:	98 b3       	in	r25, 0x18	; 24
+ 44c:	88 23       	and	r24, r24
+ 44e:	c1 f0       	breq	.+48     	; 0x480 <main+0xf2>
+ 450:	26 c0       	rjmp	.+76     	; 0x49e <main+0x110>
+		
+		// toggle to other input select
+		left = !left;
+		
+		// bring SS_F_LEFT or SS_F_BELOW to HIGH
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 452:	92 2b       	or	r25, r18
+ 454:	98 bb       	out	0x18, r25	; 24
+ 456:	e9 e6       	ldi	r30, 0x69	; 105
+ 458:	f8 e1       	ldi	r31, 0x18	; 24
+ 45a:	31 97       	sbiw	r30, 0x01	; 1
+ 45c:	f1 f7       	brne	.-4      	; 0x45a <main+0xcc>
+ 45e:	00 c0       	rjmp	.+0      	; 0x460 <main+0xd2>
+ 460:	00 00       	nop
+		
+		// master processor may be busy
+		_delay_ms(25);
+		
+		TOGGLE_ERROR;
+ 462:	92 b3       	in	r25, 0x12	; 18
+ 464:	93 27       	eor	r25, r19
+ 466:	92 bb       	out	0x12, r25	; 18
+	
+	// master processor may be busy
+	_delay_ms(25);
+	
+	// spin until handshake has been recognized
+	while (cur_state == StartHandshake && !hs_started) {
+ 468:	90 91 6c 00 	lds	r25, 0x006C
+ 46c:	91 30       	cpi	r25, 0x01	; 1
+ 46e:	21 f4       	brne	.+8      	; 0x478 <main+0xea>
+ 470:	90 91 6b 00 	lds	r25, 0x006B
+ 474:	99 23       	and	r25, r25
+ 476:	31 f3       	breq	.-52     	; 0x444 <main+0xb6>
+
+	initHandshake();
+	waitForCompletedHandshake();
+
+	
+	while (loop_i2c()) {
+ 478:	53 d0       	rcall	.+166    	; 0x520 <loop_i2c>
+ 47a:	89 2b       	or	r24, r25
+ 47c:	e9 f7       	brne	.-6      	; 0x478 <main+0xea>
+ 47e:	1e c0       	rjmp	.+60     	; 0x4bc <main+0x12e>
+
+		// disable clock pin change interrupt
+		PCMSK &= ~_BV(SPI_S_CLK_PCINT);
+		
+		// bring SS_F_LEFT or SS_F_BELOW back down LOW
+		SPI_S_PORT &= ~_BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 480:	9d 7f       	andi	r25, 0xFD	; 253
+ 482:	98 bb       	out	0x18, r25	; 24
+ 484:	89 e6       	ldi	r24, 0x69	; 105
+ 486:	98 e1       	ldi	r25, 0x18	; 24
+ 488:	01 97       	sbiw	r24, 0x01	; 1
+ 48a:	f1 f7       	brne	.-4      	; 0x488 <main+0xfa>
+ 48c:	00 c0       	rjmp	.+0      	; 0x48e <main+0x100>
+ 48e:	00 00       	nop
+		
+		// give more time to finish
+		_delay_ms(25);
+		
+		// re-eneable clock pin change interrupt
+		PCMSK |= _BV(SPI_S_CLK_PCINT);
+ 490:	80 b5       	in	r24, 0x20	; 32
+ 492:	84 60       	ori	r24, 0x04	; 4
+ 494:	80 bd       	out	0x20, r24	; 32
+		
+		// toggle to other input select
+		left = !left;
+		
+		// bring SS_F_LEFT or SS_F_BELOW to HIGH
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 496:	28 b3       	in	r18, 0x18	; 24
+		
+		// re-eneable clock pin change interrupt
+		PCMSK |= _BV(SPI_S_CLK_PCINT);
+		
+		// toggle to other input select
+		left = !left;
+ 498:	84 2f       	mov	r24, r20
+		
+		// bring SS_F_LEFT or SS_F_BELOW to HIGH
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 49a:	94 2f       	mov	r25, r20
+ 49c:	da cf       	rjmp	.-76     	; 0x452 <main+0xc4>
+
+		// disable clock pin change interrupt
+		PCMSK &= ~_BV(SPI_S_CLK_PCINT);
+		
+		// bring SS_F_LEFT or SS_F_BELOW back down LOW
+		SPI_S_PORT &= ~_BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 49e:	9e 7f       	andi	r25, 0xFE	; 254
+ 4a0:	98 bb       	out	0x18, r25	; 24
+ 4a2:	e9 e6       	ldi	r30, 0x69	; 105
+ 4a4:	f8 e1       	ldi	r31, 0x18	; 24
+ 4a6:	31 97       	sbiw	r30, 0x01	; 1
+ 4a8:	f1 f7       	brne	.-4      	; 0x4a6 <main+0x118>
+ 4aa:	00 c0       	rjmp	.+0      	; 0x4ac <main+0x11e>
+ 4ac:	00 00       	nop
+		
+		// give more time to finish
+		_delay_ms(25);
+		
+		// re-eneable clock pin change interrupt
+		PCMSK |= _BV(SPI_S_CLK_PCINT);
+ 4ae:	80 b5       	in	r24, 0x20	; 32
+ 4b0:	84 60       	ori	r24, 0x04	; 4
+ 4b2:	80 bd       	out	0x20, r24	; 32
+		
+		// toggle to other input select
+		left = !left;
+		
+		// bring SS_F_LEFT or SS_F_BELOW to HIGH
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 4b4:	28 b3       	in	r18, 0x18	; 24
+		
+		// re-eneable clock pin change interrupt
+		PCMSK |= _BV(SPI_S_CLK_PCINT);
+		
+		// toggle to other input select
+		left = !left;
+ 4b6:	86 2f       	mov	r24, r22
+		
+		// bring SS_F_LEFT or SS_F_BELOW to HIGH
+		SPI_S_PORT |= _BV((left) ? (SS_F_LEFT) : (SS_F_BELOW));
+ 4b8:	95 2f       	mov	r25, r21
+ 4ba:	cb cf       	rjmp	.-106    	; 0x452 <main+0xc4>
+	
+	while (loop_i2c()) {
+		;
+	}
+	return 0; // never reached
+}
+ 4bc:	80 e0       	ldi	r24, 0x00	; 0
+ 4be:	90 e0       	ldi	r25, 0x00	; 0
+ 4c0:	08 95       	ret
+
+000004c2 <requestEvent_i2c>:
+volatile uint8_t State_i2c; //this keeps track of the state or mode of the block
+volatile uint8_t Block_Function = BLOCK_FUNCTION; //this is the lexical function 
+
+void requestEvent_i2c()  //this runs when a read is detected for address
+{  
+  switch (State_i2c)
+ 4c2:	80 91 99 00 	lds	r24, 0x0099
+  {
+  case 0: //reading the function, default
+  default:
+    usiTwiTransmitByte(Block_Function);
+ 4c6:	80 91 62 00 	lds	r24, 0x0062
+ 4ca:	5c d0       	rcall	.+184    	; 0x584 <usiTwiTransmitByte>
+ 4cc:	08 95       	ret
+
+000004ce <receiveEvent_i2c>:
+  }
+}
+
+void receiveEvent_i2c(uint8_t HowMany) //this runs when a write is detected for address 
+{                                  //flow is slave_write then state_# then value. 3 bytes to changes omething
+    switch (State_i2c)
+ 4ce:	80 91 99 00 	lds	r24, 0x0099
+ 4d2:	82 30       	cpi	r24, 0x02	; 2
+ 4d4:	39 f0       	breq	.+14     	; 0x4e4 <receiveEvent_i2c+0x16>
+ 4d6:	83 30       	cpi	r24, 0x03	; 3
+ 4d8:	19 f0       	breq	.+6      	; 0x4e0 <receiveEvent_i2c+0x12>
+ 4da:	81 30       	cpi	r24, 0x01	; 1
+ 4dc:	71 f4       	brne	.+28     	; 0x4fa <receiveEvent_i2c+0x2c>
+ 4de:	07 c0       	rjmp	.+14     	; 0x4ee <receiveEvent_i2c+0x20>
+    {
+	  case 3: //reset
+		usiTwiReceiveByte(); //trash 3rd byte
+ 4e0:	61 d0       	rcall	.+194    	; 0x5a4 <usiTwiReceiveByte>
+		break;
+ 4e2:	08 95       	ret
+      case 2: //changing slave address
+        usiTwiSlaveInit(usiTwiReceiveByte());
+ 4e4:	5f d0       	rcall	.+190    	; 0x5a4 <usiTwiReceiveByte>
+ 4e6:	39 d0       	rcall	.+114    	; 0x55a <usiTwiSlaveInit>
+        State_i2c = 0;
+ 4e8:	10 92 99 00 	sts	0x0099, r1
+        break;
+ 4ec:	08 95       	ret
+      case 1: //setting a new function
+        Block_Function = usiTwiReceiveByte();
+ 4ee:	5a d0       	rcall	.+180    	; 0x5a4 <usiTwiReceiveByte>
+ 4f0:	80 93 62 00 	sts	0x0062, r24
+        State_i2c = 0;
+ 4f4:	10 92 99 00 	sts	0x0099, r1
+        break;
+ 4f8:	08 95       	ret
+      case 0: //setting a new state, default
+      default:       
+        State_i2c = usiTwiReceiveByte();
+ 4fa:	54 d0       	rcall	.+168    	; 0x5a4 <usiTwiReceiveByte>
+ 4fc:	80 93 99 00 	sts	0x0099, r24
+ 500:	08 95       	ret
+
+00000502 <setup_i2c>:
+    }
+}
+
+void I2C_setup(uint8_t slave_add)
+{
+     usiTwiSlaveInit(slave_add);
+ 502:	84 e0       	ldi	r24, 0x04	; 4
+ 504:	2a d0       	rcall	.+84     	; 0x55a <usiTwiSlaveInit>
+
+
+void setup_i2c() 
+{
+     I2C_setup(I2C_SLAVE_ADDRESS);
+     usi_onReceiverPtr = receiveEvent_i2c;
+ 506:	87 e6       	ldi	r24, 0x67	; 103
+ 508:	92 e0       	ldi	r25, 0x02	; 2
+ 50a:	90 93 96 00 	sts	0x0096, r25
+ 50e:	80 93 95 00 	sts	0x0095, r24
+     usi_onRequestPtr = requestEvent_i2c;
+ 512:	81 e6       	ldi	r24, 0x61	; 97
+ 514:	92 e0       	ldi	r25, 0x02	; 2
+ 516:	90 93 94 00 	sts	0x0094, r25
+ 51a:	80 93 93 00 	sts	0x0093, r24
+ 51e:	08 95       	ret
+
+00000520 <loop_i2c>:
+
+}
+
+bool loop_i2c() 
+{
+	if(State_i2c==3)
+ 520:	80 91 99 00 	lds	r24, 0x0099
+ 524:	83 30       	cpi	r24, 0x03	; 3
+ 526:	89 f0       	breq	.+34     	; 0x54a <loop_i2c+0x2a>
+	{
+		return(false);
+	}
+    {
+		if (!usi_onReceiverPtr)
+ 528:	80 91 95 00 	lds	r24, 0x0095
+ 52c:	90 91 96 00 	lds	r25, 0x0096
+ 530:	89 2b       	or	r24, r25
+ 532:	69 f0       	breq	.+26     	; 0x54e <loop_i2c+0x2e>
+		{
+			// no onReceive callback, nothing to do...
+			return(true);
+		}
+		if (!(USISR & ( 1 << USIPF )))
+ 534:	75 9b       	sbis	0x0e, 5	; 14
+ 536:	0d c0       	rjmp	.+26     	; 0x552 <loop_i2c+0x32>
+		{
+			// Stop not detected
+			return(true);
+		}
+		uint8_t amount = usiTwiAmountDataInReceiveBuffer();
+ 538:	51 d0       	rcall	.+162    	; 0x5dc <usiTwiAmountDataInReceiveBuffer>
+		if (amount == 0)
+ 53a:	88 23       	and	r24, r24
+ 53c:	61 f0       	breq	.+24     	; 0x556 <loop_i2c+0x36>
+		{
+			// no data in buffer
+			return(true);
+		}
+		usi_onReceiverPtr(amount);
+ 53e:	e0 91 95 00 	lds	r30, 0x0095
+ 542:	f0 91 96 00 	lds	r31, 0x0096
+ 546:	09 95       	icall
+ 548:	08 95       	ret
+
+bool loop_i2c() 
+{
+	if(State_i2c==3)
+	{
+		return(false);
+ 54a:	80 e0       	ldi	r24, 0x00	; 0
+ 54c:	08 95       	ret
+	}
+    {
+		if (!usi_onReceiverPtr)
+		{
+			// no onReceive callback, nothing to do...
+			return(true);
+ 54e:	81 e0       	ldi	r24, 0x01	; 1
+ 550:	08 95       	ret
+		}
+		if (!(USISR & ( 1 << USIPF )))
+		{
+			// Stop not detected
+			return(true);
+ 552:	81 e0       	ldi	r24, 0x01	; 1
+ 554:	08 95       	ret
+		}
+		uint8_t amount = usiTwiAmountDataInReceiveBuffer();
+		if (amount == 0)
+		{
+			// no data in buffer
+			return(true);
+ 556:	81 e0       	ldi	r24, 0x01	; 1
+		}
+		usi_onReceiverPtr(amount);
+	}
+}
+ 558:	08 95       	ret
+
+0000055a <usiTwiSlaveInit>:
+void
+flushTwiBuffers(
+  void
+)
+{
+  rxTail = 0;
+ 55a:	10 92 7f 00 	sts	0x007F, r1
+  rxHead = 0;
+ 55e:	10 92 80 00 	sts	0x0080, r1
+  txTail = 0;
+ 562:	10 92 6d 00 	sts	0x006D, r1
+  txHead = 0;
+ 566:	10 92 6e 00 	sts	0x006E, r1
+)
+{
+
+  flushTwiBuffers( );
+
+  slaveAddress = ownAddress;
+ 56a:	80 93 92 00 	sts	0x0092, r24
+  // low when a start condition is detected or a counter overflow (only
+  // for USIWM1, USIWM0 = 11).  This inserts a wait state.  SCL is released
+  // by the ISRs (USI_START_vect and USI_OVERFLOW_vect).
+
+  // Set SCL and SDA as output
+  DDR_USI |= ( 1 << PORT_USI_SCL ) | ( 1 << PORT_USI_SDA );
+ 56e:	87 b3       	in	r24, 0x17	; 23
+ 570:	80 6a       	ori	r24, 0xA0	; 160
+ 572:	87 bb       	out	0x17, r24	; 23
+ 
+  // set SCL high
+  PORT_USI |= ( 1 << PORT_USI_SCL );
+ 574:	c7 9a       	sbi	0x18, 7	; 24
+
+  // set SDA high
+  PORT_USI |= ( 1 << PORT_USI_SDA );
+ 576:	c5 9a       	sbi	0x18, 5	; 24
+
+  // Set SDA as input
+  DDR_USI &= ~( 1 << PORT_USI_SDA );
+ 578:	bd 98       	cbi	0x17, 5	; 23
+
+  USICR =
+ 57a:	88 ea       	ldi	r24, 0xA8	; 168
+ 57c:	8d b9       	out	0x0d, r24	; 13
+       // no toggle clock-port pin
+       ( 0 << USITC );
+
+  // clear all interrupt flags and reset overflow counter
+
+  USISR = ( 1 << USI_START_COND_INT ) | ( 1 << USIOIF ) | ( 1 << USIPF ) | ( 1 << USIDC );
+ 57e:	80 ef       	ldi	r24, 0xF0	; 240
+ 580:	8e b9       	out	0x0e, r24	; 14
+ 582:	08 95       	ret
+
+00000584 <usiTwiTransmitByte>:
+{
+
+  uint8_t tmphead;
+
+  // calculate buffer index
+  tmphead = ( txHead + 1 ) & TWI_TX_BUFFER_MASK;
+ 584:	20 91 6e 00 	lds	r18, 0x006E
+ 588:	2f 5f       	subi	r18, 0xFF	; 255
+ 58a:	2f 70       	andi	r18, 0x0F	; 15
+
+  // wait for free space in buffer
+  while ( tmphead == txTail );
+ 58c:	90 91 6d 00 	lds	r25, 0x006D
+ 590:	29 17       	cp	r18, r25
+ 592:	e1 f3       	breq	.-8      	; 0x58c <usiTwiTransmitByte+0x8>
+
+  // store data in buffer
+  txBuf[ tmphead ] = data;
+ 594:	e2 2f       	mov	r30, r18
+ 596:	f0 e0       	ldi	r31, 0x00	; 0
+ 598:	e1 59       	subi	r30, 0x91	; 145
+ 59a:	ff 4f       	sbci	r31, 0xFF	; 255
+ 59c:	80 83       	st	Z, r24
+
+  // store new index
+  txHead = tmphead;
+ 59e:	20 93 6e 00 	sts	0x006E, r18
+ 5a2:	08 95       	ret
+
+000005a4 <usiTwiReceiveByte>:
+  void
+)
+{
+
+  // wait for Rx data
+  while ( rxHead == rxTail );
+ 5a4:	90 91 80 00 	lds	r25, 0x0080
+ 5a8:	80 91 7f 00 	lds	r24, 0x007F
+ 5ac:	98 17       	cp	r25, r24
+ 5ae:	d1 f3       	breq	.-12     	; 0x5a4 <usiTwiReceiveByte>
+
+  // calculate buffer index
+  rxTail = ( rxTail + 1 ) & TWI_RX_BUFFER_MASK;
+ 5b0:	80 91 7f 00 	lds	r24, 0x007F
+ 5b4:	8f 5f       	subi	r24, 0xFF	; 255
+ 5b6:	8f 70       	andi	r24, 0x0F	; 15
+ 5b8:	80 93 7f 00 	sts	0x007F, r24
+
+  // return data from the buffer.
+  return rxBuf[ rxTail ];
+ 5bc:	e0 91 7f 00 	lds	r30, 0x007F
+ 5c0:	f0 e0       	ldi	r31, 0x00	; 0
+ 5c2:	ef 57       	subi	r30, 0x7F	; 127
+ 5c4:	ff 4f       	sbci	r31, 0xFF	; 255
+
+} // end usiTwiReceiveByte
+ 5c6:	80 81       	ld	r24, Z
+ 5c8:	08 95       	ret
+
+000005ca <usiTwiDataInReceiveBuffer>:
+  void
+)
+{
+
+  // return 0 (false) if the receive buffer is empty
+  return rxHead != rxTail;
+ 5ca:	20 91 80 00 	lds	r18, 0x0080
+ 5ce:	90 91 7f 00 	lds	r25, 0x007F
+ 5d2:	81 e0       	ldi	r24, 0x01	; 1
+ 5d4:	29 13       	cpse	r18, r25
+ 5d6:	01 c0       	rjmp	.+2      	; 0x5da <usiTwiDataInReceiveBuffer+0x10>
+ 5d8:	80 e0       	ldi	r24, 0x00	; 0
+
+} // end usiTwiDataInReceiveBuffer
+ 5da:	08 95       	ret
+
+000005dc <usiTwiAmountDataInReceiveBuffer>:
+
+uint8_t usiTwiAmountDataInReceiveBuffer(void)
+{
+    if (rxHead == rxTail)
+ 5dc:	90 91 80 00 	lds	r25, 0x0080
+ 5e0:	80 91 7f 00 	lds	r24, 0x007F
+ 5e4:	98 17       	cp	r25, r24
+ 5e6:	99 f0       	breq	.+38     	; 0x60e <usiTwiAmountDataInReceiveBuffer+0x32>
+    {
+        return 0;
+    }
+    if (rxHead < rxTail)
+ 5e8:	90 91 80 00 	lds	r25, 0x0080
+ 5ec:	80 91 7f 00 	lds	r24, 0x007F
+ 5f0:	98 17       	cp	r25, r24
+ 5f2:	38 f4       	brcc	.+14     	; 0x602 <usiTwiAmountDataInReceiveBuffer+0x26>
+    {
+        // Is there a better way ?
+        return ((int8_t)rxHead - (int8_t)rxTail) + TWI_RX_BUFFER_SIZE;
+ 5f4:	80 91 80 00 	lds	r24, 0x0080
+ 5f8:	90 91 7f 00 	lds	r25, 0x007F
+ 5fc:	80 5f       	subi	r24, 0xF0	; 240
+ 5fe:	89 1b       	sub	r24, r25
+ 600:	08 95       	ret
+    }
+    return rxHead - rxTail;
+ 602:	80 91 80 00 	lds	r24, 0x0080
+ 606:	90 91 7f 00 	lds	r25, 0x007F
+ 60a:	89 1b       	sub	r24, r25
+ 60c:	08 95       	ret
+
+uint8_t usiTwiAmountDataInReceiveBuffer(void)
+{
+    if (rxHead == rxTail)
+    {
+        return 0;
+ 60e:	80 e0       	ldi	r24, 0x00	; 0
+    {
+        // Is there a better way ?
+        return ((int8_t)rxHead - (int8_t)rxTail) + TWI_RX_BUFFER_SIZE;
+    }
+    return rxHead - rxTail;
+}
+ 610:	08 95       	ret
+
+00000612 <__vector_15>:
+                            USI Start Condition ISR
+
+********************************************************************************/
+
+ISR( USI_START_VECTOR )
+{
+ 612:	1f 92       	push	r1
+ 614:	0f 92       	push	r0
+ 616:	0f b6       	in	r0, 0x3f	; 63
+ 618:	0f 92       	push	r0
+ 61a:	11 24       	eor	r1, r1
+ 61c:	8f 93       	push	r24
+  // This triggers on second write, but claims to the callback there is only *one* byte in buffer
+  USI_RECEIVE_CALLBACK();
+  */
+
+  // set default starting conditions for new TWI package
+  overflowState = USI_SLAVE_CHECK_ADDRESS;
+ 61e:	10 92 91 00 	sts	0x0091, r1
+
+  // set SDA as input
+  DDR_USI &= ~( 1 << PORT_USI_SDA );
+ 622:	bd 98       	cbi	0x17, 5	; 23
+  // wait for SCL to go low to ensure the Start Condition has completed (the
+  // start detector will hold SCL low ) - if a Stop Condition arises then leave
+  // the interrupt to prevent waiting forever - don't use USISR to test for Stop
+  // Condition as in Application Note AVR312 because the Stop Condition Flag is
+  // going to be set from the last TWI sequence
+  while (
+ 624:	b7 9b       	sbis	0x16, 7	; 22
+ 626:	02 c0       	rjmp	.+4      	; 0x62c <__vector_15+0x1a>
+       // SCL his high
+       ( PIN_USI & ( 1 << PIN_USI_SCL ) ) &&
+ 628:	b5 9b       	sbis	0x16, 5	; 22
+ 62a:	fc cf       	rjmp	.-8      	; 0x624 <__vector_15+0x12>
+       // and SDA is low
+       !( ( PIN_USI & ( 1 << PIN_USI_SDA ) ) )
+  );
+
+
+  if ( !( PIN_USI & ( 1 << PIN_USI_SDA ) ) )
+ 62c:	b5 99       	sbic	0x16, 5	; 22
+ 62e:	03 c0       	rjmp	.+6      	; 0x636 <__vector_15+0x24>
+  {
+
+    // a Stop Condition did not occur
+
+    USICR =
+ 630:	88 ef       	ldi	r24, 0xF8	; 248
+ 632:	8d b9       	out	0x0d, r24	; 13
+ 634:	02 c0       	rjmp	.+4      	; 0x63a <__vector_15+0x28>
+  }
+  else
+  {
+    // a Stop Condition did occur
+
+    USICR =
+ 636:	88 ea       	ldi	r24, 0xA8	; 168
+ 638:	8d b9       	out	0x0d, r24	; 13
+         // no toggle clock-port pin
+         ( 0 << USITC );
+
+  } // end if
+
+  USISR =
+ 63a:	80 ef       	ldi	r24, 0xF0	; 240
+ 63c:	8e b9       	out	0x0e, r24	; 14
+       ( 1 << USIPF ) |( 1 << USIDC ) |
+       // set USI to sample 8 bits (count 16 external SCL pin toggles)
+       ( 0x0 << USICNT0);
+
+
+} // end ISR( USI_START_VECTOR )
+ 63e:	8f 91       	pop	r24
+ 640:	0f 90       	pop	r0
+ 642:	0f be       	out	0x3f, r0	; 63
+ 644:	0f 90       	pop	r0
+ 646:	1f 90       	pop	r1
+ 648:	18 95       	reti
+
+0000064a <__vector_16>:
+Only disabled when waiting for a new Start Condition.
+
+********************************************************************************/
+
+ISR( USI_OVERFLOW_VECTOR )
+{
+ 64a:	1f 92       	push	r1
+ 64c:	0f 92       	push	r0
+ 64e:	0f b6       	in	r0, 0x3f	; 63
+ 650:	0f 92       	push	r0
+ 652:	11 24       	eor	r1, r1
+ 654:	2f 93       	push	r18
+ 656:	3f 93       	push	r19
+ 658:	4f 93       	push	r20
+ 65a:	5f 93       	push	r21
+ 65c:	6f 93       	push	r22
+ 65e:	7f 93       	push	r23
+ 660:	8f 93       	push	r24
+ 662:	9f 93       	push	r25
+ 664:	af 93       	push	r26
+ 666:	bf 93       	push	r27
+ 668:	cf 93       	push	r28
+ 66a:	df 93       	push	r29
+ 66c:	ef 93       	push	r30
+ 66e:	ff 93       	push	r31
+
+  switch ( overflowState )
+ 670:	80 91 91 00 	lds	r24, 0x0091
+ 674:	82 30       	cpi	r24, 0x02	; 2
+ 676:	09 f4       	brne	.+2      	; 0x67a <__vector_16+0x30>
+ 678:	73 c0       	rjmp	.+230    	; 0x760 <__vector_16+0x116>
+ 67a:	28 f4       	brcc	.+10     	; 0x686 <__vector_16+0x3c>
+ 67c:	88 23       	and	r24, r24
+ 67e:	59 f0       	breq	.+22     	; 0x696 <__vector_16+0x4c>
+ 680:	81 30       	cpi	r24, 0x01	; 1
+ 682:	a1 f1       	breq	.+104    	; 0x6ec <__vector_16+0xa2>
+ 684:	9d c0       	rjmp	.+314    	; 0x7c0 <__vector_16+0x176>
+ 686:	84 30       	cpi	r24, 0x04	; 4
+ 688:	09 f4       	brne	.+2      	; 0x68c <__vector_16+0x42>
+ 68a:	72 c0       	rjmp	.+228    	; 0x770 <__vector_16+0x126>
+ 68c:	38 f1       	brcs	.+78     	; 0x6dc <__vector_16+0x92>
+ 68e:	85 30       	cpi	r24, 0x05	; 5
+ 690:	09 f4       	brne	.+2      	; 0x694 <__vector_16+0x4a>
+ 692:	75 c0       	rjmp	.+234    	; 0x77e <__vector_16+0x134>
+ 694:	95 c0       	rjmp	.+298    	; 0x7c0 <__vector_16+0x176>
+  {
+
+    // Address mode: check address and send ACK (and next USI_SLAVE_SEND_DATA) if OK,
+    // else reset USI
+    case USI_SLAVE_CHECK_ADDRESS:
+      if ( ( USIDR == 0 ) || ( ( USIDR >> 1 ) == slaveAddress) )
+ 696:	8f b1       	in	r24, 0x0f	; 15
+ 698:	88 23       	and	r24, r24
+ 69a:	31 f0       	breq	.+12     	; 0x6a8 <__vector_16+0x5e>
+ 69c:	9f b1       	in	r25, 0x0f	; 15
+ 69e:	96 95       	lsr	r25
+ 6a0:	80 91 92 00 	lds	r24, 0x0092
+ 6a4:	98 13       	cpse	r25, r24
+ 6a6:	15 c0       	rjmp	.+42     	; 0x6d2 <__vector_16+0x88>
+      {
+         // callback
+         if(_onTwiDataRequest) _onTwiDataRequest();
+ 6a8:	e0 91 97 00 	lds	r30, 0x0097
+ 6ac:	f0 91 98 00 	lds	r31, 0x0098
+ 6b0:	30 97       	sbiw	r30, 0x00	; 0
+ 6b2:	09 f0       	breq	.+2      	; 0x6b6 <__vector_16+0x6c>
+ 6b4:	09 95       	icall
+         if ( USIDR & 0x01 )
+ 6b6:	78 9b       	sbis	0x0f, 0	; 15
+ 6b8:	04 c0       	rjmp	.+8      	; 0x6c2 <__vector_16+0x78>
+        {
+          overflowState = USI_SLAVE_SEND_DATA;
+ 6ba:	81 e0       	ldi	r24, 0x01	; 1
+ 6bc:	80 93 91 00 	sts	0x0091, r24
+ 6c0:	03 c0       	rjmp	.+6      	; 0x6c8 <__vector_16+0x7e>
+        }
+        else
+        {
+          overflowState = USI_SLAVE_REQUEST_DATA;
+ 6c2:	84 e0       	ldi	r24, 0x04	; 4
+ 6c4:	80 93 91 00 	sts	0x0091, r24
+        } // end if
+        SET_USI_TO_SEND_ACK( );
+ 6c8:	1f b8       	out	0x0f, r1	; 15
+ 6ca:	bd 9a       	sbi	0x17, 5	; 23
+ 6cc:	8e e7       	ldi	r24, 0x7E	; 126
+ 6ce:	8e b9       	out	0x0e, r24	; 14
+ 6d0:	77 c0       	rjmp	.+238    	; 0x7c0 <__vector_16+0x176>
+      }
+      else
+      {
+        SET_USI_TO_TWI_START_CONDITION_MODE( );
+ 6d2:	88 ea       	ldi	r24, 0xA8	; 168
+ 6d4:	8d b9       	out	0x0d, r24	; 13
+ 6d6:	80 e7       	ldi	r24, 0x70	; 112
+ 6d8:	8e b9       	out	0x0e, r24	; 14
+ 6da:	72 c0       	rjmp	.+228    	; 0x7c0 <__vector_16+0x176>
+      break;
+
+    // Master write data mode: check reply and goto USI_SLAVE_SEND_DATA if OK,
+    // else reset USI
+    case USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA:
+      if ( USIDR )
+ 6dc:	8f b1       	in	r24, 0x0f	; 15
+ 6de:	88 23       	and	r24, r24
+ 6e0:	29 f0       	breq	.+10     	; 0x6ec <__vector_16+0xa2>
+      {
+        // if NACK, the master does not want more data
+        SET_USI_TO_TWI_START_CONDITION_MODE( );
+ 6e2:	88 ea       	ldi	r24, 0xA8	; 168
+ 6e4:	8d b9       	out	0x0d, r24	; 13
+ 6e6:	80 e7       	ldi	r24, 0x70	; 112
+ 6e8:	8e b9       	out	0x0e, r24	; 14
+        return;
+ 6ea:	6a c0       	rjmp	.+212    	; 0x7c0 <__vector_16+0x176>
+      // master sent an ACK
+
+    // copy data from buffer to USIDR and set USI to shift byte
+    // next USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA
+    case USI_SLAVE_SEND_DATA:
+      USI_REQUEST_CALLBACK();
+ 6ec:	80 91 95 00 	lds	r24, 0x0095
+ 6f0:	90 91 96 00 	lds	r25, 0x0096
+ 6f4:	89 2b       	or	r24, r25
+ 6f6:	51 f0       	breq	.+20     	; 0x70c <__vector_16+0xc2>
+ 6f8:	68 df       	rcall	.-304    	; 0x5ca <usiTwiDataInReceiveBuffer>
+ 6fa:	88 23       	and	r24, r24
+ 6fc:	39 f0       	breq	.+14     	; 0x70c <__vector_16+0xc2>
+ 6fe:	c0 91 95 00 	lds	r28, 0x0095
+ 702:	d0 91 96 00 	lds	r29, 0x0096
+ 706:	6a df       	rcall	.-300    	; 0x5dc <usiTwiAmountDataInReceiveBuffer>
+ 708:	fe 01       	movw	r30, r28
+ 70a:	09 95       	icall
+ 70c:	e0 91 93 00 	lds	r30, 0x0093
+ 710:	f0 91 94 00 	lds	r31, 0x0094
+ 714:	30 97       	sbiw	r30, 0x00	; 0
+ 716:	09 f0       	breq	.+2      	; 0x71a <__vector_16+0xd0>
+ 718:	09 95       	icall
+      // Get data from Buffer
+      if ( txHead != txTail )
+ 71a:	90 91 6e 00 	lds	r25, 0x006E
+ 71e:	80 91 6d 00 	lds	r24, 0x006D
+ 722:	98 17       	cp	r25, r24
+ 724:	a1 f0       	breq	.+40     	; 0x74e <__vector_16+0x104>
+      {
+        txTail = ( txTail + 1 ) & TWI_TX_BUFFER_MASK;
+ 726:	80 91 6d 00 	lds	r24, 0x006D
+ 72a:	8f 5f       	subi	r24, 0xFF	; 255
+ 72c:	8f 70       	andi	r24, 0x0F	; 15
+ 72e:	80 93 6d 00 	sts	0x006D, r24
+        USIDR = txBuf[ txTail ];
+ 732:	e0 91 6d 00 	lds	r30, 0x006D
+ 736:	f0 e0       	ldi	r31, 0x00	; 0
+ 738:	e1 59       	subi	r30, 0x91	; 145
+ 73a:	ff 4f       	sbci	r31, 0xFF	; 255
+ 73c:	80 81       	ld	r24, Z
+ 73e:	8f b9       	out	0x0f, r24	; 15
+        // the buffer is empty
+        SET_USI_TO_READ_ACK( ); // This might be neccessary sometimes see http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&p=805227#805227
+        SET_USI_TO_TWI_START_CONDITION_MODE( );
+        return;
+      } // end if
+      overflowState = USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA;
+ 740:	82 e0       	ldi	r24, 0x02	; 2
+ 742:	80 93 91 00 	sts	0x0091, r24
+      SET_USI_TO_SEND_DATA( );
+ 746:	bd 9a       	sbi	0x17, 5	; 23
+ 748:	80 e7       	ldi	r24, 0x70	; 112
+ 74a:	8e b9       	out	0x0e, r24	; 14
+      break;
+ 74c:	39 c0       	rjmp	.+114    	; 0x7c0 <__vector_16+0x176>
+        USIDR = txBuf[ txTail ];
+      }
+      else
+      {
+        // the buffer is empty
+        SET_USI_TO_READ_ACK( ); // This might be neccessary sometimes see http://www.avrfreaks.net/index.php?name=PNphpBB2&file=viewtopic&p=805227#805227
+ 74e:	bd 98       	cbi	0x17, 5	; 23
+ 750:	1f b8       	out	0x0f, r1	; 15
+ 752:	8e e7       	ldi	r24, 0x7E	; 126
+ 754:	8e b9       	out	0x0e, r24	; 14
+        SET_USI_TO_TWI_START_CONDITION_MODE( );
+ 756:	88 ea       	ldi	r24, 0xA8	; 168
+ 758:	8d b9       	out	0x0d, r24	; 13
+ 75a:	80 e7       	ldi	r24, 0x70	; 112
+ 75c:	8e b9       	out	0x0e, r24	; 14
+        return;
+ 75e:	30 c0       	rjmp	.+96     	; 0x7c0 <__vector_16+0x176>
+      break;
+
+    // set USI to sample reply from master
+    // next USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA
+    case USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA:
+      overflowState = USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA;
+ 760:	83 e0       	ldi	r24, 0x03	; 3
+ 762:	80 93 91 00 	sts	0x0091, r24
+      SET_USI_TO_READ_ACK( );
+ 766:	bd 98       	cbi	0x17, 5	; 23
+ 768:	1f b8       	out	0x0f, r1	; 15
+ 76a:	8e e7       	ldi	r24, 0x7E	; 126
+ 76c:	8e b9       	out	0x0e, r24	; 14
+      break;
+ 76e:	28 c0       	rjmp	.+80     	; 0x7c0 <__vector_16+0x176>
+
+    // Master read data mode: set USI to sample data from master, next
+    // USI_SLAVE_GET_DATA_AND_SEND_ACK
+    case USI_SLAVE_REQUEST_DATA:
+      overflowState = USI_SLAVE_GET_DATA_AND_SEND_ACK;
+ 770:	85 e0       	ldi	r24, 0x05	; 5
+ 772:	80 93 91 00 	sts	0x0091, r24
+      SET_USI_TO_READ_DATA( );
+ 776:	bd 98       	cbi	0x17, 5	; 23
+ 778:	80 e7       	ldi	r24, 0x70	; 112
+ 77a:	8e b9       	out	0x0e, r24	; 14
+      break;
+ 77c:	21 c0       	rjmp	.+66     	; 0x7c0 <__vector_16+0x176>
+    // copy data from USIDR and send ACK
+    // next USI_SLAVE_REQUEST_DATA
+    case USI_SLAVE_GET_DATA_AND_SEND_ACK:
+      // put data into buffer
+      // Not necessary, but prevents warnings
+      rxHead = ( rxHead + 1 ) & TWI_RX_BUFFER_MASK;
+ 77e:	80 91 80 00 	lds	r24, 0x0080
+ 782:	8f 5f       	subi	r24, 0xFF	; 255
+ 784:	8f 70       	andi	r24, 0x0F	; 15
+ 786:	80 93 80 00 	sts	0x0080, r24
+      // check buffer size
+      if (rxHead == rxTail) {
+ 78a:	90 91 80 00 	lds	r25, 0x0080
+ 78e:	80 91 7f 00 	lds	r24, 0x007F
+ 792:	98 13       	cpse	r25, r24
+ 794:	07 c0       	rjmp	.+14     	; 0x7a4 <__vector_16+0x15a>
+        // overrun
+        rxHead = (rxHead + TWI_RX_BUFFER_SIZE - 1) & TWI_RX_BUFFER_MASK;
+ 796:	80 91 80 00 	lds	r24, 0x0080
+ 79a:	81 5f       	subi	r24, 0xF1	; 241
+ 79c:	8f 70       	andi	r24, 0x0F	; 15
+ 79e:	80 93 80 00 	sts	0x0080, r24
+ 7a2:	07 c0       	rjmp	.+14     	; 0x7b2 <__vector_16+0x168>
+      } else {
+        rxBuf[ rxHead ] = USIDR;
+ 7a4:	e0 91 80 00 	lds	r30, 0x0080
+ 7a8:	8f b1       	in	r24, 0x0f	; 15
+ 7aa:	f0 e0       	ldi	r31, 0x00	; 0
+ 7ac:	ef 57       	subi	r30, 0x7F	; 127
+ 7ae:	ff 4f       	sbci	r31, 0xFF	; 255
+ 7b0:	80 83       	st	Z, r24
+      }
+      // next USI_SLAVE_REQUEST_DATA
+      overflowState = USI_SLAVE_REQUEST_DATA;
+ 7b2:	84 e0       	ldi	r24, 0x04	; 4
+ 7b4:	80 93 91 00 	sts	0x0091, r24
+      SET_USI_TO_SEND_ACK( );
+ 7b8:	1f b8       	out	0x0f, r1	; 15
+ 7ba:	bd 9a       	sbi	0x17, 5	; 23
+ 7bc:	8e e7       	ldi	r24, 0x7E	; 126
+ 7be:	8e b9       	out	0x0e, r24	; 14
+      break;
+
+  } // end switch
+
+} // end ISR( USI_OVERFLOW_VECTOR )
+ 7c0:	ff 91       	pop	r31
+ 7c2:	ef 91       	pop	r30
+ 7c4:	df 91       	pop	r29
+ 7c6:	cf 91       	pop	r28
+ 7c8:	bf 91       	pop	r27
+ 7ca:	af 91       	pop	r26
+ 7cc:	9f 91       	pop	r25
+ 7ce:	8f 91       	pop	r24
+ 7d0:	7f 91       	pop	r23
+ 7d2:	6f 91       	pop	r22
+ 7d4:	5f 91       	pop	r21
+ 7d6:	4f 91       	pop	r20
+ 7d8:	3f 91       	pop	r19
+ 7da:	2f 91       	pop	r18
+ 7dc:	0f 90       	pop	r0
+ 7de:	0f be       	out	0x3f, r0	; 63
+ 7e0:	0f 90       	pop	r0
+ 7e2:	1f 90       	pop	r1
+ 7e4:	18 95       	reti
+
+000007e6 <_exit>:
+ 7e6:	f8 94       	cli
+
+000007e8 <__stop_program>:
+ 7e8:	ff cf       	rjmp	.-2      	; 0x7e8 <__stop_program>
