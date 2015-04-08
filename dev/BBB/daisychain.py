@@ -13,6 +13,9 @@ MISO = "P9_24"
 
 global dataIn
 
+def i2c_addr(x, y):
+    return (int(x) & 7) | ((int(y) & 15) << 3)
+
 def setupHandshake():
     GPIO.setup(spiClock, GPIO.OUT)
     # GPIO.output(spiClock, GPIO.LOW)
@@ -54,7 +57,7 @@ def setupSpi():
     GPIO.setup(MISO, GPIO.IN)
 
 def spi_transfer(number):
-    print "Writing " + number + "..."
+    print "Writing " + "{0:b}".format(number) + "..."
     GPIO.output(slaveSelect, GPIO.LOW)
     num = int(number)
     dataIn = 0
@@ -79,7 +82,7 @@ def spi_transfer(number):
     # time.sleep(pause)
     # print str(count) + " messages"
     GPIO.output(slaveSelect, GPIO.HIGH)
-    print "Wrote " + number + "!"
+    # print "Wrote " + str(number) + "!"
     return dataIn
 
 
@@ -91,12 +94,12 @@ setupSpi()
 
 stop = False
 while True != stop:
-    response = str(raw_input("enter num to send over spi, x to exit: "))
-    if response != "x":
-        rcvd = str(spi_transfer(response))
+    response = str(raw_input("Enter 'x, y' coord to send, q to quit: "))
+    if response != "q":
+        x, y = response.split(',')
+        rcvd = str(spi_transfer(i2c_addr(x, y)))
         print "Received: ", rcvd
     else:
         stop = True
 
 print "Thanks."
-# spi.close()
