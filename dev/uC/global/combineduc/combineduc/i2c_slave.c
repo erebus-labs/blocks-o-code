@@ -30,9 +30,7 @@ int loop_i2c();
 
 void Demo_Function_Select()
 {
-	#define selectpin1
-	#define selectpin2
-	#define selectpin3
+	Block_Function = ((PINA >>1) & 0b00000111); //port A inputs 1,2,3
 	
 	
 }

@@ -7,7 +7,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <inttypes.h>
+//#include <inttypes.h>
+#include "i2c_slave.h"
 
 #define TESTING 1
 
@@ -205,8 +206,8 @@ static void serviceMasterHandshake(uint8_t changedPins);
 static void waitForCompletedHandshake(void);
 static void sendVector(uint8_t newBlockDirection);
 
-void setup_i2c();
-int loop_i2c();
+//void setup_i2c();
+//int loop_i2c();
 
 /**
  *	Initializes pins and registers for handshake protocol
