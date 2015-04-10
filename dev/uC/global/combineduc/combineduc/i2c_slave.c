@@ -20,12 +20,41 @@ On write changes the current funtion or i2c adress.
 volatile uint8_t State_i2c; //this keeps track of the state or mode of the block
 volatile uint8_t Block_Function = BLOCK_FUNCTION; //this is the lexical function 
 
+void Demo_Function_Select();
+void WDT_on();
+void requestEvent_i2c();
+void receiveEvent_i2c(uint8_t Howmany);
+void I2C_setup(uint8_t slave_add);
+void setup_i2c(uint8_t slave_add);
+int loop_i2c();
+
+void Demo_Function_Select()
+{
+	#define selectpin1
+	#define selectpin2
+	#define selectpin3
+	
+	
+}
+
+void WDT_on(void) //force a reset in about 16ms
+{
+	//_WDR();
+	/* Clear WDRF in MCUSR */
+	MCUSR = 0x00;
+	/* Write logical one to WDCE and WDE */
+	WDTCR |= (1<<WDCE) | (1<<WDE);
+	/* Turn on WDT */
+	WDTCR = 0x08;
+}
+
 void requestEvent_i2c()  //this runs when a read is detected for address
 {  
   switch (State_i2c)
   {
   case 0: //reading the function, default
   default:
+	Demo_Function_Select();
     usiTwiTransmitByte(Block_Function);
     break; 
   }
@@ -36,6 +65,7 @@ void receiveEvent_i2c(uint8_t HowMany) //this runs when a write is detected for 
     switch (State_i2c)
     {
 	  case 3: //reset
+		
 		usiTwiReceiveByte(); //trash 3rd byte
 		break;
       case 2: //changing slave address
@@ -59,18 +89,19 @@ void I2C_setup(uint8_t slave_add)
 }
 
 
-void setup_i2c() 
+void setup_i2c(uint8_t slave_add) 
 {
-     I2C_setup(I2C_SLAVE_ADDRESS);
+     I2C_setup(slave_add);
      usi_onReceiverPtr = receiveEvent_i2c;
      usi_onRequestPtr = requestEvent_i2c;
 
 }
 
-bool loop_i2c() 
+int loop_i2c() 
 {
 	if(State_i2c==3)
 	{
+		State_i2c = 0;
 		return(false);
 	}
     {
@@ -91,5 +122,6 @@ bool loop_i2c()
 			return(true);
 		}
 		usi_onReceiverPtr(amount);
+		return(true);
 	}
 }
