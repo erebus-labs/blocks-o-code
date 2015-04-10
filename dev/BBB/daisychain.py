@@ -85,21 +85,22 @@ def spi_transfer(number):
     # print "Wrote " + str(number) + "!"
     return dataIn
 
+while True:
+    setupHandshake()
+    print "Starting handshake..."
+    handshake()
+    print "Handshake completed."
+    setupSpi()
+    spi_transfer(i2c_addr(0, 0))
 
-setupHandshake()
-print "Starting handshake..."
-handshake()
-print "Handshake completed."
-setupSpi()
-
-stop = False
-while True != stop:
-    response = str(raw_input("Enter 'x, y' coord to send, q to quit: "))
-    if response != "q":
-        x, y = response.split(',')
-        rcvd = str(spi_transfer(i2c_addr(x, y)))
-        print "Received: ", rcvd
-    else:
-        stop = True
+# stop = False
+# while True != stop:
+#     response = str(raw_input("Enter 'x, y' coord to send, q to quit: "))
+#     if response != "q":
+#         x, y = response.split(',')
+#         rcvd = str(spi_transfer(i2c_addr(x, y)))
+#         print "Received: ", rcvd
+#     else:
+#         stop = True
 
 print "Thanks."

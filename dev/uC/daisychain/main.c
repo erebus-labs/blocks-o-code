@@ -90,7 +90,7 @@
 
 // Testing LED (Debug)
 #if TESTING
-#define STATUS_LED		PA0
+#define STATUS_LED		PA1
 #define STATUS_PORT		PORTA
 #define TOGGLE_STATUS	(STATUS_PORT ^= _BV(STATUS_LED))
 #endif
@@ -102,7 +102,7 @@
 
 // SPI Slave Pins
 #define SPI_S_DI_REG	PINA
-#define SPI_S_DI		PINA6
+#define SPI_S_DI		PINA0
 #define SPI_S_PIN_REG	PINB
 #define SPI_S_CLK		PINB4
 #define SS_F_BELOW		PINB3
@@ -112,7 +112,7 @@
 #define SPI_F_B_DIR		DDB3
 #define SPI_F_L_DIR		DDB1
 #define SPI_S_DI_DDR	DDRA
-#define SPI_S_DI_DIR	DDA6
+#define SPI_S_DI_DIR	DDA0
 #define SPI_S_PORT		PORTB
 #define SPI_S_INT_PORT	PCIE0
 #define SPI_CLK_INT_PRT	PCIE1
@@ -128,11 +128,11 @@
 #define SPI_M_DO_REG	PORTA
 #define SPI_M_DO		PORTA7
 #define SPI_M_PIN_REG	PINB
-#define SPI_M_CLK		PORTA3
+#define SPI_M_CLK		PORTA6
 #define SS_T_ABOVE		PINB6
 #define SS_T_RIGHT		PINB5
 #define SPI_M_DDR		DDRB
-#define SPI_M_CLK_DIR	DDB7
+#define SPI_M_CLK_DIR	DDA6
 #define SPI_T_A_DIR		DDB6
 #define SPI_T_R_DIR		DDB5
 #define SPI_M_DO_DDR	DDRA
@@ -508,7 +508,7 @@ void sendVector(uint8_t newBlockDirection) {
 	}
 	
 	// reset position
-	m_data_out_pos = 8;
+	m_data_out_pos = 9;
 	
 	// pull HIGH to signal end of tx
 	SPI_M_PORT |= newBlockDirection;
@@ -597,7 +597,7 @@ void showAddress(void) {
 #endif
 #ifdef MCU_461
 	PORTA &= 0b11001001;
-	PORTA |= ((i2c_addr << 1) & 0b00000110);
+	PORTA |= ((i2c_addr << 2) & 0b00001100);
 	PORTA |= ((i2c_addr << 1) & 0b00110000);
 //	spi_s_data_in = 0;
 //	i2c_addr = 0;
@@ -637,17 +637,17 @@ void startupSequence(void) {
 	}
 #endif
 #ifdef MCU_461
-	PORTA |= _BV(PA1);
-	_delay_ms(25);
 	PORTA |= _BV(PA2);
+	_delay_ms(25);
+	PORTA |= _BV(PA3);
 	_delay_ms(25);
 	PORTA |= _BV(PA4);
 	_delay_ms(25);
 	PORTA |= _BV(PA5);
 	_delay_ms(25);
-	PORTA &= ~_BV(PA1);
-	_delay_ms(25);
 	PORTA &= ~_BV(PA2);
+	_delay_ms(25);
+	PORTA &= ~_BV(PA3);
 	_delay_ms(25);
 	PORTA &= ~_BV(PA4);
 	_delay_ms(25);
