@@ -15,11 +15,19 @@
 #define TESTING 1
 
 /**
+ *  Blocking function returns when a SPI transmission provides vector position
+ */
+void waitForVector(void);
+
+/**
  *	Microcontroller selection
  */
 
 //#define MCU_2313
 #define MCU_461
+
+
+
 
 /**
  *	Using the ATtiny2313 model microcontrollers
@@ -77,10 +85,9 @@
 #define SPI_T_A_PCINT	PCINT4
 #define SPI_T_R_PCINT	PCINT3
 
-
 //#define SPI_M_DI	PINA0
 
-#endif
+#endif /* defined(__MCU_461__) */
 
 /**
  *	Using the ATtiny461 model microcontrollers
@@ -120,7 +127,6 @@
 #define SPI_F_L_PCINT	PCINT9
 #define SPI_PCMSK		PCMSK1
 
-
 // SPI Master Pins
 #define SPI_M_DO_REG	PORTA
 #define SPI_M_DO		PORTA7
@@ -139,13 +145,6 @@
 #define SPI_T_A_PCINT	PCINT14
 #define SPI_T_R_PCINT	PCINT13
 
-
-#endif
-
-void initSlaveHandshake(void);
-
-void showAddress(void);
-void waitForCompletedHandshake(void);
-
+#endif /* defined(__MCU_2313__) */
 
 #endif /* defined(__daisy__abc_daisy__) */

@@ -5,10 +5,26 @@
 
 #include "abc_daisy.h"
 
-
 static void initIO(void);
 static void startupSequence(void);
 
+int main(void) {
+	
+	// initialization
+	initIO();
+	startupSequence();
+	startupSequence();
+	_delay_ms(1000);
+	
+	// spin until position received from connected block
+	waitForVector();
+	
+	while (1) {
+		//		_delay_ms(500);
+		//		TOGGLE_STATUS;
+	}
+	return 0; // never reached
+}
 
 void initIO(void) {
 	// set output pins
@@ -58,30 +74,6 @@ void startupSequence(void) {
 	_delay_ms(25);
 	PORTA &= ~_BV(PA5);
 	_delay_ms(25);
-#endif
-}
-
-int main(void) {
-	
-	initIO();
-//	initSPISlave();
-	startupSequence();
-	startupSequence();
-	
-	_delay_ms(1000);
-
-	
-	initSlaveHandshake();
-	waitForCompletedHandshake();
-	
 	PORTA &= 0b11000000;
-
-
-	
-	while (1) {
-//		_delay_ms(500);
-//		
-//		TOGGLE_STATUS;
-	}
-	return 0; // never reached
+#endif
 }
