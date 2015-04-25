@@ -12,14 +12,15 @@ On write changes the current funtion or i2c adress.
 
 #include "i2c_slave.h"
 
-#define I2C_SLAVE_ADDRESS 42 //in use it'll be set by another program (local bus code) can also be set over the i2c bus
-#define BLOCK_FUNCTION 36 //in phase 2 will be set by another program (adc ->function code) can also be set over the i2c bus
-/* list of functions by number
-0x11 this test
-*/
+//#define I2C_SLAVE_ADDRESS 42 //in use it'll be set by another program (local bus code) can also be set over the i2c bus
+//#define BLOCK_FUNCTION 36 //in phase 2 will be set by another program (adc ->function code) can also be set over the i2c bus
+// these are now passed in to this file
+
 
 volatile uint8_t State_i2c; //this keeps track of the state or mode of the block
-volatile uint8_t Block_Function = BLOCK_FUNCTION; //this is the lexical function 
+volatile uint8_t Block_Function; //= BLOCK_FUNCTION; //this is the lexical function 
+volatile uint8_t X_position;
+volatile uint8_t Y_position;
 
 //void Demo_Function_Select();
 //void WDT_on();
@@ -99,11 +100,12 @@ void I2C_setup(uint8_t slave_add)
 }
 
 
-void setup_i2c(uint8_t slave_add,uint8_t X,uint8_t Y) 
+void setup_i2c(uint8_t slave_add,uint8_t Function,uint8_t X,uint8_t Y) 
 {
      I2C_setup(slave_add);
 	 X_position = X;
 	 Y_position = Y;
+	 Block_Function = Function;
      usi_onReceiverPtr = receiveEvent_i2c;
      usi_onRequestPtr = requestEvent_i2c;
 
