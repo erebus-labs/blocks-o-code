@@ -11,13 +11,13 @@ def addrFvect(x,y):
 
 def I2cLex(z):
 	#address = addrFvect(x,y)
-	if(address == 0xff):
-		return lex.noblock
+	if(z == 0xff):
+		return 0 # lex.noblock
 	else:
-		i2caddr = Adafruit_I2C(address)
+		i2caddr = Adafruit_I2C(z)
 		val = i2caddr.readU8(0)
 		if (val == -1):
-			return lex.noblock
+			return 0
 		else:
 			return val # lex.reverse_mapping[val]
 
@@ -27,7 +27,12 @@ def enum(*sequential, **named):
     enums['reverse_mapping'] = reverse
     return type('Enum', (), enums)
 
-lex = enum(noblock=" ",plus=1,minus=2,one=3,two=4,X=5,assign=6,ifblock=7,lessthan=8,"3"=117,x=36,":"=12,say=19)
+#lex = enum(noblock=" ",plus=1,minus=2,one=3,two=4,X=5,assign=6,ifblock=7,lessthan=8,"3"=117,x=36,":"=12,say=19)
+
+dictionary = {	36: 'A',
+				12: ':',
+				117: '3',
+				19: 'p', 0:' ' }
 
 ###################################################################
 #start of run
@@ -38,5 +43,5 @@ B = I2cLex(32)
 C = I2cLex(42)
 D = I2cLex(4)
 E = I2cLex(17)
-print lex.reverse_mapping[D], lex.reverse_mapping[E], lex.reverse_mapping[B]
-print lex.reverse_mapping[C], lex.reverse_mapping[A]
+print dictionary[D], dictionary[E], dictionary[B]
+print dictionary[C], dictionary[A]
