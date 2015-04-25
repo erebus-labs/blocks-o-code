@@ -65,9 +65,9 @@ void debugBlink(void);
 void debugBlink(void) {
 	_delay_ms(100);
 	TOGGLE_STATUS;
-	_delay_ms(1000);
+	_delay_ms(150);
 	TOGGLE_STATUS;
-	_delay_ms(1000);
+	_delay_ms(150);
 }
 
 /**
@@ -81,6 +81,8 @@ void waitForVector(void) {
 	// spin until rx has received vector
 	while (!rx_completed) {
 		
+		debugBlink();
+
 		// initial handshake state, toggles slave select lines until response
 		if (cur_state == StartSlaveHandshake) {
 			toggleUntilMasterResponse();
@@ -137,12 +139,13 @@ uint8_t slaveSelectToggler(uint8_t signal) {
 	// master process may be busy, give time to finish and send interrupt signal
 	_delay_ms(m_clk_ms);
 	
+	// interrupts will advance program state
 	return cur_state;
 }
 
 /**
  *  Interrupt Service Routine for Pin Change Interrupts (PCIE0 and PCIE1).
-	Interrupts automatically disabled in function and re-enabled on return.
+ *	Interrupts automatically disabled in function and re-enabled on return.
  */
 ISR(PCINT_vect) {
 	
@@ -160,20 +163,15 @@ ISR(PCINT_vect) {
 
 //	prev_pin_a = PINA;
 
-//	if (pinaChanged & _BV(PA0)) {
-//		TOGGLE_STATUS;
-//		_delay_ms(1000);
-//		TOGGLE_STATUS;
-//		_delay_ms(1000);
-//	}
+	debugBlink();
 	
 	switch (cur_state) {
 			
-			// handshake initiated (toggling)
-			case StartSlaveHandshake:
+		// handshake initiated (toggling)
+		case StartSlaveHandshake:
 			if ((changed & _BV(SPI_S_CLK))			// master clock interrupt
-				&& !(prev_pin_b & _BV(SPI_S_CLK))	// LOW to HIGH: sample data
-				&& (SPI_S_DI_REG & _BV(SPI_S_DI))){ // data-in is HIGH
+			&& !(prev_pin_b & _BV(SPI_S_CLK))		// LOW to HIGH: sample data
+			&& (SPI_S_DI_REG & _BV(SPI_S_DI))) {	// data-in is HIGH
 				
 				// advance handshake
 				cur_state = SlaveHandshakeA;
@@ -192,10 +190,10 @@ ISR(PCINT_vect) {
 			resetSlaveState();
 			break;
 			
-			//
-			case SlaveHandshakeA:
-			if ((changed & _BV(SPI_S_CLK))			// master clock transition
-				&& (prev_pin_b & _BV(SPI_S_CLK))) {	// HIGH to LOW: change state
+		//
+		case SlaveHandshakeA:
+			if ((changed & _BV(SPI_S_CLK))			// master clock interrupt
+			&& (prev_pin_b & _BV(SPI_S_CLK))) {		// HIGH to LOW: change state
 				
 				// advance handshake
 				cur_state = SlaveHandshakeB;
@@ -207,14 +205,14 @@ ISR(PCINT_vect) {
 				// bring SS_F_LEFT or SS_F_BELOW to HIGH
 				SPI_S_PORT |= _BV(sel_pin);
 				
-				// master clock triggers the select signal
-				// release select line for master to retain
-				SPI_S_DDR &= ~_BV(sel_dir);			// set responding as input
+				// release select line for master to retain after a short delay
+				_delay_ms(m_clk_ms);
+				SPI_S_DDR  &= ~_BV(sel_dir);		// set responding as input
 				
-				// SPI pull-up resistors
+				// pull-up resistor
 				SPI_S_PORT |= _BV(sel_pin);			// slave select pull-up
 				
-				// previous port values associated with pull-ups
+				// previous port value associated with pull-up
 				prev_pin_b |= _BV(sel_pin);			// initialize high
 				
 //				debugBlink();
@@ -227,11 +225,11 @@ ISR(PCINT_vect) {
 			resetSlaveState();
 			break;
 			
-			case SlaveHandshakeB:
-			if ((changed & _BV(SPI_S_CLK))			// master clock transition
-				&& !(prev_pin_b & _BV(SPI_S_CLK))	// LOW to HIGH: sample data
-				&& !(SPI_S_DI_REG & _BV(SPI_S_DI))	// data-in is LOW
-				&& !(SPI_S_PIN_REG & _BV(sel_pin))){// SEL is LOW
+		case SlaveHandshakeB:
+			if ((changed & _BV(SPI_S_CLK))			// master clock interrupt
+			&& !(prev_pin_b & _BV(SPI_S_CLK))		// LOW to HIGH: sample data
+			&& !(SPI_S_DI_REG & _BV(SPI_S_DI))		// data-in is LOW
+			&& !(SPI_S_PIN_REG & _BV(sel_pin))) {	// SEL is LOW
 				
 				// complete handshake and initialize SPI slave for RX
 				initSPISlave();
@@ -246,14 +244,13 @@ ISR(PCINT_vect) {
 			resetSlaveState();
 			break;
 			
-			// soft SPI slave select triggers
-			case SpiSlave:
-			
+		// soft SPI slave select triggers
+		case SpiSlave:
 			serviceSpiSlaveTransmission(changed);
 			break;
 			
-			// starting SPI Master handshake
-			case SpiMasterHandshake:
+		// starting SPI Master handshake
+		case SpiMasterHandshake:
 			serviceMasterHandshake(changed);
 			break;
 			
@@ -271,6 +268,7 @@ ISR(PCINT_vect) {
 		setI2CAddress(spi_s_data_in);
 		showAddress();
 		
+		debugBlink();
 		
 		//		initSPIMaster();
 		
@@ -297,11 +295,11 @@ void resetSlaveState(void) {
 
 
 /**
-	Initialization Functions
+ *	Initialization Functions
  */
 
 /**
- 	Initializes pins and registers for slave handshake protocol
+ *	Initializes pins and registers for slave handshake protocol
  */
 void initSlaveHandshake(void) {
 	
@@ -344,19 +342,19 @@ void initSPISlave(void) {
 	SPI_S_DDR	 &= ~_BV(SPI_F_L_DIR);
 	
 	// SPI pull-up resistors
-	SPI_S_PORT |= _BV(SS_F_BELOW);			// slave select from below
-	SPI_S_PORT |= _BV(SS_F_LEFT);			// slave select from left
+//	SPI_S_PORT |= _BV(SS_F_BELOW);			// slave select from below
+//	SPI_S_PORT |= _BV(SS_F_LEFT);			// slave select from left
 	
-	// previous port values associated with pull-ups
-	prev_pin_b |= _BV(SS_F_BELOW);			// initialized to high
-	prev_pin_b |= _BV(SS_F_LEFT);			// "slave select" pulls low
+	// previous pin values associated with select lines
+	prev_pin_b	 &= ~_BV(SS_F_BELOW);		// initialized to low
+	prev_pin_b	 &= ~_BV(SS_F_LEFT);		// "slave select" pulls high
 	
 	// enable pin change interrupts (PCI)
-	GIMSK	  |= _BV(SPI_S_INT_PORT);		// SPI slave interrupt port
-	GIMSK	  |= _BV(SPI_CLK_INT_PRT);		// SPI slave clock interrupt port
-	SPI_PCMSK |= _BV(SPI_S_CLK_PCINT);		// SPI slave clock
-	SPI_PCMSK |= _BV(SPI_F_B_PCINT);		// slave select from below
-	SPI_PCMSK |= _BV(SPI_F_L_PCINT);		// slave select from left
+	GIMSK		 |= _BV(SPI_S_INT_PORT);	// SPI slave interrupt port
+	GIMSK		 |= _BV(SPI_CLK_INT_PRT);	// SPI slave clock interrupt port
+	SPI_PCMSK	 |= _BV(SPI_S_CLK_PCINT);	// SPI slave clock
+	SPI_PCMSK	 |= _BV(SPI_F_B_PCINT);		// slave select from below
+	SPI_PCMSK	 |= _BV(SPI_F_L_PCINT);		// slave select from left
 	
 //	sei();									// enable interrupts
 }
@@ -391,42 +389,49 @@ void initSPIMaster(void) {
 
 
 /**
-	Interrupt Service Functions
+ *	Interrupt Service Functions
  */
 
+/**
+ *	Services signals relating to
+ *
+ *	SPI mode 0: CPOL = 0, CPHA = 0. Slave Select (SS) lines idle low.
+ *
+ *  @param changedPins Bit-field of pins that have changed since last interrupt
+ */
 void serviceSpiSlaveTransmission(uint8_t changedPins) {
 	
 	if (changedPins & _BV(SS_F_BELOW)) {
 		
 		// trigger from below
-		if (prev_pin_b & _BV(SS_F_BELOW)) {
+		if (prev_pin_b & _BV(SS_F_BELOW)) {		// HIGH to LOW
+			// end of receive
+			rx_completed = 1;
+			
+		} else {								// LOW to HIGH
 			// transmission started, remove SS_F_LEFT interrupt
 			trig_f_below = 1;
 			SPI_PCMSK &= ~_BV(SPI_F_L_PCINT);
-			
-		} else {
-			// end of receive
-			rx_completed = 1;
 		}
 	} else if (changedPins & _BV(SS_F_LEFT)) {
 		
 		// trigger from left
-		if (prev_pin_b & _BV(SS_F_LEFT)) {
+		if (prev_pin_b & _BV(SS_F_LEFT)) {		// HIGH to LOW
+			// end of receive
+			rx_completed = 1;
+			
+		} else {								// LOW to HIGH
 			// transmission started, remove SS_F_BELOW interrupt
 			trig_f_left = 1;
 			SPI_PCMSK &= ~_BV(SPI_F_B_PCINT);
-			
-		} else {
-			// end of receive
-			rx_completed = 1;
 		}
 	} else if (changedPins & _BV(SPI_S_CLK)) {
 		
-		// SPI mode 0: CPOL = 0, CPHA = 0
-		if (prev_pin_b & _BV(SPI_S_CLK)) {
-			// HIGH to LOW - update (if implemented)
+		// SPI mode 0
+		if (prev_pin_b & _BV(SPI_S_CLK)) {		// HIGH to LOW
+			// HIGH to LOW - update data-out (if implemented)
 			
-		} else {
+		} else {								// LOW to HIGH
 			// LOW to HIGH - sample
 			if (s_data_in_pos--) {
 				spi_s_data_in |= (!!(SPI_S_DI_REG & _BV(SPI_S_DI)) << s_data_in_pos);
@@ -495,13 +500,23 @@ void serviceMasterHandshake(uint8_t changedPins) {
 	}
 }
 
+/**
+ *  Data Functions
+ *
+ */
 
+/**
+ *  Sends current position vector on data-out bus (master) to requesting block 
+ *	(slave).
+ *
+ *  @param newBlockDirection Bit position of newly placed block signal
+ */
 void sendVector(uint8_t newBlockDirection) {
 	
 	// pull slave select LOW to signal tx start
 	SPI_M_PORT &= ~newBlockDirection;
 	
-	// put bits on data out line
+	// put bits on data-out line
 	while (m_data_out_pos--) {
 		SPI_M_DO_REG = (SPI_M_DO_REG & ~_BV(SPI_M_DO)) | (((i2c_addr >> m_data_out_pos) & 0b00000001) << SPI_M_DO);
 		
@@ -527,14 +542,14 @@ void sendVector(uint8_t newBlockDirection) {
 void setI2CAddress(uint8_t data) {
 	// position structure: bits [2:0] are x-coord, [6:3] are y-coord
 	// set x-coord [2:0], increment if triggered from the left
-	i2c_addr  = (spi_s_data_in + trig_f_left) & 0b00000111;
+	i2c_addr  = (data + trig_f_left) & 0b00000111;
 	
 	// set y-coord [6:3], increment if triggered from below
-	i2c_addr |= (spi_s_data_in + (trig_f_below << 3)) & 0b01111000;
+	i2c_addr |= (data + (trig_f_below << 3)) & 0b01111000;
 	
 	// old implementation
-//	i2c_addr = (spi_s_data_in & 0b00000111) + (trig_f_left);
-//	i2c_addr |= (spi_s_data_in & 0b01111000) + (trig_f_below << 3);
+//	i2c_addr = (data & 0b00000111) + (trig_f_left);
+//	i2c_addr |= (data & 0b01111000) + (trig_f_below << 3);
 }
 
 /**

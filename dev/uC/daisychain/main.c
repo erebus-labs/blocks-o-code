@@ -10,18 +10,22 @@ static void startupSequence(void);
 
 int main(void) {
 	
+//	cli();
+	
 	// initialization
 	initIO();
 	startupSequence();
 	startupSequence();
-	_delay_ms(1000);
+	_delay_ms(100);
+	
+//	sei();
 	
 	// spin until position received from connected block
 	waitForVector();
 	
 	while (1) {
-		//		_delay_ms(500);
-		//		TOGGLE_STATUS;
+		_delay_ms(500);
+		TOGGLE_STATUS;
 	}
 	return 0; // never reached
 }
