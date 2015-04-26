@@ -55,10 +55,15 @@ void requestEvent_i2c(void)  //this runs when a read is detected for address
   case 5:
 	usiTwiTransmitByte(Y_position);
 	State_i2c = 0;
+    break;
   case 4:
 	usiTwiTransmitByte(X_position);
 	State_i2c = 0;
+    break;
   case 0: //reading the function, default
+    usiTwiTransmitByte(Block_Function);
+    break;
+/*
   default:
 //	Demo_Function_Select();
 //	_delay_ms(225);
@@ -67,7 +72,8 @@ void requestEvent_i2c(void)  //this runs when a read is detected for address
 //	_delay_ms(225);
 
     usiTwiTransmitByte(Block_Function);
-    break; 
+    break;
+ */
   }
 }
 

@@ -13,11 +13,14 @@ for address in range(0,128):
     block = {}
 
     i2caddr = Adafruit_I2C(address)
-    block['addr'] = x
+    block['addr'] = address
     block['func'] = i2caddr.readU8(0)
-    block['x'] = i2caddr.readU8(4)
-    block['y'] = i2caddr.readU8(5)
+    if block['func'] < 0:
+        continue
+    block['x'] = i2caddr.readU8(5)
+    block['y'] = i2caddr.readU8(4)
 
+    # print(block)
     blocks.append(block)
 
 func_to_str = {
@@ -30,11 +33,11 @@ func_to_str = {
 
 source_code = ""
 
-for x in range(0,16):
-    for y in range(0,16).reversed()j:
-        for block in blocks():
+for x in reversed(range(0,16)):
+    for y in range(0,16):
+        for block in blocks:
             if block['x'] == x and block['y'] == y:
-                sourcecode += ' %s ' % func_to_str[block['func']]
+                source_code += ' %s ' % func_to_str[block['func']]
                 break
     source_code += '\n'
 
