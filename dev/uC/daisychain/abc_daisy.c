@@ -64,7 +64,7 @@ static volatile uint8_t signal_f_above  = 0;
 
 static volatile uint8_t slave_sel_bit   = 0;
 
-static const	uint8_t m_clk_ms		= 10;
+static const	uint8_t m_clk_ms		= 5;
 
 void debugBlink(void);
 
@@ -183,6 +183,8 @@ ISR(PCINT_vect) {
 				cur_state = SlaveHandshakeA;
 				
 				_delay_ms(5);
+//				PORTA |= _BV(PA2);
+				
 				
 				// master clock triggers the select signal
 				// bring SS_F_LEFT or SS_F_BELOW back down LOW
@@ -208,6 +210,7 @@ ISR(PCINT_vect) {
 				cur_state = SlaveHandshakeB;
 
 				_delay_ms(5);
+//				PORTA |= _BV(PA3);
 
 				// determine currently responding signal
 				uint8_t sel_dir = (signal_f_left) ? (SPI_F_L_DIR) : (SPI_F_B_DIR);
@@ -247,7 +250,8 @@ ISR(PCINT_vect) {
 				initSPISlave();
 				
 				_delay_ms(5);
-
+//				PORTA |= _BV(PA4);
+				
 //				debugBlink();
 				
 				// exit switch statement
@@ -274,9 +278,12 @@ ISR(PCINT_vect) {
 				
 				showAddress();
 				
+				debugBlink();
+				debugBlink();
+				debugBlink();
+				
 				initSPIMaster();
 			}
-			
 			break;
 			
 		// starting SPI Master handshake
@@ -303,6 +310,7 @@ ISR(PCINT_vect) {
 			if (cur_state == MasterHandshakeA) {
 				
 //				debugBlink();
+//				PORTA |= _BV(PA2);
 				
 				SPI_M_DO_REG |= _BV(SPI_M_DO);
 				SPI_M_DO_REG |= _BV(SPI_M_CLK);
@@ -323,7 +331,8 @@ ISR(PCINT_vect) {
 			if (cur_state == MasterHandshakeB) {
 				
 //				debugBlink();
-
+//				PORTA |= _BV(PA3);
+				
 				SPI_M_DO_REG &= ~_BV(SPI_M_DO);
 				SPI_M_DO_REG &= ~_BV(SPI_M_CLK);
 			}
@@ -341,12 +350,13 @@ ISR(PCINT_vect) {
 			if (cur_state == SpiMaster) {
 				
 				// let slave device release signal
-				_delay_ms(m_clk_ms);
+				_delay_ms(20);
+//				PORTA |= _BV(PA4);
 				
 				// set corresponding slave select as output and bring low
 				uint8_t s_bit = _BV((signal_f_above) ? (SPI_T_A_DIR) : (SPI_T_R_DIR));
 				SPI_M_DDR	  |= s_bit;
-				SPI_M_PIN_REG &= ~_BV(s_bit);
+				SPI_M_PIN_REG &= ~s_bit;
 				
 				// pulse the clock with select line low to complete handshake
 				SPI_M_DO_REG  |= _BV(SPI_M_CLK);
@@ -672,7 +682,7 @@ void showAddress(void) {
 	PORTD |= ((i2c_addr & (0b00000011 << 3)) >> 1);
 #endif
 #ifdef MCU_461
-	PORTA &= 0b11001001;
+	PORTA &= 0b11000011;
 	PORTA |= ((i2c_addr << 2) & 0b00001100);
 	PORTA |= ((i2c_addr << 1) & 0b00110000);
 #endif

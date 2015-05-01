@@ -41,8 +41,8 @@ void initIO(void) {
 	DDRA |= _BV(ERROR_LED);
 #endif
 #ifdef MCU_461
-	DDRA |= _BV(PA1);
 	DDRA |= _BV(PA2);
+	DDRA |= _BV(PA3);
 	DDRA |= _BV(PA4);
 	DDRA |= _BV(PA5);
 	DDRA |= _BV(STATUS_LED);
