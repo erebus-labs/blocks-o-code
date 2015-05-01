@@ -24,8 +24,8 @@ int main(void) {
 	waitForVector();
 	
 	while (1) {
-		_delay_ms(500);
-		TOGGLE_STATUS;
+//		_delay_ms(500);
+//		TOGGLE_STATUS;
 	}
 	return 0; // never reached
 }
