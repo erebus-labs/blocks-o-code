@@ -82,11 +82,11 @@ def spi_transfer(number):
     # print "Wrote " + str(number) + "!"
     return dataIn
 
-# while True:
+#while True:
 setupHandshake()
 print "Starting handshake..."
 handshake()
 print "Handshake completed."
-# time.sleep(pause)
+    # time.sleep(pause)
 setupSpi()
-spi_transfer(i2c_addr(1, 1))
+spi_transfer(i2c_addr(0, 0))
