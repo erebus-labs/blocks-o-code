@@ -326,8 +326,8 @@ ISR(PCINT_vect) {
 				
 				// set corresponding slave select as output and bring low
 				uint8_t s_bit = master_sel_bit;
-				SPI_M_DDR	  |= s_bit;
-				SPI_M_PIN_REG &= ~s_bit;
+				SPI_M_DDR	|= s_bit;
+				SPI_M_PORT	&= ~s_bit;
 				
 				// pulse the clock with select line low to complete handshake
 				// give some delay to allow master to sink the current

@@ -20,7 +20,7 @@ int main(void) {
 	uint8_t addr = waitForVector();
 	
 	// add offset to show up in BBB scan
-	addr += 3;
+	addr += 10;
 	
 	// assign received vector to i2c initialization
 	setup_i2c(addr, 36, 0, 3);

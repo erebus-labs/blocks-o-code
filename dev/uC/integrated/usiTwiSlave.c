@@ -329,11 +329,6 @@ flushTwiBuffers(
 ********************************************************************************/
 
 
-#define STATUS_LED		PA1
-#define STATUS_PORT		PORTA
-#define TOGGLE_STATUS	(STATUS_PORT ^= _BV(STATUS_LED))
-
-
 // initialise USI for TWI slave mode
 
 void

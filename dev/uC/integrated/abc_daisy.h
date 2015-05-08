@@ -99,7 +99,7 @@ uint8_t waitForVector(void);
 
 // Testing LED (Debug)
 #if TESTING
-#define STATUS_LED		PA1
+#define STATUS_LED		PA4
 #define STATUS_PORT		PORTA
 #define TOGGLE_STATUS	(STATUS_PORT ^= _BV(STATUS_LED))
 #endif
