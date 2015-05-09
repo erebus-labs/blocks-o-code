@@ -71,8 +71,8 @@ Parsing Emulator for A Block of Code
 %left WHILE IF
 %precedence IF_ONLY
 %precedence IF_ELSE
-%left OUTPUT END_IF END_WHILE
-%left SAY AS_PLUS AS_MINUS AS_MULT AS_DIV AS_POW AS_MOD
+%left END_IF END_WHILE
+%left OUTPUT SAY AS_PLUS AS_MINUS AS_MULT AS_DIV AS_POW AS_MOD
 %left SUBEXP                    /* Expression in parens     */
 %precedence EVAR                /* Empty variable statement */
 %left EX_EQ EX_NE EX_LT EX_GT EX_LE EX_GE /* Comparision Operators    */
@@ -143,6 +143,10 @@ STATEMENT:
     | SAY     EXPRESSION {
         DEBUG("    (Parser Responds: Found 'say' statement)\n");
         $$ = ast_node_new_op('p', 0, $2);
+    }
+    | OUTPUT  EXPRESSION EXPRESSION {
+        DEBUG("    (Parser Responds: Found 'output' statement)\n");
+        $$ = ast_node_new_op('o', $2, $3);
     }
     | VAR     AS_PLUS    EXPRESSION {
         DEBUG("    (Parser Responds: Found '+=' statement)\n");

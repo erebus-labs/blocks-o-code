@@ -138,6 +138,11 @@ double eval_print(double x, double y) {
     return y;
 }
 
+double eval_output(double num, double y) {
+    fprintf(stdout, "#OUT(%d, %g)\n", (int)num, y);
+    return y;
+}
+
 double eval_charprint(double x, double y) {
     fprintf(stdout, "%c", (char)y);
     return y;
@@ -301,7 +306,7 @@ eval_expr_fn eval_op_lut[128] = {
     [108] = &eval_cle,     // l
     [109] = &eval_default, // m
     [110] = &eval_default, // n
-    [111] = &eval_default, // o
+    [111] = &eval_output,  // o
     [112] = &eval_print,   // p
     [113] = &eval_default, // q
     [114] = &eval_default, // r
