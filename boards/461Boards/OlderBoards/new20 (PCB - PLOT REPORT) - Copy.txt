@@ -1,0 +1,145 @@
+PLOT REPORT
+-----------
+
+Report File:        C:\Users\Nathan\Documents\GitHub\blocks-o-code\boards\461Boards\new20 (PCB - PLOT REPORT).txt
+Report Written:     Friday, March 20, 2015
+Design Path:        C:\Users\Nathan\Documents\GitHub\blocks-o-code\boards\461Boards\new20.pcb
+Design Title:       
+Created:            3/19/2015 10:16:11 AM
+Last Saved:         3/20/2015 12:20:07 PM
+Editing Time:       406 min
+Units:              mm (precision 1)
+
+
+Device Settings
+===============
+
+
+Gerber Settings
+===============
+
+    Leading zero suppression.
+    G01 assumed throughout.
+    Line termination <*> <CR> <LF>.
+    2.3 format absolute inches.
+    Format commands defined in Gerber file.
+    Aperture table defined in Gerber file.
+    Hardware arcs allowed.
+
+
+Drill Settings
+==============
+
+    Excellon Format 1    Format 2.3 absolute in inches.
+    No zero suppression.
+
+
+Plots Output
+============
+
+
+Gerber Output
+=============
+
+C:\Users\Nathan\AppData\Roaming\Microsoft\Windows\Network Shortcuts\ABCtests\new20 - Top Copper.gbr
+
+    Layers:
+    --------------
+    Top Copper
+
+    D-Code Shape  (thou)
+    ----------------------------------------------
+    D12    Square 60.00
+    D13    Round 60.00
+    D14    Square 60.00
+    D15    Rectangle 55.00 X 60.00  Rotation 90
+    D16    Round 70.00
+    D17    Round 56.00
+    D18    Round 50.00
+    D70    Round 15.00
+    D20    Round 98.43
+
+Gerber Output
+=============
+
+C:\Users\Nathan\AppData\Roaming\Microsoft\Windows\Network Shortcuts\ABCtests\new20 - Top Copper (Paste).gbr
+
+    Layers:
+    --------------
+    Top Copper
+
+    D-Code Shape  (thou)
+    ----------------------------------------------
+    D21    Rectangle 51.00 X 56.00  Rotation 90
+
+Gerber Output
+=============
+
+C:\Users\Nathan\AppData\Roaming\Microsoft\Windows\Network Shortcuts\ABCtests\new20 - Bottom Copper.gbr
+
+    Layers:
+    -----------------
+    Bottom Copper
+
+    D-Code Shape  (thou)
+    -----------------------
+    D12    Square 60.00
+    D13    Round 60.00
+    D14    Square 60.00
+    D16    Round 70.00
+    D17    Round 56.00
+    D18    Round 50.00
+    D71    Round 5.00
+    D20    Round 98.43
+
+NC Drill Output
+===============
+
+C:\Users\Nathan\AppData\Roaming\Microsoft\Windows\Network Shortcuts\ABCtests\new20 - Drill Data - [Through Hole].drl
+
+    Output:
+    ---------------------------
+    Plated Round Drill Holes
+    Plated Slots
+    Plated Board Outlines
+
+    Tool  Size      Count   ID
+    ---------------------------------
+    T001  00.032 in 23    D
+    T002  00.035 in 19    C
+    T003  00.039 in 4     E
+    ---------------------------------
+    Total           46
+    ---------------------------------
+
+C:\Users\Nathan\AppData\Roaming\Microsoft\Windows\Network Shortcuts\ABCtests\new20 - Drill Data - [Through Hole] (Unplated).drl
+
+    Output:
+    -----------------------------
+    Unplated Round Drill Holes
+    Unplated Slots
+    Unplated Board Outlines
+
+    Tool  Size      Count   ID
+    ---------------------------------
+    T001  00.025 in 1
+    T002  00.087 in 4     G
+    ---------------------------------
+    Total           5
+    ---------------------------------
+
+
+Gerber Output
+=============
+
+C:\Users\Nathan\AppData\Roaming\Microsoft\Windows\Network Shortcuts\ABCtests\new20 - Plot 1.gbr
+
+    Layers:
+    ------------------
+    Board Outlines
+
+    D-Code Shape  (thou)
+    -----------------------
+    D71    Round 5.00
+
+End Of Report.
