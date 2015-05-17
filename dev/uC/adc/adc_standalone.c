@@ -16,10 +16,10 @@ uint8_t get_adc(void)
 void setup_adc(void)
 {
 	ADMUX = (1<<ADLAR)|(1<<MUX0); //set 8 MSB of 10 bit adc to ADCH, set ADC to PA1
+	//OCR0A = 0x10; //counter0 match A for 250KHz from 8M sys clock (max resolution)
 	//ADCSRB = (1<<ADTS2); //set to make a measurement every counter0 overflow (ADTS0&ADTS1) for match A
 	//TCCR0A = (1<<0) //CTC0 reset the counter on match
 	//TCCR0B = (1<<CS01); //turn on counter0 using sys clock
-	//OCR0A = 0x10; //counter0 match A for 250KHz from 8M sys clock (max resolution)
 	ADCSRA = (1<<ADEN); // enable ADC with sys clock/2 (max speed) |(1<<ADATE) to set periodic measurement
 	ADCSRA |= (1<<ADSC); //Start reading
 }
