@@ -28,7 +28,21 @@ uint8_t getDefaultData(void) {
 	return  UINT8_MAX;
 }
 
+uint8_t sendHorizDefault(void);
+
+uint8_t sendVertDefault(void);
+
+uint8_t sendHorizDefault(void) {
+	return getDefaultData();
+}
+
+uint8_t sendVertDefault(void) {
+	return getDefaultData();
+}
+
 getData_ptr get_data = getDefaultData;
+sendHorizontal_ptr send_horiz = sendHorizDefault;
+sendVertical_ptr send_vert = sendVertDefault;
 
 //void Demo_Function_Select();
 //void WDT_on();
@@ -60,6 +74,14 @@ void requestEvent_i2c(void)  //this runs when a read is detected for address
 {  
   switch (State_i2c)
   {
+  case 9: // send horizontal
+	usiTwiTransmitByte(send_horiz());
+	break;
+		  
+  case 8: // send vertical
+	usiTwiTransmitByte(send_vert());
+	break;
+	
   case 5:
 	usiTwiTransmitByte(Y_position);
 	State_i2c = 0;
@@ -114,14 +136,21 @@ void I2C_setup(uint8_t slave_add)
 }
 
 
-void setup_i2c(uint8_t slave_add,getData_ptr getDataFunc,uint8_t X,uint8_t Y)
+void setup_i2c(uint8_t slave_add,
+			   getData_ptr getDataFunc,
+			   sendHorizontal_ptr sendHorizFunc,
+			   sendVertical_ptr sendVertFunc,
+			   uint8_t X,
+			   uint8_t Y)
 {
-     I2C_setup(slave_add);
-	 X_position = X;
-	 Y_position = Y;
-	 get_data = getDataFunc;
-     usi_onReceiverPtr = receiveEvent_i2c;
-     usi_onRequestPtr = requestEvent_i2c;
+	I2C_setup(slave_add);
+	X_position = X;
+	Y_position = Y;
+	get_data = getDataFunc;
+	send_horiz = sendHorizFunc;
+	send_vert = sendVertFunc;
+	usi_onReceiverPtr = receiveEvent_i2c;
+	usi_onRequestPtr = requestEvent_i2c;
 
 }
 

@@ -25,13 +25,13 @@ def addrFvect(x,y):
 	else:
 		return (0xff)
 
-def I2cLex(x ,y):
+def I2cLex(x, y, reg):
 	address = addrFvect(x,y)
 	if(address == 0xff):
 		return lex.noblock
 	else:
-		i2caddr = Adafruit_I2C(address, busname=2)
-		val = i2caddr.readU8(0)
+		i2caddr = Adafruit_I2C(address, busnum=2)
+		val = i2caddr.readU8(reg)
 		if (val == -1):
 			return lex.noblock
 		else:
@@ -161,39 +161,50 @@ def placeBlock(x, y, new_block):
 
 def scan(x, y):
 
-    new_block = I2cLex(x, y)     # read from i2c line (0)
+    new_block = I2cLex(x, y, 0)     # read from i2c line (0)
     print new_block
     if new_block == 0:
         return 0
 
+    time.sleep(0.01)
     new_block = Block(x, y, new_block)
     placeBlock(x, y, new_block)
-    time.sleep(0.1)
 
     if x == 0 and new_block.above == True:
-        wait = 10
+        # wait = 10
         read_block = scan(x, y+1)
-        while read_block == 0 and wait > 0:
-			new_block = I2cLex(x, y)      # read current block - sending up (1)
+        if read_block == 0: #and wait > 0:
+			new_block = I2cLex(x, y, 8)      # read current block - sending up (1)
 			new_block = Block(x, y, new_block)
 			placeBlock(x, y, new_block)
+			time.sleep(1.5)
 			read_block = scan(x, y+1)
-			time.sleep(0.1)
-			wait -= 1
+			# time.sleep(0.01)
+			# wait -= 1
 
     if new_block.right == True:
-        wait = 10
+        # wait = 10
         read_block = scan(x+1, y)
-        while read_block == 0 and wait > 0:
-			new_block = I2cLex(x, y)      # read current block - sending right (2)
+        if read_block == 0: #and wait > 0:
+			new_block = I2cLex(x, y, 9)      # read current block - sending right (2)
 			new_block = Block(x, y, new_block)
 			placeBlock(x, y, new_block)
+			time.sleep(1.5)
 			read_block = scan(x+1, y)
-			time.sleep(0.1)
-			wait -= 1
+			# time.sleep(0.01)
+			# wait -= 1
 
     print 'found block:', new_block
     return 1
+
+def showTopo(topology):
+    print '++++++++++++++++++++++++++'
+    for row in reversed(topology):
+        for block in row:
+            if block != 0:
+                print '[', block, ']',
+        print
+    print '++++++++++++++++++++++++++'
 
 setupHandshake()
 print "Starting handshake..."
@@ -203,10 +214,11 @@ print "Handshake completed."
 setupSpi()
 spi_transfer(i2c_addr(0, 0))
 
-time.sleep(0.5)
+time.sleep(1.5)
 
 scan(0, 1)
 
+showTopo(topo)
 
 # 00 => No Neighbor / No Changes
 # 01 => New Right Block

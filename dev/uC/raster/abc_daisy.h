@@ -32,6 +32,10 @@ uint8_t adjacentBlocks(void);
 
 void forwardChain(void);
 
+void sendHorizontal(void);
+
+void sendVertical(void);
+
 /**
  *	Microcontroller selection
  */

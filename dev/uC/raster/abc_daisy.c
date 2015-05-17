@@ -125,6 +125,19 @@ void forwardChain(void) {
 	initSPIMaster();
 }
 
+void sendHorizontal(void) {
+	DDRA |= _BV(PA4);
+	PORTA |= _BV(PORTA4);
+	
+	s_toggle_left = 1;
+	initSPIMaster();
+}
+
+void sendVertical(void) {
+	s_toggle_left = 0;
+	initSPIMaster();
+}
+
 /**
  *  Sets up master communication and sends vector.
  *
@@ -173,6 +186,9 @@ void toggleUntilMasterResponse(void) {
 		
 		// bring SS_F_LEFT or SS_F_BELOW back down LOW
 		SPI_S_PORT &= ~_BV(signal);
+		
+		// master process may be busy, give time to finish and send interrupt signal
+		_delay_ms(m_clk_ms);
 		
 		// toggle to other input select
 		s_toggle_left = !s_toggle_left;
@@ -294,7 +310,7 @@ ISR(PCINT_vect) {
 			}
 			
 			// unexpected input for state, reset handshake
-//			resetSlaveState();
+			resetSlaveState();
 			break;
 			
 		// soft SPI slave select triggers transmission
@@ -345,7 +361,7 @@ ISR(PCINT_vect) {
 			// handshake started, send response signals
 			if (cur_state == MasterHandshakeA) {
 				
-				PORTA |= _BV(PA3);
+//				PORTA |= _BV(PA3);
 
 //				PORTA &= ~_BV(PA2);
 				
@@ -362,7 +378,7 @@ ISR(PCINT_vect) {
 				// advance handshake
 				cur_state = MasterHandshakeB;
 				
-				PORTA |= _BV(PA2);
+//				PORTA |= _BV(PA2);
 				
 				// handshake continued, send response signals
 				SPI_M_DO_REG &= ~_BV(SPI_M_DO);
@@ -393,7 +409,7 @@ ISR(PCINT_vect) {
 				
 				// pulse the clock with select line low to complete handshake
 				// give some delay to allow master to sink the current
-				_delay_ms(40);
+				_delay_ms(30);
 				SPI_M_DO_REG  |= _BV(SPI_M_CLK);
 				_delay_ms(m_clk_ms);
 				SPI_M_DO_REG  &= ~_BV(SPI_M_CLK);
@@ -412,7 +428,7 @@ ISR(PCINT_vect) {
 				// allow blocks to finish
 				_delay_ms(150);
 				
-				PORTA &= ~_BV(PA4);
+//				PORTA &= ~_BV(PA4);
 				
 				break;
 			}
@@ -435,8 +451,8 @@ ISR(PCINT_vect) {
  */
 static inline void resetSlaveState(void) {
 	// wait for other block(s) to finish work
-	_delay_ms(100);
-	initSlaveHandshake();
+	_delay_ms(50);
+	waitForVector();
 }
 
 static inline void disableSPISlave(void) {
@@ -444,7 +460,7 @@ static inline void disableSPISlave(void) {
 	SPI_S_DDR	|= _BV(SPI_F_B_DIR);
 	SPI_S_DDR	|= _BV(SPI_F_L_DIR);
 	
-	// start slave selects low
+	// return slave selects LOW
 	SPI_S_PORT	&= ~_BV(SS_F_BELOW);
 	SPI_S_PORT	&= ~_BV(SS_F_LEFT);
 	
@@ -458,7 +474,7 @@ static inline void disableSPISlave(void) {
 
 static inline void resetMasterState(void) {
 	// wait for other block(s) to finish work
-	_delay_ms(100);
+	_delay_ms(50);
 	initSPIMaster();
 }
 
@@ -477,8 +493,8 @@ static inline void disableSPIMaster(void) {
 	SPI_M_PORT	 |= _BV(SPI_T_R_DIR);
 	
 	// change to tri state (Hi-Z) inputs to 'detatch' from bus
-	SPI_M_DO_DDR |= ~_BV(SPI_M_CLK_DIR);
-	SPI_M_DO_DDR |= ~_BV(SPI_M_DO_DIR);
+	SPI_M_DO_DDR &= ~_BV(SPI_M_CLK_DIR);
+	SPI_M_DO_DDR &= ~_BV(SPI_M_DO_DIR);
 	SPI_M_DO_REG &= ~_BV(SPI_M_DO);
 	SPI_M_DO_REG &= ~_BV(SPI_M_CLK);
 }
@@ -566,12 +582,21 @@ static inline void initSPIMaster(void) {
 //	cli();
 	
 	cur_state = StartMasterHandshake;
+
+	master_sel_bit  = 0;
 	
-	// if received from left, or if considered 'at the top' (i.e. in the first,
+	// return slave select lines back to inputs to "listen" block presence
+	// and enable pull-up resistors
+	SPI_M_DDR	 &= ~_BV(SPI_T_A_DIR);		// to-above line
+	SPI_M_DDR	 &= ~_BV(SPI_T_R_DIR);		// to-right line
+	SPI_M_PORT	 |= _BV(SPI_T_A_DIR);		// pull-up resistors
+	SPI_M_PORT	 |= _BV(SPI_T_R_DIR);
+	
+	// If received from left, or if considered 'at the top' (i.e. in the first,
 	// leftmost column and received from below but no block exists above), then
-	// send to the right, otherwise send to the above block.
+	// send to the right. Otherwise send to the above block.
 	uint8_t opposite = 0;
-	if (s_toggle_left){// || (!(i2c_addr & 0b111) && (SPI_M_PIN_REG & SS_T_ABOVE))){
+	if (s_toggle_left || (!(i2c_addr & 0b111) && (SPI_M_PIN_REG & _BV(SS_T_ABOVE)))){
 		opposite = SS_T_RIGHT;
 		SPI_PCMSK |= _BV(SPI_T_R_PCINT);
 //		PORTA |= _BV(PA3);
@@ -585,8 +610,8 @@ static inline void initSPIMaster(void) {
 	// respond by bringing m_do and m_clk LOW to initiate handshake
 	if (!(SPI_M_PIN_REG & _BV(opposite))) {
 		
-		PORTA = 0;
-		PORTA |= _BV(PA4);
+//		PORTA = 0;
+//		PORTA |= _BV(PA4);
 		
 		// SPI master signal directions
 		SPI_M_DO_DDR |= _BV(SPI_M_CLK_DIR);		// set master clock as output
@@ -595,12 +620,23 @@ static inline void initSPIMaster(void) {
 		// Bring m_clk and m_do LOW to start handshake for opposing block
 		SPI_M_DO_REG &= ~_BV(SPI_M_DO);
 		SPI_M_DO_REG &= ~_BV(SPI_M_CLK);
+		
+		// SPI interrupt port
+		GIMSK		 |= _BV(SPI_M_INT_PORT);	// master port interrupt enable
+		
+		// allow lines to register changes and interrupt
+		uint8_t wait = 15;
+		while (cur_state == StartMasterHandshake && wait) {
+			_delay_ms(1);
+			--wait;
+		}
+		
+		// no handshake initiated, release lines
+//		if (cur_state == StartMasterHandshake) {
+//			disableSPIMaster();
+//		}
 	}
 
-	// SPI interrupt port
-	GIMSK |= _BV(SPI_M_INT_PORT);				// master port interrupt enable
-	
-	master_sel_bit  = 0;
 	
 	// re-enable interrupts
 //	sei();
@@ -680,9 +716,9 @@ static inline void sendVector(uint8_t slave_bit) {
 		
 		// pulse clock
 		SPI_M_DO_REG |= _BV(SPI_M_CLK);
-		_delay_us(m_clk_ms);
+		_delay_ms(5);
 		SPI_M_DO_REG &= ~_BV(SPI_M_CLK);
-		_delay_us(m_clk_ms);
+		_delay_ms(5);
 	}
 	
 	// pull data to default LOW
