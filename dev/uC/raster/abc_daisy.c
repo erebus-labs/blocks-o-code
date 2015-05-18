@@ -481,9 +481,9 @@ static inline void resetMasterState(void) {
 static inline void disableSPIMaster(void) {
 	
 	// disable interrupts
-	SPI_PCMSK |= _BV(SPI_T_R_PCINT);
-	SPI_PCMSK |= _BV(SPI_T_A_PCINT);
-	GIMSK	  &= ~_BV(SPI_M_INT_PORT);
+	SPI_PCMSK	 |= _BV(SPI_T_R_PCINT);
+	SPI_PCMSK	 |= _BV(SPI_T_A_PCINT);
+	GIMSK		 &= ~_BV(SPI_M_INT_PORT);
 
 	// change slave select lines back to inputs to "listen" block presence
 	// and enable pull-up resistors
@@ -537,7 +537,7 @@ void initSlaveHandshake(void) {
 	
 	// enable pin change interrupts (PCI)
 	GIMSK		 |= _BV(SPI_CLK_INT_PRT);	// SPI slave clock interrupt port
-	SPI_PCMSK	  = _BV(SPI_S_CLK_PCINT);	// SPI slave clock
+	SPI_PCMSK	  = _BV(SPI_S_CLK_PCINT);	// SPI slave clock only
 	
 //	PORTA &= 0b11000011;
 }
@@ -552,12 +552,13 @@ static inline void initSPISlave(void) {
 	// SPI signal directions
 	SPI_S_DDR	 &= ~_BV(SPI_S_CLK_DIR);	// set slave clock as input
 	SPI_S_DI_DDR &= ~_BV(SPI_S_DI_DIR);		// set slave DI as input
-	SPI_S_DDR	 &= ~_BV(SPI_F_B_DIR);		// set slave selects as inputs
-	SPI_S_DDR	 &= ~_BV(SPI_F_L_DIR);
 	
-	// previous pin values associated with select lines
-	prev_pin_b	 &= ~_BV(SS_F_BELOW);		// initialized to low
-	prev_pin_b	 &= ~_BV(SS_F_LEFT);		// "slave select" pulls high
+	// change only currently active select line to input
+	SPI_S_DDR	 &= ~_BV((s_toggle_left) ? (SPI_F_L_DIR) : (SPI_F_B_DIR));
+	
+	// previous pin values associated with select line,
+	// initialized to low, "slave select" pulls high
+	prev_pin_b	 &= ~_BV((s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW));
 	
 	// enable pin change interrupts (PCI)
 	GIMSK		 |= _BV(SPI_S_INT_PORT);	// SPI interrupt port
@@ -589,8 +590,8 @@ static inline void initSPIMaster(void) {
 	// and enable pull-up resistors
 	SPI_M_DDR	 &= ~_BV(SPI_T_A_DIR);		// to-above line
 	SPI_M_DDR	 &= ~_BV(SPI_T_R_DIR);		// to-right line
-	SPI_M_PORT	 |= _BV(SPI_T_A_DIR);		// pull-up resistors
-	SPI_M_PORT	 |= _BV(SPI_T_R_DIR);
+	SPI_M_PORT	 |= _BV(SS_T_ABOVE);		// pull-up resistors
+	SPI_M_PORT	 |= _BV(SS_T_RIGHT);
 	
 	// If received from left, or if considered 'at the top' (i.e. in the first,
 	// leftmost column and received from below but no block exists above), then

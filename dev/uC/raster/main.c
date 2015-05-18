@@ -13,7 +13,7 @@ typedef enum {
 	Print
 } BlockFunc;
 
-static BlockFunc function = Three;
+static BlockFunc function = A_Var;
 
 static void initIO(void);
 static void startupSequence(void);
@@ -60,9 +60,6 @@ int main(void) {
 	forwardChain();
 	
 	sei();
-	
-	// set Status LED solid ON
-	STATUS_PORT |= STATUS_LED;
 	
 	// continuously poll i2c for commands
 	while (loop_i2c()) {
