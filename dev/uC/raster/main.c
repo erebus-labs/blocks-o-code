@@ -13,7 +13,7 @@ typedef enum {
 	Print
 } BlockFunc;
 
-static BlockFunc function = Three;
+static BlockFunc function = Print;
 
 static volatile uint8_t sendUpFlag		= 0;
 static volatile uint8_t sendRightFlag	= 0;
@@ -32,21 +32,24 @@ static uint8_t getMyData(void) {
 
 static uint8_t sendRight(void) {
 	++sendRightFlag;
+//	sendHorizontal();
 	return getMyData();
 }
 
 static uint8_t sendUp(void) {
 	++sendUpFlag;
+//	sendVertical();
 	return getMyData();
 }
 
 static void advanceVector(void) {
+//	TOGGLE_STATUS;
 	if (sendUpFlag) {
 		sendVertical();
 		sendUpFlag = 0;
 	}
 	if (sendRightFlag) {
-		sendRight();
+		sendHorizontal();
 		sendRightFlag = 0;
 	}
 }
@@ -73,6 +76,8 @@ int main(void) {
 	setup_i2c(addr, gData, sHoriz, sVert, 0, 0);
 	
 	forwardChain();
+	
+	STATUS_PORT &= ~_BV(STATUS_LED);
 	
 	sei();
 	

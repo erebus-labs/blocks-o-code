@@ -126,9 +126,10 @@ void forwardChain(void) {
 }
 
 void sendHorizontal(void) {
-	DDRA |= _BV(PA4);
-	PORTA |= _BV(PORTA4);
-	
+//	DDRA |= _BV(PA4);
+//	PORTA |= _BV(PORTA4);
+	STATUS_PORT |= _BV(STATUS_LED);
+
 	s_toggle_left = 1;
 	initSPIMaster();
 }
