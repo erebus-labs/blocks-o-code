@@ -3,8 +3,16 @@
 import Adafruit_BBIO.GPIO as GPIO
 from Adafruit_I2C import Adafruit_I2C
 import time
+from sys import argv
 
+delay = 0.75
 pause = 0.02
+
+arg = False
+if len(argv)>1:
+	file, arg = argv
+	if arg=='-c':
+		arg = True
 
 # i2cClock 19
 # i2cData 20
@@ -30,7 +38,13 @@ def I2cLex(x, y, reg):
 	if(address == 0xff):
 		return lex.noblock
 	else:
+		before = time.time()
 		i2caddr = Adafruit_I2C(address, busnum=2)
+		after = time.time()
+
+		if (after-before) > 0.4:
+			print "Stall"
+
 		val = i2caddr.readU8(reg)
 		if (val == -1):
 			return lex.noblock
@@ -138,7 +152,20 @@ class Block(object):
         desc += ' A' if self.above else ' a'
         return desc
 
-topo = []
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.data==other.data
+
+    def __ne__(self, other):
+        return not self==other
+
+    def __cmp__(self, other):
+        return self==other
+
+    # def __hash__(self):
+        # print 'hash'
+        # return hash(self.data, self.func)
+
+
 
 def placeBlock(x, y, new_block):
 
@@ -160,9 +187,8 @@ def placeBlock(x, y, new_block):
             # print 'new', new_block
 
 def scan(x, y):
-
     new_block = I2cLex(x, y, 0)     # read from i2c line (0)
-    print new_block
+    # print new_block
     if new_block == 0:
         return 0
 
@@ -174,10 +200,10 @@ def scan(x, y):
         # wait = 10
         read_block = scan(x, y+1)
         if read_block == 0: #and wait > 0:
-			new_block = I2cLex(x, y, 8)      # read current block - sending up (1)
+			new_block = I2cLex(x, y, 8)      # read current block - sending up (8)
 			new_block = Block(x, y, new_block)
 			placeBlock(x, y, new_block)
-			time.sleep(1.5)
+			time.sleep(delay)
 			read_block = scan(x, y+1)
 			# time.sleep(0.01)
 			# wait -= 1
@@ -186,15 +212,15 @@ def scan(x, y):
         # wait = 10
         read_block = scan(x+1, y)
         if read_block == 0: #and wait > 0:
-			new_block = I2cLex(x, y, 9)      # read current block - sending right (2)
+			new_block = I2cLex(x, y, 9)      # read current block - sending right (9)
 			new_block = Block(x, y, new_block)
 			placeBlock(x, y, new_block)
-			time.sleep(1.5)
+			time.sleep(delay)
 			read_block = scan(x+1, y)
 			# time.sleep(0.01)
 			# wait -= 1
 
-    print 'found block:', new_block
+    # print 'found block:', new_block
     return 1
 
 def showTopo(topology):
@@ -214,11 +240,19 @@ print "Handshake completed."
 setupSpi()
 spi_transfer(i2c_addr(0, 0))
 
-time.sleep(1.5)
+go = True
+old = []
+while go:
+	time.sleep(delay)
+	topo = []
+	block = scan(0, 1)
 
-scan(0, 1)
+	if block==1 and len(topo)>0 and topo!=old:
+		showTopo(topo)
+		old = topo
 
-showTopo(topo)
+	if not arg:
+		go = False
 
 # 00 => No Neighbor / No Changes
 # 01 => New Right Block

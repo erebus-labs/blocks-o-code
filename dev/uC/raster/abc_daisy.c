@@ -59,7 +59,7 @@ static volatile uint8_t s_toggle_left	= 0;
 static volatile uint8_t master_sel_bit  = 0;
 static volatile uint8_t slave_sel_bit   = 0;
 
-static const	uint8_t m_clk_ms		= 15;
+static const	uint8_t clk_ms			= 2;
 
 void debugBlink(void);
 
@@ -179,28 +179,30 @@ void toggleUntilMasterResponse(void) {
 	uint8_t signal = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
 	
 	// spin until handshake start has been recognized
-	while (slaveSelectToggler(signal) == StartSlaveHandshake) {
+	uint8_t repeat = 1;
+	while (repeat) {
+		
+		// toggles slave select lines until response
+		slaveSelectToggler(signal);
 		
 		// disable interrupts globally, prevents disruptive late attempts
-		cli();
-		
-		// bring SS_F_LEFT or SS_F_BELOW back down LOW
-		SPI_S_PORT &= ~_BV(signal);
-		
-		// master process may be busy, give time to finish and send interrupt signal
-		_delay_ms(m_clk_ms);
-		
-		// toggle to other input select
-		s_toggle_left = !s_toggle_left;
-		
-		// reassign signal from toggled select
-		signal = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
-		
-		// (re)enable global interrupt flag
-		sei();
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+			if (cur_state == StartSlaveHandshake) {
+				// bring SS_F_LEFT or SS_F_BELOW back down LOW
+				SPI_S_PORT &= ~_BV(signal);
+				
+				// toggle to other input select
+				s_toggle_left = !s_toggle_left;
+				
+				// reassign signal from toggled select
+				signal = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
+			} else {
+				// handshake started
+				repeat = 0;
+			}
+		}
 	}
 }
-
 /**
  *  Signal master block through slave select line to trigger slave handshake.
  *
@@ -214,7 +216,7 @@ uint8_t slaveSelectToggler(uint8_t signal) {
 	SPI_S_PORT |= _BV(signal);
 	
 	// master process may be busy, give time to finish and send interrupt signal
-	_delay_ms(m_clk_ms);
+	_delay_ms(clk_ms);
 	
 	// interrupts will advance program state
 	return cur_state;
@@ -242,7 +244,7 @@ ISR(PCINT_vect) {
 				// advance handshake
 				cur_state = SlaveHandshakeA;
 				
-				_delay_ms(5);
+				_delay_ms(clk_ms);
 //				PORTA |= _BV(PA2);
 
 				// master clock triggers the select signal
@@ -265,7 +267,7 @@ ISR(PCINT_vect) {
 				// advance handshake
 				cur_state = SlaveHandshakeB;
 
-				_delay_ms(10);
+				_delay_ms(clk_ms);
 //				PORTA |= _BV(PA3);
 
 				// determine currently responding signal
@@ -276,7 +278,7 @@ ISR(PCINT_vect) {
 				SPI_S_PORT |= _BV(sel_pin);
 				
 				// release select line for master to retain after a short delay
-				_delay_ms(10);
+				_delay_ms(5);
 				SPI_S_DDR  &= ~_BV(sel_dir);		// set responding as input
 				
 				// pull-up resistor
@@ -302,7 +304,7 @@ ISR(PCINT_vect) {
 				// complete handshake and initialize SPI slave for RX
 				initSPISlave();
 				
-				_delay_ms(5);
+				_delay_ms(clk_ms);
 //				PORTA |= _BV(PA4);
 				
 				// exit switch statement
@@ -399,7 +401,7 @@ ISR(PCINT_vect) {
 				cur_state = SpiMaster;
 				
 				// let slave device release signal, long delay for capacitance?
-				_delay_ms(20);
+				_delay_ms(10);
 //				PORTA |= _BV(PA4);
 				
 				// set corresponding slave select as output and bring low
@@ -409,11 +411,11 @@ ISR(PCINT_vect) {
 				
 				// pulse the clock with select line low to complete handshake
 				// give some delay to allow master to sink the current
-				_delay_ms(30);
+				_delay_ms(20);
 				SPI_M_DO_REG  |= _BV(SPI_M_CLK);
-				_delay_ms(m_clk_ms);
+				_delay_ms(clk_ms);
 				SPI_M_DO_REG  &= ~_BV(SPI_M_CLK);
-				_delay_ms(m_clk_ms);
+				_delay_ms(clk_ms);
 				
 				// send current vector to requesting block
 				sendVector(s_bit);
@@ -422,11 +424,11 @@ ISR(PCINT_vect) {
 				disableSPIMaster();
 				
 				// get ready for commands from main processor board
-				_delay_ms(25);
+				_delay_ms(clk_ms);
 				cur_state = GlobalBusCommand;
 				
 				// allow blocks to finish
-				_delay_ms(150);
+//				_delay_ms(10);
 				
 //				PORTA &= ~_BV(PA4);
 				
@@ -451,7 +453,7 @@ ISR(PCINT_vect) {
  */
 static inline void resetSlaveState(void) {
 	// wait for other block(s) to finish work
-	_delay_ms(50);
+	_delay_ms(15);
 	waitForVector();
 }
 
@@ -474,7 +476,7 @@ static inline void disableSPISlave(void) {
 
 static inline void resetMasterState(void) {
 	// wait for other block(s) to finish work
-	_delay_ms(50);
+	_delay_ms(15);
 	initSPIMaster();
 }
 
@@ -510,6 +512,14 @@ void initSlaveHandshake(void) {
 	
 	cur_state = StartSlaveHandshake;
 	
+	// set slave selects temporarily as outputs to "announce" new block presence
+	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
+	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
+	
+	// start slave selects low
+	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
+	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
+	
 	// SPI slave signal directions and enable pull-up resistors
 	SPI_S_DDR	 &= ~_BV(SPI_S_CLK_DIR);	// set slave clock as input
 	SPI_S_DI_DDR &= ~_BV(SPI_S_DI_DIR);		// set slave DI as input
@@ -518,18 +528,10 @@ void initSlaveHandshake(void) {
 	
 	// set slave-selects temporarily as inputs to "listen"
 	// for new block presence and enable pull-up resistors
-	SPI_M_DDR	&= ~_BV(SPI_T_A_DIR);		// to-above line
-	SPI_M_DDR	&= ~_BV(SPI_T_R_DIR);		// to-right line
-	SPI_M_PORT	|= _BV(SPI_T_A_DIR);		// pull-up resistors
-	SPI_M_PORT	|= _BV(SPI_T_R_DIR);
-	
-	// set slave selects temporarily as outputs to "announce" new block presence
-	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
-	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
-	
-	// start slave selects low
-	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
-	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
+	SPI_M_DDR	 &= ~_BV(SPI_T_A_DIR);		// to-above line
+	SPI_M_DDR	 &= ~_BV(SPI_T_R_DIR);		// to-right line
+	SPI_M_PORT	 |= _BV(SPI_T_A_DIR);		// pull-up resistors
+	SPI_M_PORT	 |= _BV(SPI_T_R_DIR);
 	
 	// only the slave clock signal can interrupt
 	PCMSK0 = 0;
@@ -626,8 +628,8 @@ static inline void initSPIMaster(void) {
 		GIMSK		 |= _BV(SPI_M_INT_PORT);	// master port interrupt enable
 		
 		// allow lines to register changes and interrupt
-		uint8_t wait = 15;
-		while (cur_state == StartMasterHandshake && wait) {
+		uint8_t wait = 10;
+		while ((cur_state == StartMasterHandshake) && wait) {
 			_delay_ms(1);
 			--wait;
 		}
@@ -717,9 +719,9 @@ static inline void sendVector(uint8_t slave_bit) {
 		
 		// pulse clock
 		SPI_M_DO_REG |= _BV(SPI_M_CLK);
-		_delay_ms(5);
+		_delay_ms(1);
 		SPI_M_DO_REG &= ~_BV(SPI_M_CLK);
-		_delay_ms(5);
+		_delay_ms(1);
 	}
 	
 	// pull data to default LOW
@@ -732,7 +734,7 @@ static inline void sendVector(uint8_t slave_bit) {
 	SPI_M_PORT &= ~slave_bit;
 	
 	// need small delay to allow end of tx to be recognized
-	_delay_ms(m_clk_ms);
+	_delay_ms(clk_ms);
 }
 
 /**

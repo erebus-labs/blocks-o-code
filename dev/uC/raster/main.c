@@ -13,7 +13,10 @@ typedef enum {
 	Print
 } BlockFunc;
 
-static BlockFunc function = A_Var;
+static BlockFunc function = Three;
+
+static volatile uint8_t sendUpFlag		= 0;
+static volatile uint8_t sendRightFlag	= 0;
 
 static void initIO(void);
 static void startupSequence(void);
@@ -21,19 +24,31 @@ static void startupSequence(void);
 static uint8_t getMyData(void);
 static uint8_t sendRight(void);
 static uint8_t sendUp(void);
+static void advanceVector(void);
 
 static uint8_t getMyData(void) {
 	return adjacentBlocks() | function;
 }
 
 static uint8_t sendRight(void) {
-	sendHorizontal();
+	++sendRightFlag;
 	return getMyData();
 }
 
 static uint8_t sendUp(void) {
-	sendVertical();
+	++sendUpFlag;
 	return getMyData();
+}
+
+static void advanceVector(void) {
+	if (sendUpFlag) {
+		sendVertical();
+		sendUpFlag = 0;
+	}
+	if (sendRightFlag) {
+		sendRight();
+		sendRightFlag = 0;
+	}
 }
 
 int main(void) {
@@ -45,7 +60,7 @@ int main(void) {
 //	TOGGLE_STATUS;
 //	_delay_ms(100);
 //	TOGGLE_STATUS;
-
+	
 	// spin until position received from connected block (or BBB)
 	uint8_t addr = waitForVector();
 	
@@ -63,6 +78,7 @@ int main(void) {
 	
 	// continuously poll i2c for commands
 	while (loop_i2c()) {
+		advanceVector();
 //		_delay_ms(200);
 //		TOGGLE_STATUS;
 	}
