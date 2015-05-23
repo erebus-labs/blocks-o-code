@@ -46,8 +46,9 @@ def I2cLex(x, y, reg):
 			print "Stall"
 
 		val = i2caddr.readU8(reg)
+		# print reg, x, y, functions[val & 0b00111111]
 		if (val == -1):
-			return lex.noblock
+			return 0 #lex.noblock
 		else:
 			return val # lex.reverse_mapping[val]
 
@@ -132,7 +133,7 @@ def enum(*sequential, **named):
 
 lex = enum(noblock=0,plus=1,minus=2,one=3,two=4,X=5,assign=6,ifblock=7,lessthan=8)
 
-functions = {0: 'NOP', 1: "A", 2: ":", 3: "3", 4:"p"}
+functions = {-1: 'NOP', 1: "A", 2: ":", 3: "3", 4:"p", 42:"Life", 63:"ERR"}
 
 class Block(object):
     """asdf
@@ -188,11 +189,11 @@ def placeBlock(x, y, new_block):
 
 def scan(x, y):
     new_block = I2cLex(x, y, 0)     # read from i2c line (0)
-    # print new_block
+    # print x, y, new_block
     if new_block == 0:
         return 0
 
-    time.sleep(0.01)
+    time.sleep(0.05)
     new_block = Block(x, y, new_block)
     placeBlock(x, y, new_block)
 
@@ -200,7 +201,7 @@ def scan(x, y):
         # wait = 10
         read_block = scan(x, y+1)
         if read_block == 0: #and wait > 0:
-			new_block = I2cLex(x, y, 8)      # read current block - sending up (8)
+			new_block = I2cLex(x, y, 1)      # read current block - sending up (1)
 			new_block = Block(x, y, new_block)
 			placeBlock(x, y, new_block)
 			time.sleep(delay)
@@ -212,7 +213,7 @@ def scan(x, y):
         # wait = 10
         read_block = scan(x+1, y)
         if read_block == 0: #and wait > 0:
-			new_block = I2cLex(x, y, 9)      # read current block - sending right (9)
+			new_block = I2cLex(x, y, 2)      # read current block - sending right (2)
 			new_block = Block(x, y, new_block)
 			placeBlock(x, y, new_block)
 			time.sleep(delay)
