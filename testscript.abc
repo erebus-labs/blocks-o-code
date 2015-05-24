@@ -15,7 +15,6 @@ while a < 15
     end if
 
     say b
-foo
 
     output 1 a 
     output 4 a
