@@ -2,11 +2,12 @@
 
 from subprocess import Popen, PIPE
 from argparse import ArgumentParser
+import abc
 
 class ABCOrchestration(object):
     lexer_command = {'args': ['lexer.py']}
     error_command = [
-        {'args': ['python2', '-u', 'outputs/error.py']}
+        {'args': ['python2', '-u', 'abc/error.py']}
     ]
     output_commands = [
         {'args': ['python2', '-u', 'outputs/text-lcd.py', '1'], 'name': 'lcd'},
@@ -16,6 +17,7 @@ class ABCOrchestration(object):
         {'args': ['python2', '-u', 'outputs/print.py', '5'], 'name': 'print'}
     ]
     null_command = 'outputs/null.py'
+    INTERPRETER = 'abc/interpreter/abc'
     
     def __init__(self):
         self.commands = []
@@ -46,9 +48,9 @@ class ABCOrchestration(object):
         assert not (self.args.use_lexer and self.args.file)
         if self.args.use_lexer:
             self.commands.append(self.lexer_command)
-            self.commands.append({'args': ['./abc']})
+            self.commands.append({'args': [self.INTERPRETER]})
         else:
-            self.commands.append({'args': ['./abc', self.args.file]})
+            self.commands.append({'args': [self.INTERPRETER, self.args.file]})
         self.commands += self.error_command
         self.commands += self.output_commands
 
