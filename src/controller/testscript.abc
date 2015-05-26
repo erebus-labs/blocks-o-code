@@ -1,0 +1,11 @@
+#! /usr/local/bin/abc
+# Set A to 1
+a 1
+
+# Do a while loop
+while a < 5
+    a += 1
+    output 1 a
+    output 2 a 
+    output 4 a
+end while
