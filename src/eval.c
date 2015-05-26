@@ -14,7 +14,7 @@ Parsing Emulator for A Block of Code
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <unistd.h>
 #include "pool.h"
 #include "eval.h"
 
@@ -140,6 +140,8 @@ double eval_print(double x, double y) {
 
 double eval_output(double num, double y) {
     fprintf(stdout, "#OUT(%d, %g)\n", (int)num, y);
+    fflush(stdout);
+    sleep(3);
     return y;
 }
 

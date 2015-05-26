@@ -44,7 +44,7 @@ class ABCFilter(object):
 
             if not '#OUT(' + str(self.channel) in line:
                 sys.stdout.write(line)
-                sys.stdout.flush()
+                #sys.stdout.flush()
             else:
                 second_arg_with_paren = line.split(',')[1]
                 secondarg = second_arg_with_paren.split(')')[0]

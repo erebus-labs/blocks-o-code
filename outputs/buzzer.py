@@ -14,11 +14,12 @@ class BuzzerFilter(ABCFilter):
     def action(self, arg):
         num = int(arg)
         num = 0 if num < 0 else num
+        num = 5 if num > 5 else num
         for x in range(0, num):
             GPIO.output(self.pin, GPIO.HIGH)
             sleep(0.05)
             GPIO.output(self.pin, GPIO.LOW)
-            sleep(0.5)
+            sleep(0.25)
         sleep(1)
 
 if __name__=="__main__":

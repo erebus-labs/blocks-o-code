@@ -2,20 +2,10 @@
 # Set A to 1
 a 1
 
-# And also B
-b 1
-
 # Do a while loop
-while a < 15
+while a < 5
     a += 1
-
-    # Test an IF statement inside a while
-    if a % 2 = 0
-        b *= 2
-    end if
-
-    say b
-
-    output 1 a 
+    output 1 a
+    output 2 a 
     output 4 a
 end while

@@ -4,17 +4,16 @@ from subprocess import Popen, PIPE
 from argparse import ArgumentParser
 
 class ABCOrchestration(object):
-    lexer_command = [
-    ]
+    lexer_command = {'args': ['lexer.py']}
     error_command = [
-        {'args': ['python2', 'outputs/error.py']}
+        {'args': ['python2', '-u', 'outputs/error.py']}
     ]
     output_commands = [
-        {'args': ['python2', 'outputs/print.py', '1'], 'name': 'lcd'},
-        {'args': ['python2', 'outputs/print.py', '2'], 'name': 'rgb'},
-        {'args': ['python2', 'outputs/print.py', '3'], 'name': 'motor'},
-        {'args': ['python2', 'outputs/print.py', '4'], 'name': 'buzzer'},
-        {'args': ['python2', 'outputs/print.py', '5'], 'name': 'print'}
+        {'args': ['python2', '-u', 'outputs/text-lcd.py', '1'], 'name': 'lcd'},
+        {'args': ['python2', '-u', 'outputs/lcd-rgb.py', '2'], 'name': 'rgb'},
+        {'args': ['python2', '-u', 'outputs/motor.py', '3'], 'name': 'motor'},
+        {'args': ['python2', '-u', 'outputs/buzzer.py', '4'], 'name': 'buzzer'},
+        {'args': ['python2', '-u', 'outputs/print.py', '5'], 'name': 'print'}
     ]
     null_command = 'outputs/null.py'
     
