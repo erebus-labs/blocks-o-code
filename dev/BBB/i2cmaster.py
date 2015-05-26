@@ -15,11 +15,11 @@ def I2cLex(x ,y):
 		return lex.noblock
 	else:
 		i2caddr = Adafruit_I2C(address)
-		val = readu8(i2caddr,0)
+		val = i2caddr.readU8(0)
 		if (val == -1):
 			return lex.noblock
 		else:
-			return lex.reverse_mapping[val]
+			return val # lex.reverse_mapping[val]
 
 def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
@@ -27,13 +27,13 @@ def enum(*sequential, **named):
     enums['reverse_mapping'] = reverse
     return type('Enum', (), enums)
 
-lex = enum(noblock=0,plus=1,minus=2,one=3,two=4,X=5,assign=6,ifblock=7,lessthan=8)	
+lex = enum(noblock=0,plus=1,minus=2,one=3,two=4,X=5,assign=6,ifblock=7,lessthan=8)
 
 ###################################################################
-#start of run 
+#start of run
 ###################################################################
 for y in range(1,5):
     for x in range(0,4):
         z = I2cLex(x,y) #z will be returned value from i2c
-        print lex.reverse_mapping[z], 
-    print 
+        print lex.reverse_mapping[z],
+    print

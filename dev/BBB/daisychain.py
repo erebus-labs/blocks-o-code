@@ -4,12 +4,18 @@ import Adafruit_BBIO.GPIO as GPIO
 # from Adafruit_BBIO.SPI import SPI
 import time
 
-pause = 1
+pause = 0.02
+
+# i2cClock 19
+# i2cData 20
+# spiClock 21
+# slaveSelect 22
+# slaveDataOut 23
+# reset? 24
 
 spiClock = "P9_11"
 slaveSelect = "P9_12"
 MOSI = "P9_23"
-MISO = "P9_24"
 
 global dataIn
 
@@ -18,47 +24,43 @@ def i2c_addr(x, y):
 
 def setupHandshake():
     GPIO.setup(spiClock, GPIO.OUT)
-    # GPIO.output(spiClock, GPIO.LOW)
     GPIO.setup(MOSI, GPIO.OUT)
-    # GPIO.output(MOSI, GPIO.LOW)
     GPIO.setup(slaveSelect, GPIO.IN)
 
+def setupSpi():
+    # SPI mode 0: CPOL = 0, CPHA = 0. Slave Select (SS) lines idle low.
+    GPIO.setup(spiClock, GPIO.OUT)
+    GPIO.setup(slaveSelect, GPIO.OUT)
+    GPIO.setup(MOSI, GPIO.OUT)
+
 def handshake():
+    # print "START"
     GPIO.wait_for_edge(slaveSelect, GPIO.RISING)
     GPIO.output(MOSI, GPIO.HIGH)
     GPIO.output(spiClock, GPIO.HIGH)
-    time.sleep(0.01)
-    GPIO.output(spiClock, GPIO.LOW)
+
+    # print "A"
+    GPIO.wait_for_edge(slaveSelect, GPIO.FALLING)
     GPIO.output(MOSI, GPIO.LOW)
-    time.sleep(0.01)
-
-    # GPIO.wait_for_edge(slaveSelect, GPIO.RISING)
-    GPIO.output(spiClock, GPIO.HIGH)
-    time.sleep(0.01)
     GPIO.output(spiClock, GPIO.LOW)
-    time.sleep(0.01)
 
-    GPIO.output(MOSI, GPIO.HIGH)
+    # print "B"
+    GPIO.wait_for_edge(slaveSelect, GPIO.RISING)
+    GPIO.setup(slaveSelect, GPIO.OUT)
+    GPIO.output(slaveSelect, GPIO.LOW)
+
+    # print "C"
+    time.sleep(pause)
     GPIO.output(spiClock, GPIO.HIGH)
-    GPIO.setup(slaveSelect, GPIO.OUT)
-    GPIO.output(slaveSelect, GPIO.HIGH)
-    time.sleep(0.01)
+
+    # print "END"
+    time.sleep(pause)
     GPIO.output(spiClock, GPIO.LOW)
-    GPIO.output(MOSI, GPIO.LOW)
-    time.sleep(0.01)
 
-
-def setupSpi():
-    GPIO.setup(spiClock, GPIO.OUT)
-    # GPIO.output(spiClock, GPIO.LOW)
-    GPIO.setup(slaveSelect, GPIO.OUT)
-    # GPIO.output(slaveSelect, GPIO.HIGH)
-    GPIO.setup(MOSI, GPIO.OUT)
-    GPIO.setup(MISO, GPIO.IN)
 
 def spi_transfer(number):
     print "Writing " + "{0:b}".format(number) + "..."
-    GPIO.output(slaveSelect, GPIO.LOW)
+    GPIO.output(slaveSelect, GPIO.HIGH)
     num = int(number)
     dataIn = 0
 
@@ -70,37 +72,21 @@ def spi_transfer(number):
         else:
             GPIO.output(MOSI, GPIO.LOW)
 
+        # pulse clock
         GPIO.output(spiClock, GPIO.HIGH)
-
-        if GPIO.input(MISO):
-            dataIn |= (1 << i)
-        else:
-            dataIn &= (255 ^ (1 << i))
-
         GPIO.output(spiClock, GPIO.LOW)
 
+
     # time.sleep(pause)
-    # print str(count) + " messages"
-    GPIO.output(slaveSelect, GPIO.HIGH)
+    GPIO.output(slaveSelect, GPIO.LOW)
     # print "Wrote " + str(number) + "!"
     return dataIn
 
-while True:
-    setupHandshake()
-    print "Starting handshake..."
-    handshake()
-    print "Handshake completed."
-    setupSpi()
-    spi_transfer(i2c_addr(0, 0))
-
-# stop = False
-# while True != stop:
-#     response = str(raw_input("Enter 'x, y' coord to send, q to quit: "))
-#     if response != "q":
-#         x, y = response.split(',')
-#         rcvd = str(spi_transfer(i2c_addr(x, y)))
-#         print "Received: ", rcvd
-#     else:
-#         stop = True
-
-print "Thanks."
+#while True:
+setupHandshake()
+print "Starting handshake..."
+handshake()
+print "Handshake completed."
+    # time.sleep(pause)
+setupSpi()
+spi_transfer(i2c_addr(0, 0))
