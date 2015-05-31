@@ -31,22 +31,6 @@ Parsing Emulator for A Block of Code
 
     unsigned int nest_level = 1;
     char expects_condition = 0;
-    void print_nest() {
-        switch (expects_condition) {
-        case 0:
-            for (int i = 0; i < nest_level; i++) {
-                putchar('>');
-            }
-            break;
-        case 1:
-            printf("While what?");
-            break;
-        case 2:
-            printf("If what?");
-            break;
-        }
-        putchar(' ');
-    }
 
 %}
 
@@ -58,14 +42,6 @@ Parsing Emulator for A Block of Code
 #[^\n]*\n {
     /* Ignore Comments */
     yycolnum = 1;
-    if (g_source_file == stdin) {
-        // Only execute (by returning EOF) when on the global scope
-        if (nest_level == 1) {
-            DEBUG("Lexer says: Found a comment!\n");
-            return EOF;
-        }
-        print_nest();
-    }
     }
 
 [ \t] {
@@ -75,14 +51,11 @@ Parsing Emulator for A Block of Code
 
 \n {
     yycolnum = 1;
-    if (g_source_file == stdin) {
-        // Only execute (by returning EOF) when on the global scope
-        if (nest_level == 1) {
-            DEBUG("Lexer says: Accepting input\n");
-            return EOF;
-        }
-        print_nest();
     }
+
+(?i:run) {
+    DEBUG("Lexer says: Found 'run'\n");
+    return EOF;
     }
 
 [0-9]+\.[0-9]+ {
@@ -322,22 +295,6 @@ Parsing Emulator for A Block of Code
     if (g_source_file == stdin) {
         expects_condition = 0;
         g_interactive_quit = 1;
-        return INTERACTIVE_QUIT;
-    }
-    /* Dont recognize this if not in interactive mode */
-    errorline = yylineno;
-    errorcolumn = yycolnum;
-    errortext = yytext;
-    unrecognized = 1;
-    return ERROR;
-    }
-
-(?i:cancel)|(?i:forget) {
-    if (g_source_file == stdin) {
-        g_interactive_quit = 2;
-        if (nest_level > 0) nest_level--;
-        DEBUG("Lexer Says: Cancelling...\n");
-        YY_FLUSH_BUFFER;
         return INTERACTIVE_QUIT;
     }
     /* Dont recognize this if not in interactive mode */

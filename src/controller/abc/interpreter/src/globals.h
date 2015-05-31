@@ -28,5 +28,6 @@ extern double globals[];
 extern FILE* g_source_file;
 extern int g_interactive_quit;
 
+void g_reset_globals();
 
 #endif
