@@ -2,7 +2,7 @@
 
 from Adafruit_I2C import Adafruit_I2C
 
-class Command:
+class Commands:
     (
     ReadData,
     SendVertical,
@@ -37,31 +37,31 @@ class ABC_Global_Bus(object):
         return Adafruit_I2C(self.formatAddress(x, y), busnum=i2c_busnum).readU8(register)
 
     def readData(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 0) # Commands.ReadData)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.ReadData)
 
     def sendVertical(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 1) # Commands.SendVertical)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.SendVertical)
 
     def sendHorizontal(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 2) # Commands.SendHorizontal)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.SendHorizontal)
 
     def statusLedOn(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 3) # Commands.StatusLedOn)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.StatusLedOn)
 
     def statusLedBlink(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 4) # Commands.StatusLedBlink)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.StatusLedBlink)
 
     def statusLedOff(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 5) # Commands.StatusLedOff)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.StatusLedOff)
 
     def errorLedOn(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 6) # Commands.ErrorLedOn)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.ErrorLedOn)
 
     def errorLedBlink(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 7) # Commands.ReadData)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.ReadData)
 
     def errorLedOff(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 8) # Commands.ErrorLedOn)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.ErrorLedOn)
 
     def reset(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, 9) # Commands.Reset)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.Reset)
