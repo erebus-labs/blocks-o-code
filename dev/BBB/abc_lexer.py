@@ -20,8 +20,8 @@ value_tokens = [
 	'X',
 	'Y',
 	'Z',
-	'SUM',
-	'COUNT'
+	'sum',
+	'count'
 ]
 
 operator_tokens = [
@@ -83,7 +83,8 @@ class Block(object):
 
     def token_match(self, category, adc_val):
         subset = abc_tokens[category]
-        return subset[self.adc_map(adc_val, 0, len(subset)-1)]
+        token = subset[self.adc_map(adc_val, 0, len(subset)-1)]
+        return token if token != ':' else ' '
 
     def __repr__(self):
 		if self.debug:
