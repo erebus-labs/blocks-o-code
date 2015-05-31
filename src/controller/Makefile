@@ -14,6 +14,9 @@ ABCTARGETS=$(wildcard abc/*.py)
 OUTPUTTARGETS=$(wildcard outputs/*.py)
 ROOTTARGETS=$(wildcard *.py)
 
+SERVICEDTARGET=abc.service
+SERVICEDROOT=/etc/systemd/system/
+
 all: $(BINTARGETS)
 
 install: all
@@ -28,6 +31,8 @@ install: all
 
 	$(MKDIR) '$(OPTOUTPUTS)'
 	$(INSTALL) $(OUTPUTTARGETS) '$(OPTOUTPUTS)/'
+
+	$(INSTALL) $(SERVICEDTARGET) '$(SERVICEDROOT)/'
 
 clean:
 	$(MAKE) -C '$(LOCALABC)' clean

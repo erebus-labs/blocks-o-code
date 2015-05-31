@@ -1,0 +1,8 @@
+[Unit]
+Description=ABC Daemon
+
+[Service]
+ExecStart=python2 /opt/abc/orchestrate.py -d
+
+[Install]
+WantedBy=multi-user.target
