@@ -2,6 +2,8 @@
 
 from subprocess import Popen, PIPE
 from argparse import ArgumentParser
+from outputs.textlcd import LCDTextFilter
+from time import sleep
 import abc
 
 class ABCOrchestration(object):
@@ -10,8 +12,8 @@ class ABCOrchestration(object):
         {'args': ['python2', '-u', 'abc/error.py']}
     ]
     output_commands = [
-        {'args': ['python2', '-u', 'outputs/text-lcd.py', '1'], 'name': 'lcd'},
-        {'args': ['python2', '-u', 'outputs/lcd-rgb.py', '2'], 'name': 'rgb'},
+        {'args': ['python2', '-u', 'outputs/textlcd.py', '1'], 'name': 'lcd'},
+        {'args': ['python2', '-u', 'outputs/lcdrgb.py', '2'], 'name': 'rgb'},
         {'args': ['python2', '-u', 'outputs/motor.py', '3'], 'name': 'motor'},
         {'args': ['python2', '-u', 'outputs/buzzer.py', '4'], 'name': 'buzzer'},
         {'args': ['python2', '-u', 'outputs/print.py', '5'], 'name': 'print'}
@@ -24,10 +26,13 @@ class ABCOrchestration(object):
         self.parse_args()
         self._disable_outputs()
         self._setup_commands()
+        self.lcd = LCDTextFilter(filter=False)
 
     def parse_args(self):
         parser = ArgumentParser()
         parser.add_argument("-f", "--file", help="Run a test script instead of using the blocks")
+        parser.add_argument("-d", "--daemon", help="When run as a script, run in daemon mode",
+                action="store_true")
         for x in range(0,5):
             parser.add_argument("-{0}".format(x+1), "--disable-{0}".format(self.output_commands[x]['name']),
                 help="Disable output #{1}: {0}".format(self.output_commands[x]['name'], x+1),
@@ -42,7 +47,7 @@ class ABCOrchestration(object):
     def _disable_outputs(self):
         for command in self.output_commands:
             if vars(self.args)['disable_'+command['name']]:
-                command['args'][1] = self.null_command
+                command['args'][2] = self.null_command
 
     def _setup_commands(self):
         assert not (self.args.use_lexer and self.args.file)
@@ -55,10 +60,17 @@ class ABCOrchestration(object):
         self.commands += self.output_commands
 
     def _setup_pipes(self):
-        self.commands[0]['proc'] = Popen(self.commands[0]['args'], stdout=PIPE)
+        if self.args.use_lexer:
+            self.commands[0]['proc'] = Popen(self.commands[0]['args'], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            self.lexer_control = self.commands[0]['proc'].stdin
+            self.lexer_results = self.commands[0]['proc'].stderr
+        else:
+            self.commands[0]['proc'] = Popen(self.commands[0]['args'], stdout=PIPE)
+
         for needle in range(1, len(self.commands) - 1):
             self.commands[needle]['proc'] = Popen(self.commands[needle]['args'],
                 stdout=PIPE, stdin=self.commands[needle-1]['proc'].stdout)
+
         self.commands[-1]['proc'] = Popen(self.commands[-1]['args'],
             stdin=self.commands[-2]['proc'].stdout)
     
@@ -68,8 +80,42 @@ class ABCOrchestration(object):
 
     def run_once(self):
         self._setup_pipes()
+        if self.args.use_lexer:
+            self.lexer_run()
         self._wait_procs()
+
+    def read_lexer(self):
+        lines = ['', '']
+        while lines[1] != 'endprogram':
+            self.lcd.set_text(line[0] + '\n' + line[1])
+            sleep(1)
+            lines[0] = lines[1]
+            lines[1] = self.lexer_results.readline()
+
+    def lexer_run(self):
+        self.lexer_control.write('r')
+
+    def lexer_display(self):
+        self.lexer_control.write('d')
+        self.read_lexer()
+
+    def run_loop(self):
+        commands = {
+            'r': (lambda self: self.lexer_run()),
+            'd': (lambda self: self.lexer_display() if self.args.use_lexer else None)
+        }
+
+        # Change this to button polling!
+        import sys
+        for command in sys.stdin.read(1):
+            try:
+                commands[command]()
+            except KeyError:
+                pass
 
 if __name__ == '__main__':
     o = ABCOrchestration()
-    o.run_once()
+    if o.args.daemon:
+        o.run_loop()
+    else:
+        o.run_once()

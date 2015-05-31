@@ -5,8 +5,9 @@ import smbus
 from filter import ABCFilter
 
 class LCDTextFilter(ABCFilter):
-    def __init__(self):
-        ABCFilter.__init__(self)
+    def __init__(self, filter=True):
+        if filter: 
+            ABCFilter.__init__(self)
         self.bus = smbus.SMBus(self.I2C_CHANNEL)
 
     def action(self, arg):
