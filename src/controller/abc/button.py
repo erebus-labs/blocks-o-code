@@ -23,8 +23,11 @@ class ABCButtonManager(object):
         if len(active_buttons) != 1:
             return False
         else:
-            active_buttons[0].callback()
-            return True
+            if active_buttons[0].callback:
+                active_buttons[0].callback()
+                return True
+            else:
+                return False
 
 class ABCButton(object):
     '''

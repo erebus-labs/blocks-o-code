@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from outputs.textlcd import LCDTextFilter
 from time import sleep
 import abc
+from abc.button import ABCButton, ABCButtonManager
 
 class ABCOrchestration(object):
     lexer_command = {'args': ['lexer.py']}
@@ -20,13 +21,17 @@ class ABCOrchestration(object):
     ]
     null_command = 'outputs/null.py'
     INTERPRETER = 'abc/interpreter/abc'
-    
+
     def __init__(self):
         self.commands = []
         self.parse_args()
         self._disable_outputs()
         self._setup_commands()
         self.lcd = LCDTextFilter(filter=False)
+        self.buttonmgr = ABCButtonManager([
+            ABCButton(port='P8_10', callback=self.lexer_run),
+            ABCButton(port='P8_12', callback=(self.lexer_display() if self.args.use_lexer else None))
+        ])
 
     def parse_args(self):
         parser = ArgumentParser()
@@ -73,7 +78,7 @@ class ABCOrchestration(object):
 
         self.commands[-1]['proc'] = Popen(self.commands[-1]['args'],
             stdin=self.commands[-2]['proc'].stdout)
-    
+
     def _wait_procs(self):
         for command in self.commands:
             command['proc'].wait()
@@ -100,18 +105,7 @@ class ABCOrchestration(object):
         self.read_lexer()
 
     def run_loop(self):
-        commands = {
-            'r': (lambda self: self.lexer_run()),
-            'd': (lambda self: self.lexer_display() if self.args.use_lexer else None)
-        }
-
-        # Change this to button polling!
-        import sys
-        for command in sys.stdin.read(1):
-            try:
-                commands[command]()
-            except KeyError:
-                pass
+        self.buttonmgr.poll()
 
 if __name__ == '__main__':
     o = ABCOrchestration()
