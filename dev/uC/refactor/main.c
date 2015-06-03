@@ -27,7 +27,7 @@ typedef enum {
 	Print
 } BlockFunc;
 
-static const BlockFunc function = 6;
+static const BlockFunc function = 15;
 #endif
 
 
@@ -65,7 +65,7 @@ static volatile uint8_t	tOVCount	= 0;
 static volatile uint8_t	tCountFlag	= 0;
 static volatile uint8_t statusLED	= 0;
 static volatile uint8_t errorLED	= 0;
-
+static volatile uint8_t firstRead	= 1;
 
 static void initIO(void);
 static void startupSequence(void);
@@ -86,6 +86,9 @@ int main(void) {
 	startupSequence();
 	startupSequence();
 	
+	workQueue |= _BV(StatusLedBlinkCommand);
+	serviceWorkqueue();
+	
 #if TESTING_BLOCK
 	uint8_t addr = 42;
 #else
@@ -93,13 +96,21 @@ int main(void) {
 	uint8_t addr = waitForVector();
 #endif
 	
-	// assign function pointer to use custom data-collector function
-	GetData_ptr GlobalFunc_ptr = GlobalBusCommand;
+	// limitations of address space says we can't have addresses
+	// with MSB set (addr > 127)
+	if (addr & 0b10000000) {
+		workQueue |= _BV(ErrorLedBlinkCommand);
+		serviceWorkqueue();
+	} else {
+		// assign function pointer to use custom data-collector function
+		GetData_ptr GlobalFunc_ptr = GlobalBusCommand;
+		
+		// assign received vector to i2c initialization
+		setup_i2c(addr, GlobalFunc_ptr);
+	}
 	
-	// assign received vector to i2c initialization
-	setup_i2c(addr, GlobalFunc_ptr);
 	sei();
-	
+
 //	STATUS_PORT &= ~_BV(STATUS_LED);
 	
 	// continuously poll i2c for commands
@@ -226,8 +237,13 @@ static uint8_t ABCReadData(void) {
 static void serviceWorkqueue(void) {
 	// Read
 	if (workQueue & _BV(ReadDataCommand)) {
-		// may need delay for ADC
 		workQueue &= ~_BV(ReadDataCommand);
+		
+		// light LED on first lexer read
+		if (firstRead) {
+			STATUS_PORT |= _BV(STATUS_LED);
+			firstRead = 0;
+		}
 	}
 	
 	// Send Vertical

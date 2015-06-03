@@ -70,9 +70,10 @@ static volatile uint8_t s_toggle_left	= 0;
 static volatile uint8_t master_sel_bit  = 0;
 static volatile uint8_t slave_sel_bit   = 0;
 
-static uint8_t adjacentUpdated = 0;
+static volatile	uint8_t	adjacentUpdated = 0;
 
 static const	uint8_t clk_ms			= 3;
+
 
 /**
  *  Blocking function returns when a SPI transmission provides vector position
@@ -85,9 +86,12 @@ uint8_t waitForVector(void) {
 	// initialize pins and registers
 	initSlaveHandshake();
 	
+	// capture neighboring blocks only on startup
 	if (!adjacentUpdated) {
+		_delay_ms(35);
 		updateAdjacentBlocks();
 		adjacentUpdated = 1;
+		_delay_ms(35);
 	}
 	
 	// spin until rx has received vector and assigned it to the global address
@@ -580,13 +584,21 @@ static inline void disableSPIMaster(void) {
  */
 void initSlaveHandshake(void) {
 	
-	// SPI slave signal directions and enable pull-up resistors
+	// set slave selects temporarily as outputs to "announce" new block presence
+	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
+	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
+	
+	// start slave selects low
+	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
+	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
+	
+	// set SPI slave signal directions and enable pull-up resistors
 	SPI_S_DDR	 &= ~_BV(SPI_S_CLK_DIR);	// set slave clock as input
 	SPI_S_DI_DDR &= ~_BV(SPI_S_DI_DIR);		// set slave DI as input
 	SPI_S_PORT	 |= _BV(SPI_S_CLK);			// pull-up resistors
 	SPI_M_DO_REG |= _BV(SPI_S_DI);
 	
-	// set slave-selects temporarily as inputs to "listen"
+	// set master-side slave-selects temporarily as inputs to "listen"
 	// for new block presence and enable pull-up resistors
 	SPI_M_DDR	 &= ~_BV(SPI_T_A_DIR);		// to-above line
 	SPI_M_DDR	 &= ~_BV(SPI_T_R_DIR);		// to-right line
@@ -600,14 +612,6 @@ void initSlaveHandshake(void) {
 	// enable pin change interrupts (PCI)
 	GIMSK		 |= _BV(SPI_CLK_INT_PRT);	// SPI slave clock interrupt port
 	SPI_PCMSK	  = _BV(SPI_S_CLK_PCINT);	// SPI slave clock only
-
-	// set slave selects temporarily as outputs to "announce" new block presence
-	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
-	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
-	
-	// start slave selects low
-	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
-	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
 }
 
 /**
@@ -798,10 +802,17 @@ static inline void sendVector(uint8_t slave_bit) {
 static inline void formatVector(uint8_t data) {
 	// position structure: bits [2:0] are x-coord, [6:3] are y-coord
 	// set x-coord [2:0], increment if triggered from the left
-	globalAddress  = (data + trig_f_left) & 0b00000111;
+	globalAddress = data + trig_f_left;
+	
+	// out of x-coord bounds
+	if (globalAddress & 0b1000) {
+		globalAddress = 0b1000000;
+		return;
+	}
 	
 	// set y-coord [6:3], increment if triggered from below
-	globalAddress |= (data + (trig_f_below << 3)) & 0b01111000;
+	// if out of y-coord bounds, the MSB will already be set
+	globalAddress |= data + (trig_f_below << 3);
 }
 
 /**

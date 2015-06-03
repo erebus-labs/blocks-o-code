@@ -18,7 +18,6 @@
 #include <util/delay.h>
 #include <util/atomic.h>
 
-
 /**
  *  Blocking function returns when a SPI transmission provides vector position
  *
