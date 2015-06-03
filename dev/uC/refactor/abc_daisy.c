@@ -70,6 +70,8 @@ static volatile uint8_t s_toggle_left	= 0;
 static volatile uint8_t master_sel_bit  = 0;
 static volatile uint8_t slave_sel_bit   = 0;
 
+static uint8_t adjacentUpdated = 0;
+
 static const	uint8_t clk_ms			= 3;
 
 /**
@@ -82,6 +84,11 @@ uint8_t waitForVector(void) {
 	
 	// initialize pins and registers
 	initSlaveHandshake();
+	
+	if (!adjacentUpdated) {
+		updateAdjacentBlocks();
+		adjacentUpdated = 1;
+	}
 	
 	// spin until rx has received vector and assigned it to the global address
 	while (!rx_completed) {
@@ -114,6 +121,7 @@ void sendDaisyChainHorizontal(void) {
 }
 
 void sendDaisyChainVertical(void) {
+	ERROR_PORT |= _BV(ERROR_LED);
 	s_toggle_left = 0;
 	initSPIMaster();
 }
@@ -132,9 +140,13 @@ void toggleUntilMasterResponse(void) {
 	s_toggle_left = 0;
 	uint8_t signal = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
 	
-	// spin until handshake start has been recognized
+	// spin while slave signals low
+	// until handshake start has been recognized 
 	uint8_t repeat = 1;
-	while (repeat) {
+	while (repeat && (((~(SPI_S_PIN_REG)) & _BV(SPI_S_CLK))
+					  && ((~(SPI_S_DI_REG)) & _BV(SPI_S_DI)))) {
+		
+		TOGGLE_ERROR();
 		
 		// toggles slave select lines until response
 		slaveSelectToggler(signal);
@@ -147,19 +159,21 @@ void toggleUntilMasterResponse(void) {
 		}
 		
 		// disable interrupts for scope, prevents disruptive late attempts
-		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-			if (!stateTriggered) {
-				
-				// toggle to other input select
-				s_toggle_left = !s_toggle_left;
-				
-				// reassign signal from toggled select
-				signal = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
-			} else {
-				// handshake started
-				repeat = 0;
-			}
+//		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+//		cli();
+		if (!stateTriggered) {
+			
+			// toggle to other input select
+			s_toggle_left = !s_toggle_left;
+			
+			// reassign signal from toggled select
+			signal = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
+		} else {
+			// handshake started
+			repeat = 0;
 		}
+//		sei();
+//		}
 	}
 }
 
@@ -186,8 +200,10 @@ static void serviceTrigger(void) {
 	switch (cur_state) {
 		case PowerOn:
 			// poll until master brings s_clk AND s_di LOW
-			if ((~SPI_S_PIN_REG & _BV(SPI_S_CLK))
-			&& (~SPI_S_DI_REG & _BV(SPI_S_DI))) {
+			if (((~(SPI_S_PIN_REG)) & _BV(SPI_S_CLK))
+			&& ((~(SPI_S_DI_REG)) & _BV(SPI_S_DI))) {
+				
+				TOGGLE_STATUS();
 				
 				// advance program state
 				cur_state = StartSlaveHandshake;
@@ -215,6 +231,8 @@ static void serviceTrigger(void) {
 				// master clock triggers the select signal
 				// bring SS_F_LEFT or SS_F_BELOW back down LOW
 				SPI_S_PORT &= ~_BV(sel_pin);
+			} else {
+				waitForVector();
 			}
 			break;
 			
@@ -229,25 +247,27 @@ static void serviceTrigger(void) {
 				// wait for signals to register
 				_delay_ms(clk_ms);
 
-				ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-					// determine currently responding signal
-					uint8_t sel_dir = (s_toggle_left) ? (SPI_F_L_DIR) : (SPI_F_B_DIR);
-					uint8_t sel_pin = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
+//				ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+//				cli();
+				// determine currently responding signal
+				uint8_t sel_dir = (s_toggle_left) ? (SPI_F_L_DIR) : (SPI_F_B_DIR);
+				uint8_t sel_pin = (s_toggle_left) ? (SS_F_LEFT) : (SS_F_BELOW);
 
-					// master clock triggers the select signal
-					// bring SS_F_LEFT or SS_F_BELOW to HIGH
-					SPI_S_PORT |= _BV(sel_pin);
-					
-					// previous port value associated with pull-up
-					prev_pin_b |= _BV(sel_pin);			// initialize high
-					
-					// release select line for master to retain after a short delay
-//					_delay_ms(5);
-					SPI_S_DDR  &= ~_BV(sel_dir);		// set responding as input
+				// master clock triggers the select signal
+				// bring SS_F_LEFT or SS_F_BELOW to HIGH
+				SPI_S_PORT |= _BV(sel_pin);
 				
-					// pull-up resistor
-					SPI_S_PORT |= _BV(sel_pin);			// slave select pull-up
-				}
+				// previous port value associated with pull-up
+				prev_pin_b |= _BV(sel_pin);			// initialize high
+				
+				// release select line for master to retain after a short delay
+//					_delay_ms(5);
+				SPI_S_DDR  &= ~_BV(sel_dir);		// set responding as input
+			
+				// pull-up resistor
+				SPI_S_PORT |= _BV(sel_pin);			// slave select pull-up
+//				}
+//				sei();
 			}
 			
 			break;
@@ -386,7 +406,7 @@ static void serviceTrigger(void) {
 		default:
 			break;
 	}
-	updateAdjacentBlocks();
+//	updateAdjacentBlocks();
 }
 
 /**
@@ -559,14 +579,6 @@ static inline void disableSPIMaster(void) {
  *	Initializes pins and registers for slave handshake protocol
  */
 void initSlaveHandshake(void) {
-		
-	// set slave selects temporarily as outputs to "announce" new block presence
-	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
-	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
-	
-	// start slave selects low
-	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
-	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
 	
 	// SPI slave signal directions and enable pull-up resistors
 	SPI_S_DDR	 &= ~_BV(SPI_S_CLK_DIR);	// set slave clock as input
@@ -588,6 +600,14 @@ void initSlaveHandshake(void) {
 	// enable pin change interrupts (PCI)
 	GIMSK		 |= _BV(SPI_CLK_INT_PRT);	// SPI slave clock interrupt port
 	SPI_PCMSK	  = _BV(SPI_S_CLK_PCINT);	// SPI slave clock only
+
+	// set slave selects temporarily as outputs to "announce" new block presence
+	SPI_S_DDR	 |= _BV(SPI_F_B_DIR);
+	SPI_S_DDR	 |= _BV(SPI_F_L_DIR);
+	
+	// start slave selects low
+	SPI_S_PORT	 &= ~_BV(SS_F_BELOW);
+	SPI_S_PORT	 &= ~_BV(SS_F_LEFT);
 }
 
 /**
@@ -664,7 +684,7 @@ static inline void initSPIMaster(void) {
 		SPI_M_DO_REG &= ~_BV(SPI_M_CLK);
 		
 		// allow lines to register changes and interrupt
-		uint8_t wait = 25;
+		uint8_t wait = 55;
 		while ((!stateTriggered) && wait) {
 			_delay_ms(1);
 			--wait;

@@ -27,7 +27,7 @@ typedef enum {
 	Print
 } BlockFunc;
 
-static const BlockFunc function = 0;
+static const BlockFunc function = 6;
 #endif
 
 
