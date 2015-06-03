@@ -95,10 +95,10 @@ input:
 
 STATEMENT_LIST:
       STATEMENT_LIST STATEMENT {
-        $$ = ast_node_list_append($1, ast_node_new_list($2));
+        $$ = ast_node_list_append($1, ast_node_new_list($2, yylineno - 1));
     }
     | STATEMENT {
-        $$ = ast_node_new_list($1);
+        $$ = ast_node_new_list($1, yylineno - 1);
     }
 ;
 

@@ -59,6 +59,8 @@ typedef struct _ASTNode {
 
     } data;                 ///< The data associated with the node
 
+    int linenum;            ///< The linenumber of the statement
+
     struct _ASTNode* lop;   ///< The left operand/previous list item
     struct _ASTNode* rop;   ///< The right operand/next list item
 } ASTNode;
@@ -72,7 +74,7 @@ ASTNode* ast_node_new(void);
 ASTNode* ast_node_new_op(char c, ASTNode* lop, ASTNode* rop);
 ASTNode* ast_node_new_var(char c, ASTNode* lop, ASTNode* rop);
 ASTNode* ast_node_new_literal(double n, ASTNode* lop, ASTNode* rop);
-ASTNode* ast_node_new_list(ASTNode* e);
+ASTNode* ast_node_new_list(ASTNode* e, int linenum);
 ASTNode* ast_node_list_append(ASTNode* e, ASTNode* rop);
 ASTNode* ast_node_empty();
 ASTNode* ast_node_conditional(ASTNode* e, ASTNode* lop, ASTNode* rop);
