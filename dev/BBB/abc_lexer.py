@@ -2,6 +2,7 @@
 
 from abc_local import ABC_Local_Bus
 from abc_global import ABC_Global_Bus
+from squishy_tylo import space_string
 import time
 import sys
 
@@ -26,14 +27,17 @@ value_tokens = [
 
 operator_tokens = [
     '+',
+	'+',
     '-',
     '/',
     '*',
     '^',
+	'^',
     '%',
     '=',
     '!=',
     '>',
+	'>',
     '<',
     '>=',
     '<=',
@@ -42,20 +46,39 @@ operator_tokens = [
 
 control_tokens = [
     'while',
+	'while',
+	'while',
     'endwhile',
+	'endwhile',
     'if',
+	'if',
     'else',
+	'else',
     'endif',
+	'endif',
     '(',
-    ')'
+	'(',
+    ')',
+	')',
+	')'
 ]
 
 statement_tokens = [
-    'OUT1',
-    'OUT2',
-    'OUT3',
-    'OUT4',
-    'OUT5',
+    'output 1',
+    'output 1',
+    'output 1',
+    'output 2',
+    'output 2',
+    'output 3',
+    'output 3',
+    'output 3',
+    'output 4',
+    'output 4',
+    'output 5',
+    'output 5',
+    'output 5',
+    'Print',
+    'Print',
     'Print'
 ]
 
@@ -78,12 +101,8 @@ class Block(object):
         self.above = (self.data & 0b10000000) > 0
         self.debug = debug_flag
 
-    def adc_map(self, val, out_min, out_max, in_min=0, in_max=15):
-        return (val - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
-
     def token_match(self, category, adc_val):
-        subset = abc_tokens[category]
-        token = subset[self.adc_map(adc_val, 0, len(subset)-1)]
+        token = abc_tokens[category][adc_val]
         return token if token != ':' else ' '
 
     def __repr__(self):
@@ -115,9 +134,23 @@ class ABC_Lexer(object):
         self.local_bus = ABC_Local_Bus(debugFlag=debug_flag)
         self.topology = []
         self.debug = debug_flag
-        self.scan_delay = 0.75
+        self.scan_delay = 0.45
+        self.error = False
+        self.errorMsg = ''
+
+    def checkForInput(self, x, y, new_block):
+        if new_block.category == 3 and ((new_block.data & 0b1111) == 15):
+	    input_data = self.global_bus.auxiliaryRead(x, y)
+	    if (input_data & 0b00110000) != 0:
+		return new_block
+            if self.debug:
+		print "input block found!"
+	    return Block(x, y, input_data & 0b111)
+	return new_block
+
 
     def placeBlock(self, x, y, new_block):
+	new_block = self.checkForInput(x, y, new_block)
         if y > len(self.topology):
             row = []
             row.append(new_block)
@@ -135,6 +168,7 @@ class ABC_Lexer(object):
                 # print 'existing:', old_block
                 # print 'new', new_block
 
+
     def scan(self, x, y):
         new_block = self.global_bus.readData(x, y)    # read from i2c line (0)
         if self.debug:
@@ -142,56 +176,67 @@ class ABC_Lexer(object):
         if new_block == -1:
             return 0
 
-        time.sleep(0.05)
-        new_block = Block(x, y, new_block)
+        time.sleep(0.15)
+        new_block = Block(x, y, new_block, debug_flag=self.debug)
         self.placeBlock(x, y, new_block)
 
         if x == 0 and new_block.above == True:
             # wait = 10
             read_block = self.scan(x, y+1)
             if read_block == 0: #and wait > 0:
-        		if self.debug:
-        			print "Sending up"
-        		new_block = self.global_bus.sendVertical(x, y)      # read current block - sending up (1)
-        		new_block = Block(x, y, new_block)
-        		self.placeBlock(x, y, new_block)
-        		time.sleep(self.scan_delay)
-        		read_block = self.scan(x, y+1)
-        		# time.sleep(0.01)
-        		# wait -= 1
+                if self.debug:
+                    print "Sending up"
+                new_block = self.global_bus.sendVertical(x, y)      # read current block - sending up (1)
+                new_block = Block(x, y, new_block, debug_flag=self.debug)
+                self.placeBlock(x, y, new_block)
+                time.sleep(self.scan_delay)
+                read_block = self.scan(x, y+1)
+                # if read_block == -1:
+                #     self.error = True
+                #     self.errorMsg = 'Bad Block Connection, Please Try Again.'
+                # time.sleep(0.01)
+                # wait -= 1
 
         if new_block.right == True:
             # wait = 10
             read_block = self.scan(x+1, y)
             if read_block == 0: #and wait > 0:
-        		if self.debug:
-        			print "Sending right"
-        		new_block = self.global_bus.sendHorizontal(x, y)     # read current block - sending right (2)
-        		new_block = Block(x, y, new_block)
-        		self.placeBlock(x, y, new_block)
-        		time.sleep(self.scan_delay)
-        		read_block = self.scan(x+1, y)
-        		# time.sleep(0.01)
-        		# wait -= 1
+                if self.debug:
+                    print "Sending right"
+                new_block = self.global_bus.sendHorizontal(x, y)     # read current block - sending right (2)
+                new_block = Block(x, y, new_block, debug_flag=self.debug)
+                self.placeBlock(x, y, new_block)
+                time.sleep(self.scan_delay)
+                read_block = self.scan(x+1, y)
+                # if read_block == -1:
+                #     self.error = True
+                #     self.errorMsg = 'Bad Block Connection, Please Try Again.'
+                # time.sleep(0.01)
+                # wait -= 1
 
         if self.debug:
         	print 'found block:', new_block
         return 1
 
     def showTopology(self, stderr=False):
+        prog = str()
         if self.debug:
-        	print '++++++++++++++++++++++++++'
-        for row in reversed(self.topology):
+            print '++++++++++++++++++++++++++'
+	for row in self.topology:
             for block in row:
                 if block != 0:
-                    print block,
-        	if stderr:
-        		sys.stderr.write(block.token)
-            print
-        if stderr:
+	            prog += block.token + ' '
+                    #print block,
+        	    if stderr:
+                        sys.stderr.write(block.token)
+            #print
+	    prog += '\n'
+            if stderr:
         	sys.stderr.write('\n')
         if self.debug:
             print '++++++++++++++++++++++++++'
+	#print prog
+        print space_string(prog)
 
     def runOnce(self):
         self.local_bus.resetChain()
@@ -203,6 +248,9 @@ class ABC_Lexer(object):
 
         if block==1 and len(self.topology)>0:
             self.showTopology()
+
+        if self.debug and self.error:
+            print self.errorMsg
 
     def displayCode(self):
         self.showTopology(stderr=True)

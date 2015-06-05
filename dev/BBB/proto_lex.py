@@ -5,7 +5,7 @@ import time
 import sys
 
 
-delay = 0.75
+delay = 1.25
 
 continuous = False
 debug = False
@@ -21,11 +21,16 @@ if len(sys.argv)>1:
 lex = ABC_Lexer(debug)
 
 go = True
+count = 1
 while go:
     #time.sleep(delay)
-    lex.runOnce()
 
-    if not continuous:
+    #print 'Run #' + str(count)
+    lex.runOnce()
+    print
+    count += 1
+
+    if not continuous or count == 101:
         go = False
 
 # 00 => No Neighbor / No Changes
