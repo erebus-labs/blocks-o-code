@@ -119,13 +119,11 @@ uint8_t adjacentBlocks(void) {
 }
 
 void sendDaisyChainHorizontal(void) {
-	STATUS_PORT |= _BV(STATUS_LED);
 	s_toggle_left = 1;
 	initSPIMaster();
 }
 
 void sendDaisyChainVertical(void) {
-	ERROR_PORT |= _BV(ERROR_LED);
 	s_toggle_left = 0;
 	initSPIMaster();
 }
@@ -149,8 +147,6 @@ void toggleUntilMasterResponse(void) {
 	uint8_t repeat = 1;
 	while (repeat && (((~(SPI_S_PIN_REG)) & _BV(SPI_S_CLK))
 					  && ((~(SPI_S_DI_REG)) & _BV(SPI_S_DI)))) {
-		
-		TOGGLE_ERROR();
 		
 		// toggles slave select lines until response
 		slaveSelectToggler(signal);
@@ -207,14 +203,17 @@ static void serviceTrigger(void) {
 			if (((~(SPI_S_PIN_REG)) & _BV(SPI_S_CLK))
 			&& ((~(SPI_S_DI_REG)) & _BV(SPI_S_DI))) {
 				
-				TOGGLE_STATUS();
+				// only the slave clock signal can interrupt
+				PCMSK0 = 0;
+				PCMSK1 = 0;
+				
+				// enable pin change interrupts (PCI)
+				GIMSK		 |= _BV(SPI_CLK_INT_PRT);	// SPI slave clock interrupt port
+				SPI_PCMSK	  = _BV(SPI_S_CLK_PCINT);	// SPI slave clock only
 				
 				// advance program state
 				cur_state = StartSlaveHandshake;
 				stateTriggered = 0;
-
-				// enable interrupts to prepare for responses
-				sei();
 			}
 			break;
 			
@@ -604,14 +603,6 @@ void initSlaveHandshake(void) {
 	SPI_M_DDR	 &= ~_BV(SPI_T_R_DIR);		// to-right line
 	SPI_M_PORT	 |= _BV(SPI_T_A_DIR);		// pull-up resistors
 	SPI_M_PORT	 |= _BV(SPI_T_R_DIR);
-	
-	// only the slave clock signal can interrupt
-	PCMSK0 = 0;
-	PCMSK1 = 0;
-	
-	// enable pin change interrupts (PCI)
-	GIMSK		 |= _BV(SPI_CLK_INT_PRT);	// SPI slave clock interrupt port
-	SPI_PCMSK	  = _BV(SPI_S_CLK_PCINT);	// SPI slave clock only
 }
 
 /**
@@ -802,17 +793,17 @@ static inline void sendVector(uint8_t slave_bit) {
 static inline void formatVector(uint8_t data) {
 	// position structure: bits [2:0] are x-coord, [6:3] are y-coord
 	// set x-coord [2:0], increment if triggered from the left
-	globalAddress = data + trig_f_left;
+	globalAddress = (data & 0b00000111) + trig_f_left;
 	
 	// out of x-coord bounds
-	if (globalAddress & 0b1000) {
-		globalAddress = 0b1000000;
+	if (globalAddress & 0b00001000) {
+		globalAddress = 0b10000000;
 		return;
 	}
 	
 	// set y-coord [6:3], increment if triggered from below
 	// if out of y-coord bounds, the MSB will already be set
-	globalAddress |= data + (trig_f_below << 3);
+	globalAddress |= (data & 0b11111000) + (trig_f_below << 3);
 }
 
 /**

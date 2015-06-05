@@ -11,9 +11,9 @@
 #include "i2c_slave.h"		// global bus identification and communication
 #include "func_select.h"	// function selection input
 
-#define INPUT_BLOCK	0
-#define POTENTIOMETER 0
-#define TESTING_BLOCK 0
+#define INPUT_BLOCK		0
+#define POTENTIOMETER	1
+#define TESTING_BLOCK	0
 
 // hard-coded test values for prototyping
 
@@ -27,7 +27,7 @@ typedef enum {
 	Print
 } BlockFunc;
 
-static const BlockFunc function = 15;
+static const BlockFunc function = 8;
 #endif
 
 
@@ -38,7 +38,7 @@ typedef enum {
 	StatementTokens
 } TokenCategories;
 
-static const TokenCategories category = ValueTokens;
+static const TokenCategories category = ControlTokens;
 
 /**
 	Read Commands from the global bus. Used as bit masks to add tasks to the 
@@ -68,7 +68,9 @@ static volatile uint8_t errorLED	= 0;
 static volatile uint8_t firstRead	= 1;
 
 static void initIO(void);
+#if TESTING_BLOCK
 static void startupSequence(void);
+#endif
 static uint8_t GlobalBusCommand(uint8_t command);
 static uint8_t ABCReadData(void);
 static void serviceWorkqueue(void);
@@ -83,11 +85,15 @@ static uint8_t ABCAuxiliary(void);
 int main(void) {
 	// initialization
 	initIO();
-	startupSequence();
-	startupSequence();
+//	startupSequence();
+//	startupSequence();
 	
 	workQueue |= _BV(StatusLedBlinkCommand);
 	serviceWorkqueue();
+	
+	// enable interrupts
+	sei();
+
 	
 #if TESTING_BLOCK
 	uint8_t addr = 42;
@@ -102,6 +108,8 @@ int main(void) {
 		workQueue |= _BV(ErrorLedBlinkCommand);
 		serviceWorkqueue();
 	} else {
+		workQueue |= _BV(StatusLedOnCommand);
+		
 		// assign function pointer to use custom data-collector function
 		GetData_ptr GlobalFunc_ptr = GlobalBusCommand;
 		
@@ -109,7 +117,6 @@ int main(void) {
 		setup_i2c(addr, GlobalFunc_ptr);
 	}
 	
-	sei();
 
 //	STATUS_PORT &= ~_BV(STATUS_LED);
 	
@@ -220,7 +227,7 @@ static uint8_t GlobalBusCommand(uint8_t command) {
 
 #if INPUT_BLOCK
 static uint8_t ABCAuxiliary(void) {
-	return 0b00001111 & read_adc();
+	return (adjacentBlocks() | read_adc());
 }
 #endif
 
