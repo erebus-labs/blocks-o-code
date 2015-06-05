@@ -5,12 +5,21 @@ from time import sleep
 
 class ABC_Local_Bus(object):
     """docstring for ABC_Handshake"""
-    def __init__(self, spiClockPin="P9_11", slaveSelectPin="P9_12", mosiPin="P9_23", debugFlag=False):
+    def __init__(self, spiClockPin="P9_11", slaveSelectPin="P9_12", mosiPin="P9_23", resetPin="P9_24", debugFlag=False):
         super(ABC_Local_Bus, self).__init__()
         self.spiClock    = spiClockPin
         self.slaveSelect = slaveSelectPin
         self.mosi        = mosiPin
         self.debug       = debugFlag
+        self.reset       = resetPin
+        GPIO.setup(self.reset, GPIO.OUT)
+        GPIO.output(self.reset, GPIO.HIGH)
+
+    def resetChain(self, preDelay=0.1, postDelay=0.1):
+        sleep(preDelay)
+        GPIO.output(self.reset, GPIO.LOW)
+        sleep(postDelay)
+        GPIO.output(self.reset, GPIO.HIGH)
 
     def setupHandshake(self):
         GPIO.setup(self.spiClock, GPIO.OUT)
@@ -38,25 +47,29 @@ class ABC_Local_Bus(object):
         else:
             if self.debug:
                 print "wait for slave low"
-            GPIO.wait_for_edge(self.slaveSelect, GPIO.FALLING)
+            while GPIO.input(self.slaveSelect):
+                pass
             GPIO.output(self.mosi, GPIO.LOW)
             GPIO.output(self.spiClock, GPIO.LOW)
 
         if self.debug:
             print "START"
-        GPIO.wait_for_edge(self.slaveSelect, GPIO.RISING)
+        while not GPIO.input(self.slaveSelect):
+            pass
         GPIO.output(self.mosi, GPIO.HIGH)
         GPIO.output(self.spiClock, GPIO.HIGH)
 
         if self.debug:
             print "A"
-        GPIO.wait_for_edge(self.slaveSelect, GPIO.FALLING)
+        while GPIO.input(self.slaveSelect):
+            pass
         GPIO.output(self.mosi, GPIO.LOW)
         GPIO.output(self.spiClock, GPIO.LOW)
 
         if self.debug:
             print "B"
-        GPIO.wait_for_edge(self.slaveSelect, GPIO.RISING)
+        while not GPIO.input(self.slaveSelect):
+            pass
         GPIO.setup(self.slaveSelect, GPIO.OUT)
         GPIO.output(self.slaveSelect, GPIO.LOW)
 
@@ -98,4 +111,6 @@ class ABC_Local_Bus(object):
         GPIO.output(self.slaveSelect, GPIO.LOW)
         if self.debug:
             print "Wrote " + str(vector) + "!"
+
+        # sleep(0.2)
         return dataIn
