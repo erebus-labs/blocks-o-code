@@ -58,8 +58,9 @@ ASTNode* ast_node_new_literal(double n, ASTNode* lop, ASTNode* rop) {
     return node;
 }
 
-ASTNode* ast_node_new_list(ASTNode* e) {
+ASTNode* ast_node_new_list(ASTNode* e, int linenum) {
     ASTNode* node = ast_node_new();
+    node->linenum = linenum;
     node->t = ASTList;
     node->data.e = e;
     node->lop = 0;

@@ -13,8 +13,9 @@ class Commands:
     ErrorLedOn,
     ErrorLedBlink,
     ErrorLedOff,
-    Reset
-    ) = range(10)
+    Reset,
+    AuxiliaryRead
+    ) = range(11)
 
 
 class ABC_Global_Bus(object):
@@ -30,6 +31,8 @@ class ABC_Global_Bus(object):
                 raise
 
     def formatAddress(self, x, y):
+        if int(x) > 7 or int(y) > 15:
+            return -1
         return (int(x) & 7) | ((int(y) & 15) << 3)
 
     # returns function value stored in the block's function register
@@ -58,10 +61,13 @@ class ABC_Global_Bus(object):
         return self.serviceCommand(x, y, i2c_busnum, Commands.ErrorLedOn)
 
     def errorLedBlink(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, Commands.ReadData)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.ErrorLedBlink)
 
     def errorLedOff(self, x, y, i2c_busnum=2):
-        return self.serviceCommand(x, y, i2c_busnum, Commands.ErrorLedOn)
+        return self.serviceCommand(x, y, i2c_busnum, Commands.ErrorLedOff)
 
     def reset(self, x, y, i2c_busnum=2):
         return self.serviceCommand(x, y, i2c_busnum, Commands.Reset)
+
+    def auxiliaryRead(self, x, y, i2c_busnum=2):
+        return self.serviceCommand(x, y, i2c_busnum, Commands.AuxiliaryRead)

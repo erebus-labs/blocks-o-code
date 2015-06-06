@@ -112,6 +112,9 @@ double eval_expr(ASTNode* expr) {
             }
         case ASTList:
             for (; needle; needle = needle->rop) {
+                if (needle->linenum >= 1) {
+                    fprintf(stdout, "#LINECHANGE(%d)\n", needle->linenum);
+                }
                 retval = eval_expr(needle->data.e);
             }
             return retval;

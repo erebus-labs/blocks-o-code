@@ -111,4 +111,6 @@ class ABC_Local_Bus(object):
         GPIO.output(self.slaveSelect, GPIO.LOW)
         if self.debug:
             print "Wrote " + str(vector) + "!"
+
+        # sleep(0.2)
         return dataIn
