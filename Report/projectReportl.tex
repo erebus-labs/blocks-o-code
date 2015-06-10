@@ -188,4 +188,88 @@ The local bus is started from the BeagleBone and initiates a handshake with the 
     
     
      \includegraphics[width=6.5in]{lxer.png}
+     \newpage
+   \subsubsection{Parser}
+   The parser is implemented using GNU Flex and Bison. Bison is used to allow rapid changes to grammar rules once physical manipulators are tested to give feedback to drive iterative redesign of the language. Flex is used to tokenize literals from the input stream and ease case-insensitivity of the language?s keywords.
+   
+ 
+   \textit{\textbf{Tokens}}
+   
+   Tokens patterns are expressed as regular expressions and are available in the appendix. Non-tokenized patterns that are in the source code are omitted for brevity. These patterns are used for ignoring certain patterns or implementing parser control patterns.
+     
+      \textit{\textbf{Grammar}}
+      
+      The Bison based parser builds an abstract syntax tree whose structure can be modeled with a 1-to-1 mapping with the grammar rules. The grammar rules are provided in the appendix.
+      \subsubsection{Interpreter}
+      The interpreter receives the root node from the parser, which is a STATEMENT\_LIST and descends it directly. The interpreter follows each node in the list and evaluates each node, discarding any return values and performing each node?s side effects.
+      
+      Each operand in the statement in the statement list is recursively evaluated as expressions, until a terminator is reached. Terminators are type NUM and VAR.
+      \subsubsection{Output Pipeline}
+      
+       Outputs from the interpreter are put on stdout in the form: \begin{verbatim}
+       #OUTPUT(CHANNEL, VAL)
+       \end{verbatim} The orchestration script pipes the output of the interpreter through a pipeline of output modules.
+       
+       The output modules are written in Python and read from their stdin. They echo everything they read from their stdin to their stdout except for their corresponding \#OUTPUT control codes. When the output module reads an output control code, it performs an action.
+       
+       The following outputs modules were written. Of the output modules written, the LCD Text module and LCD RGB Backlight module were demonstrated.
+       
+      \textit{\textbf{LCD Text}}
+      
+      An LCD attached to the control board is updated with the value given to the corresponding output block when the output statement is executed.
+      
+      \textit{\textbf{LCD RGB Backlight}}
+      
+      The LCD attached to the control board has an RBG LED used as a backlight which is updated with the value given to the corresponding output block when the output statement is executed. The modulo 7 of the value given is truncated to an integer which indexes a color in the following list: [red, orange, yellow, green, blue, indigo, violet].
+      
+      \textit{\textbf{Piezo Buzzer}}
+      
+      A piezo buzzer attached to the control board is buzzed a number of times corresponding to the value given to the output block when the output statement is executed. The number of beeps is ceiling 5.
+      
+      \textit{\textbf{Relay}}
+      
+      A relay attached to the control board is closed for a number of time units corresponding to the value given to the output block when the output statement is executed. A time unit is about a half of a second and is ceiling 5.
+      
+      \textit{\textbf{ Stdout}}
+      
+      The value given to the output block when the output statement is executed is printed to stdout in an informative way. 
+      
+      \section{Experiments and Testing}
+      Testing of the equipment is broken down into two sections. The first section is hardware tests related to the construction of the blocks and cape. For our hardware test plans we implemented four different test plans. The first hardware test is the connectivity of an individual block. After this is complete the second hardware test is connecting a set of blocks together without connecting power. Connectivity is checked across the global busses to ensure that end to end connections exist throughout the block configuration. The third and fourth hardware tests are connectivity checks on the programmer header and output breakout cape.
+      
+      The second set of tests were to ensure that the software was loaded correctly and functioning as intended. Software test number one is a simple power on test of an individual block to ensure that it goes to the awaiting address state while not connected to the controller. Following this test a block is connected individually to the controller board to verify that it receives its address and indicates this on the status LED. Once these two tests were complete the final software test is connecting a syntactically correct line of code to ensure the controller and outputs are functioning as intended. 
+      
+      The detailed test plans are attached at the end of the document. 
+     
+     \section{Results}
+     52 blocks, 3 programming headers, and 2 capes were made. These can control 4 different outputs with a Turing-complete grammar. Multiple functions are available on each block using 4 different selector wheels. A complete block set includes: 30 blocks with selectable functions, a Controller Cape for BeagleBone Black which supplies power and reset line to networked blocks as well as provides 4 default output components, and a programmer breakout for block updates. It is an open source project, both hardware and software, so all relevant documents, designs, and source code is available in a repository for the public to fork and merge. 
+     The project requirements were all met: \textit{see Appendix I for Project Requirements Checklist}
+     
+     \section{Conclusions}
+     \subsection{Lessons Learned}
+     Throughout the project there were many areas that could be improved, but two of the design methods stood out when reviewing the project. The first of these is the tasking of multiple individuals or teams to develop ideas in parallel. Starting from the concept generation phase, ideas were developed and evaluated by one individual with only some discussion at group meetings, and often older ideas would be reevaluated with each potential roadblock that appeared. This showed that our group would have benefited from developing multiple ideas until it was clear one would be used in the final revision.  The second design method that was apparent after many of the revisions was that we repeatedly expanded our hardware capabilities to meet new needs. It would have been more efficient for the design process had a more complex set of equipment been selected that allowed the design to be finalized, and at that point trim down the hardware to only contain features required.
+     
+     In addition to improving the team?s design process, our project would have run more smoothly if we had allocated equipment earlier rather than later. Testing equipment was requested after discovering it was required, and some time was lost that could have been saved with some planning.
+     \subsection{Future Work}	
+     Based on the original project goals and initial concept generation, we propose several additions and refinements that may help the project serve its purpose. The first is reducing the cost-per-block. As the intention is to provide a tool for classroom use, keeping the cost-per-set low will make the project more economically accessible. The largest expense per block is the four connectors and the PCB itself. For reducing connector cost a pin increase to fifteen combined with an increased volume per order will reduce the cost significantly due to the fifteen pin version of the DB connector being a much more common part. The size of the wheels and blocks are limited by the size of the circuit board inside currently, so reducing circuit board size is not an easy modification, but changing the number of boards ordered per batch without a rush on the shipment will lower this expense as well.
+     
+     The second area of improvement for the blocks is the physical strength of each block of code. During our testing of the BlockBoard v2.2 circuit the stress on one of our connectors broke the solder joint on a support post. While this was partly due to the stiffness of the brand new connectors, we took additional steps to add reinforcement to the blocks before the demonstration. To reduce stress on the connector posts and make the blocks themselves more rigid an expanding glue was added on the seam between the connector and the printed circuit board. To prevent this in future versions a right angle DB connector that more closely mates to the circuit board could be used, as with our DB male connectors a slight gap existed between the housing and the circuit board that allowed the connector to rock back and forth when the connection was made.
+     
+     The third future goal is to improve the functionality of the block sets. The first method of expanding the set?s capabilities is to introduce input blocks to accompany the function select wheel. These blocks could quantize environmental characteristics such as ambient light and temperature to demonstrate programming interaction with the physical world for a more engaging learning experience. The second method of expanding the block set would be to allow for user defined functions. The method of implementation would be to add a user(\#) function to the output wheel, and instructing the controller to assign the current configuration of code to that function when it is received. This would allow programs that are not constrained to a limited number of blocks or wheel types, but rather to the memory of the controller. 
+     
+  \section{Appendix I: Project Checklist} 
+  \includegraphics[width=6.5in]{pds2.png}
+  \section{Appendix II: Token Patterns}
+  \includegraphics[width=7in]{apx2.png}
+    \section{Appendix III Grammar Rules}
+    \includegraphics[width=6in]{apx3.png}
+\section{Appendix IV: Test Plans}
+\includepdf{HWtest1.pdf}
+\includepdf{HWtest2.pdf}    
+\includepdf{HWtest3.pdf}
+\includepdf{SWtest1.pdf} 
+\includepdf{SWtest2.pdf}  
+\includepdf{SWtest3.pdf}  
+\includepdf{SWtest4.pdf} 
+\includepdf{SWtest5.pdf}       
 \end{document}

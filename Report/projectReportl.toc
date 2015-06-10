@@ -13,3 +13,15 @@
 \contentsline {subsubsection}{\numberline {5.1.4}TWI Commands}{18}{subsubsection.5.1.4}
 \contentsline {subsection}{\numberline {5.2}Processor Board}{19}{subsection.5.2}
 \contentsline {subsubsection}{\numberline {5.2.1}Lexer}{19}{subsubsection.5.2.1}
+\contentsline {subsubsection}{\numberline {5.2.2}Parser}{22}{subsubsection.5.2.2}
+\contentsline {subsubsection}{\numberline {5.2.3}Interpreter}{22}{subsubsection.5.2.3}
+\contentsline {subsubsection}{\numberline {5.2.4}Output Pipeline}{22}{subsubsection.5.2.4}
+\contentsline {section}{\numberline {6}Experiments and Testing}{24}{section.6}
+\contentsline {section}{\numberline {7}Results}{24}{section.7}
+\contentsline {section}{\numberline {8}Conclusions}{25}{section.8}
+\contentsline {subsection}{\numberline {8.1}Lessons Learned}{25}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}Future Work}{25}{subsection.8.2}
+\contentsline {section}{\numberline {9}Appendix I: Project Checklist}{27}{section.9}
+\contentsline {section}{\numberline {10}Appendix II: Token Patterns}{28}{section.10}
+\contentsline {section}{\numberline {11}Appendix III Grammar Rules}{29}{section.11}
+\contentsline {section}{\numberline {12}Appendix IV: Test Plans}{30}{section.12}
